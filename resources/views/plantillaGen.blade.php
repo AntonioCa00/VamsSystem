@@ -42,7 +42,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">VAM'S <sup>ADMIN</sup></div>
+                <div class="sidebar-brand-text mx-3">VAM'S</div>
             </a>
 
             <!-- Divider -->
@@ -50,7 +50,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="{{route('index')}}">
+                <a class="nav-link" href="{{route('indexEnc')}}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Sistema de informacion</span></a>
             </li>
@@ -65,37 +65,31 @@
 
             <!-- Nav Item - Tables -->
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('unidades')}}">
+                <a class="nav-link" href="{{route('unidadesEnc')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('encargados')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Encargado</span></a>
-            </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('refacciones')}}">
+                <a class="nav-link" href="{{route('refaccionesEnc')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Refacciones</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('salidas')}}">
+                <a class="nav-link" href="{{route('salidasEnc')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('compras')}}">
+                <a class="nav-link" href="{{route('comprasEnc')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Compras</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('solicitudes')}}">
+                <a class="nav-link" href="{{route('solicitudesEnc')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Solicitudes</span></a>
             </li>
@@ -107,7 +101,7 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="{{route('charts')}}">
+                <a class="nav-link" href="{{route('chartsEnc')}}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Charts</span></a>
             </li>            
@@ -251,7 +245,7 @@
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">                            
+                        <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{session('loginNombre')}}</span>
@@ -262,8 +256,8 @@
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>                                    
-                                    Perfil
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -288,7 +282,7 @@
 
 
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
-                @yield('Contenido') 
+                @yield('contenido') 
 
 
             </div>
