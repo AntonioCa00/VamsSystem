@@ -1,6 +1,6 @@
-@extends('plantilla')
+@extends('plantillaGen')
 
-@section('Contenido')
+@section('contenido')
 
 <div class="container-fluid">
 
@@ -17,27 +17,26 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_refaccion</th>
-                            <th>Nombre</th>
-                            <th>Modelo</th>
-                            <th>Año</th>
+                            <th>ID_unidad</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Año Unidad</th>
                             <th>Marca</th>
-                            <th>Motor</th>
-                            <th>Descripcion</th>
-                            <th>Stock</th>
+                            <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($refacciones as $refaccion)
+                        @foreach ($unidades as $unidad)
                         <tr>
-                            <th>{{$refaccion->id_refaccion}}</th>
-                            <th>{{$refaccion->nombre}}</th>
-                            <th>{{$refaccion->modelo}}</th>
-                            <th>{{$refaccion->ano}}</th>
-                            <th>{{$refaccion->marca}}</th>
-                            <th>{{$refaccion->motor}}</th>
-                            <th>{{$refaccion->descripcion}}</th>
-                            <th>{{$refaccion->stock}}</th>
+                            <th>{{$unidad->id_unidad}}</th>
+                            <th>{{$unidad->tipo}}</th>
+                            <th>{{$unidad->estado}}</th>
+                            <th>{{$unidad->anio_unidad}}</th>
+                            <th>{{$unidad->marca}}</th>
+                            <th>
+                                <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
+                                <a href="" class="btn btn-primary">Eliminar</a>
+                            </th>
                         </tr>
                         @endforeach
                     </tbody>

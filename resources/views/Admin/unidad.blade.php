@@ -2,6 +2,30 @@
 
 @section('Contenido')
 
+@if(session()->has('regis'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Unidad registrada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
+@if(session()->has('update'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Unidad Editada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -10,7 +34,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Unidades en uso</h6>
+            <a class="btn btn-primary" href="{{route('CreateUnidad')}}">Registrar nueva unidad</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -22,6 +46,7 @@
                             <th>Estado</th>
                             <th>Año Unidad</th>
                             <th>Marca</th>
+                            <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,8 +55,12 @@
                             <th>{{$unidad->id_unidad}}</th>
                             <th>{{$unidad->tipo}}</th>
                             <th>{{$unidad->estado}}</th>
-                            <th>{{$unidad->ano_unidad}}</th>
+                            <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
+                            <th>
+                                <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
+                                <a href="" class="btn btn-primary">Eliminar</a>
+                            </th>
                         </tr>
                         @endforeach
                     </tbody>

@@ -5,19 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Unidades extends Model
 {
 
     protected $fillable = [
-        'id',
-        'Nombre',
-        'telefono',
-        'correo',
-        'password',
-        'rol',
+        'id_unidad',
+        'tipo',
+        'estado',
+        'anio_unidad',
+        'marca',
         'estatus',
-        'created_at',
-        'updated_at'
     ];
 
     use HasFactory;

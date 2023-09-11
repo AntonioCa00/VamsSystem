@@ -1,15 +1,12 @@
-@extends('plantilla')
+@extends('plantillaGen')
 
-@section('Contenido')
+@section('contenido')
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Charts</h1>
-    <p class="mb-4">Chart.js is a third party plugin that is used to generate the charts in this theme.
-        The charts below have been customized - for further customization options, please visit the <a
-            target="_blank" href="https://www.chartjs.org/docs/latest/">official Chart.js
-            documentation</a>.</p>
+    <h1 class="h3 mb-2 text-gray-800">Reportes</h1>
+    <p class="mb-4"></p>
 
     <!-- Content Row -->
     <div class="row">
@@ -19,7 +16,8 @@
             <!-- Area Chart -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Total de costos por mes
+                    </h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -86,7 +84,7 @@
             labels: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto', 'Septiembre', 'Octubre','Noviembre','Diciembre',],
             datasets: [{
                 label: 'Total costo por mes ($)',
-                data: [500,30,40,100,0,204,julio, agosto, septiembre, octubre],
+                data: [500,30,40,100,0,204,julio, agosto, septiembre, octubre,4000,2006],
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.2)',
                     'rgba(255, 99, 132, 0.2)',

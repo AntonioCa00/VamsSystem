@@ -5,16 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Salidas extends Model
 {
 
     protected $fillable = [
-        'id',
-        'Nombre',
-        'telefono',
-        'correo',
-        'password',
-        'rol',
+        'id_ssalida',
+        'solicitud_id',
+        'cantidad',
         'estatus',
         'created_at',
         'updated_at'

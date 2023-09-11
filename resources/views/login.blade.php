@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+4<head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,10 +19,23 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
 <body class="bg-gradient-primary">
+
+    @if(session()->has('error'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Usuario no encontrado, revise sus credenciales',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+    @endif
 
     <div class="container">
 
@@ -35,21 +48,21 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image" img src="/public/img/ejem1.svg"  ></div>
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image" img src="img/logo.jpg"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Bienvenido</h1>
                                     </div>
-                                    <form class="user" method="POST" action="">
+                                    <form class="user" method="POST" action="{{route('validate')}}">
                                         @csrf <!-- Agrega el campo CSRF token para protección -->
                                         <div class="form-group">
                                             <input type="email" class="form-control form-control-user" name="correo"
-                                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu correo">
+                                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu correo" required>
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user" name="contraseña"
-                                                id="exampleInputPassword" placeholder="Contraseña">
+                                            <input type="password" class="form-control form-control-user" name="contrasena"
+                                                id="exampleInputPassword" placeholder="Contraseña" required>
                                         </div>
                                         <div class="form-group">
                                             <!-- Otros campos si es necesario -->

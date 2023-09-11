@@ -5,16 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Refacciones extends Model
 {
 
-    protected $fillable = [
-        'id',
-        'Nombre',
-        'telefono',
-        'correo',
-        'password',
-        'rol',
+    protected $fillable = [       
+        'id_refaccion',
+        'nombre',
+        'modelo',
+        'anio',
+        'marca',
+        'motor',
+        'descripcion',
+        'stock',
         'estatus',
         'created_at',
         'updated_at'
