@@ -1,13 +1,13 @@
-@extends('plantillaAdm')
+@extends('plantillaDir')
 
-@section('Contenido')
+@section('contenido')
 
-@if(session()->has('cotizacion'))
+@if(session()->has('validacion'))
     <script type="text/javascript">          
         Swal.fire({
         position: 'center',
         icon: 'success',
-        title: 'Cotizacion realizada',
+        title: 'solicitud validada',
         showConfirmButton: false,
         timer: 1000
         })
@@ -48,10 +48,9 @@
                             <th>{{$solicitudes->id_unidad}}</th>
                             <th>{{$solicitudes->descripcion}}</th>
                             <th>
-                                <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_solicitud)}}">
-                                    Cotizar
+                                <a class="btn btn-primary" href="{{route('verCotiza', $solicitudes->id_solicitud)}}">
+                                    Cotizaciones
                                 </a>
-                                <a href="" class="btn btn-primary">Eliminar</a>
                             </th>
                         </tr>
                         @endforeach

@@ -1,6 +1,18 @@
-@extends('plantilla')
+@extends('plantillaAdm')
 
 @section('Contenido')
+
+@if(session()->has('comprado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Compra registrada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
 
 <div class="container-fluid">
 
@@ -10,7 +22,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">COMPRAS en uso</h6>
+            <a class="btn btn-primary" href="{{route('createCompra')}}">Hacer nueva compra</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -22,7 +34,6 @@
                             <th>Fecha de compra:</th>
                             <th>Unidad:</th>
                             <th>Costo:</th>
-                            <th>Refaccion:</th>
                             <th>Factura:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -31,11 +42,10 @@
                         @foreach ($compras as $compra)
                         <tr>
                             <th>{{$compra->id_compra}}</th>
-                            <th>{{$compra->administrador}}</th>
+                            <th>{{$compra->Nombre}}</th>
                             <th>{{$compra->fecha_compra}}</th>
                             <th>{{$compra->id_unidad}}</th>                            
                             <th>{{$compra->costo}}</th>
-                            <th>{{$compra->refaccion}}</th>
                             <th>{{$compra->factura}}</th>
                             <th>
                                 <a href="" class="btn btn-primary">Editar</a>

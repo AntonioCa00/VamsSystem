@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('unidad_id');
             $table->foreign('unidad_id')->references('id_unidad')->on('unidades');
             $table->string('descripcion');
-            $table->bigInteger('refaccion_id')->unsigned();
-            $table->foreign('refaccion_id')->references('id_refaccion')->on('refacciones');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });

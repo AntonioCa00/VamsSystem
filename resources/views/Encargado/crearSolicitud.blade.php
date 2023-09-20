@@ -29,15 +29,6 @@
                     <label for="exampleFormControlInput1">Descripcion:</label>
                     <input name="Descripcion" type="text" class="form-control" placeholder="Describe la solicitud">
                 </div>
-                <div class="form-group">
-                    <label for="exampleFormControlSelect1">Refacción</label>
-                    <select name="Refaccion" class="form-control">
-                        <option selected disabled value="">Selecciona la refaccion que necesitas</option>
-                        @foreach($refacciones as $refaccion)
-                            <option value="{{$refaccion->id_refaccion}}">{{$refaccion->nombre}}</option>
-                        @endforeach
-                    </select>
-                </div>
                 <button type="submit" class="btn btn-primary">Guardar solicitud</button>
             </form>
         </div>

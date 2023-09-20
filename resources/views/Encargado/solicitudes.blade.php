@@ -35,7 +35,6 @@
                             <th>Estado</th>
                             <th>Unidad</th>
                             <th>Descripcion</th>
-                            <th>Refaccion</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -48,13 +47,13 @@
                             <th>{{$solicitud->estado}}</th>
                             <th>{{$solicitud->unidad_id}}</th>
                             <th>{{$solicitud->Descripcion}}</th>
-                            <th>{{$solicitud->refaccion}}</th>
                             <th>                                
-                                @if($solicitud->estado === "En proceso")
+                                @if($solicitud->estado === "Solicitado")
                                     <a href="" class="btn btn-primary">Eliminar</a>
                                 @else 
                                     <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
                                 @endif
+                                <a href="" class="btn btn-primary">Editar</a>
                             </th>
                         </tr>
                         @endforeach

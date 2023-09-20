@@ -68,9 +68,8 @@ class controladorEncargado extends Controller
     public function tableSolicitud(){
 
         $solicitudes = DB::table('solicitudes')
-        ->select('solicitudes.id_solicitud', 'users.nombre as encargado', 'solicitudes.created_at', 'solicitudes.estado', 'solicitudes.unidad_id', 'solicitudes.Descripcion', 'refacciones.descripcion as refaccion')
+        ->select('solicitudes.id_solicitud', 'users.nombre as encargado', 'solicitudes.created_at', 'solicitudes.estado', 'solicitudes.unidad_id', 'solicitudes.Descripcion')
         ->join('users','solicitudes.encargado_id','=','users.id')
-        ->join('refacciones','solicitudes.refaccion_id','=','refacciones.id_refaccion')
         ->where('solicitudes.encargado_id','=',session('loginId'))
         ->get();
         return view('Encargado.solicitudes',compact('solicitudes'));
@@ -88,10 +87,9 @@ class controladorEncargado extends Controller
 
         Solicitudes::create([
             "encargado_id"=>session('loginId'),
-            "estado"=>"En proceso",
+            "estado"=>"Solicitado",
             "unidad_id"=>$req->input('Unidad'),
             "descripcion"=>$req->input('Descripcion'),
-            "refaccion_id"=>$req->input('Refaccion'),
             "estatus"=>"1",
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
@@ -100,7 +98,7 @@ class controladorEncargado extends Controller
             DB::table('logs')->insert([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Solicitudes",
-                "action"=>"Se ha registrado una nueva solicitud:"."$req->input('Descripcion')",
+                "action"=>"Se ha registrado una nueva solicitud:".$req->input('Descripcion'),
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);

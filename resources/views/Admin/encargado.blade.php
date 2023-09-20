@@ -1,4 +1,4 @@
-@extends('plantilla')
+@extends('plantillaAdm')
 
 @section('Contenido')
 
@@ -17,19 +17,19 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">ENCARGADOS</h1>
+    <h1 class="h3 mb-2 text-gray-800">Usuarios</h1>
     
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <a class="btn btn-primary" href="{{route('createUser')}}">Registrar nuevo encargado</a>
+            <a class="btn btn-primary" href="{{route('createUser')}}">Registrar nuevo usuario</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_encargado</th>
+                            <th>ID_usuario</th>
                             <th>Nombre</th>
                             <th>Telefono</th>
                             <th>Correo</th>
