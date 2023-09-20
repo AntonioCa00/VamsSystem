@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('modelo');
             $table->string('anio');
             $table->string('marca');
-            $table->string('motor');
             $table->string('descripcion');
             $table->integer('stock');
             $table->tinyInteger('estatus')->default(1);

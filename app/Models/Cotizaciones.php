@@ -5,18 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Compras extends Model
+class Cotizaciones extends Model
 {
 
     protected $fillable = [       
-        'id_compra',
+        'id_cotizacio',
         'solicitud_id',
-        'costo',
-        'factura',
+        'administrador_id',
+        'Proveedor',
+        'Costo_total',
+        'archivo_pdf',
         'estatus',
         'created_at',        
-        'updated_at',
-        'admin_id'
+        'updated_at'
     ];
+
     use HasFactory;
 }

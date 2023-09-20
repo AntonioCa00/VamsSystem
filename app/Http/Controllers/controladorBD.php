@@ -7,6 +7,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Unidades;
+use App\Models\Solicitudes;
+use App\Models\Compras;
+use App\Models\Cotizaciones;
 use Session;
 use DB;
 use Carbon\Carbon;
@@ -26,7 +29,11 @@ class controladorBD extends Controller
                     $req->session()->put('loginId',$user->id);
                     $req->session()->put('loginNombre',$user->Nombre);
                     return redirect('inicio');
-                } else {
+                } elseif ($user->rol == "Direccion") {
+                    $req->session()->put('loginId',$user->id);
+                    $req->session()->put('loginNombre',$user->Nombre);
+                    return redirect('inicioDir');
+                } else{
                     $req->session()->put('loginId',$user->id);
                     $req->session()->put('loginNombre',$user->Nombre);
                     return redirect('inicioEnc');
@@ -134,7 +141,7 @@ class controladorBD extends Controller
             DB::table('logs')->insert([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Unidades",
-                "action"=>"Se ha registrado una nueva unidad:"."$req->input('id_unidad')",
+                "action"=>"Se ha registrado una nueva unidad:".$req->input('id_unidad'),
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
@@ -178,50 +185,114 @@ class controladorBD extends Controller
         DB::table('logs')->insert([
             "user_id"=>session('loginId'),
             "table_name"=>"Users",
-            "action"=>"Se ha registrado un nuevo usuario:"."$req->input('id_unidad')",
+            "action"=>"Se ha registrado un nuevo usuario:".$req->input('nombre'),
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
-
-        /*
-
-        GUARDAR USUARIO EN FLY.IO PARA USAR ESAS CREDENCIALES EN LA APP
-
-        try {
-            $client = new Client();
-            // Realizar una solicitud POST a la URL de la API externa
-            $response = $client->request('POST', 'https://practica2.fly.dev/insert-user', [
-                'json' => [
-                    'nombres' => $req->input('nombre'),
-                    'apellidos' =>$req->input('nombre'),
-                    'correo' => $req->input('correo'),
-                    'contrasena' => $password,
-                ],
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
-    
-            // Obtener la respuesta JSON de la API externa
-            $data = json_decode($response->getBody(), true);
-    
-            // Puedes manejar la respuesta como desees, por ejemplo, devolverla como JSON
-            return redirect()->route('encargados')->with('upddate','update');
-    
-        } catch (\Exception $e) {
-            // Manejar errores, por ejemplo, devolver un mensaje de error
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-        */
-
+        
         return redirect()->route('encargados')->with('creado','creado');
 
     }
 
+    public function validarSoli($id){
+        Solicitudes::where('id_solicitud', $id)->update([
+            "estado" => "Validado",
+            "updated_at" => Carbon::now()
+        ]);
 
+        DB::table('logs')->insert([
+            "user_id"=>session('loginId'),
+            "table_name"=>"Solicitudes",
+            "action"=>"Se ha validado una solicitud:".$id,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
 
+        return back()->with('validado','validado');    
+    }
 
+    public function createCotiza($id){
+        $cotizaciones = Cotizaciones::where('solicitud_id', $id)->where('estatus','1')->get();
+        return view('Admin.crearCotizacion',compact('cotizaciones','id'));
+    }
+
+    public function insertCotiza(Request $req){
+        if ($req->hasFile('archivo') && $req->file('archivo')->isValid()){
+            $archivo = $req->file('archivo');
+            $nombreArchivo = uniqid() . '.' . $archivo->getClientOriginalExtension();
+    
+            $archivo->storeAs('archivos', $nombreArchivo, 'public');
+            $archivo_pdf = 'archivos/' . $nombreArchivo;
+
+            Cotizaciones::create([
+                "solicitud_id"=>$req->input('solicitud'),
+                "administrador_id"=>session('loginId'),
+                "Proveedor"=>$req->input('proveedor'),
+                "Costo_total"=>$req->input('costo'),
+                "archivo_pdf"=>$archivo_pdf,
+                "estatus"=>"1",
+                "created_at"=>Carbon::now(),        
+                "updated_at"=>Carbon::now()
+            ]);
+    
+            Solicitudes::where('id_solicitud',$req->input('solicitud'))->update([
+                "estado" => "En proceso",
+                "updated_at" => Carbon::now()
+            ]);
+    
+            DB::table('logs')->insert([
+                "user_id"=>session('loginId'),
+                "table_name"=>"Solicitudes",
+                "action"=>"Se ha hecho una cotizacion en la solicitud:".$req->input('solicitud'),
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]); 
+            return redirect('tabla-solicitud')->with('cotizacion','cotizacion');
+        } else {
+            return back()->with('error', 'No se ha seleccionado ningún archivo.');
+        }
+    }
+
+    public function deleteCotiza($id){
+        Cotizaciones::where('id_cotizacion', $id)->update([
+            "estatus" => "0",
+            "updated_at" => Carbon::now()
+        ]);
+
+        return back()->with('eliminado','eliminado');    
+    }
+
+    public function createCompra(){
+        $solicitudes = DB::table('vista_solicitudes')->where('estado','Validado')->get();
+        return view('Admin.crearCompra',compact('solicitudes'));
+    }
+
+    public function insertCompra(Request $req){
+        Compras::create([
+            "solicitud_id"=>$req->input('solicitudId'),
+            "costo"=>$req->input('costo'),
+            "factura"=>$req->input('factura'),
+            "estatus"=>'1',
+            "created_at"=>Carbon::now(),        
+            "updated_at"=>Carbon::now(),
+            "admin_id"=>session('loginId')
+        ]);
+
+        DB::table('logs')->insert([
+            "user_id"=>session('loginId'),
+            "table_name"=>"Compras",
+            "action"=>"Se ha registrado una nueva compra:".$req->input('factura'),
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        Solicitudes::where('id_solicitud',$req->input('solicitudId'))->update([
+            "estado"=>"Comprado",
+            "updated_at" => Carbon::now()
+        ]);
+
+        return redirect('tabla-compras  ')->with('comprado','comprado');
+    }   
 
     public function generateRandomPassword() {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';

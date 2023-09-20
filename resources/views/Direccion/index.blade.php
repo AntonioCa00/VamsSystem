@@ -1,6 +1,6 @@
-@extends('plantillaAdm')
+@extends('plantillaDir')
 
-@section('Contenido')
+@section('contenido')
 
 <div class="container-fluid">
 

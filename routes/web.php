@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\controladorBD;
 use App\Http\Controllers\controladorEncargado;
+use App\Http\Controllers\controladorDir;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,8 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('form-Unidad', [controladorBD::class, 'createUnidad'])->name('CreateUnidad');
     Route::get('edit-Unidad/{id}', [controladorBD::class, 'editUnidad'])->name('editUnidad');
     Route::get('form-user',[controladorBD::class,'createUser'])->name('createUser');
+    Route::get('form-compra',[controladorBD::class,'createCompra'])->name('createCompra');
+    Route::get('form/{id}/cotizar',[controladorBD::class,'createCotiza'])->name('createCotiza');
 
     //RUTAS ENCARGADO
     Route::get('inicioEnc',[controladorEncargado::class,'index'])->name('indexEnc');
@@ -46,9 +49,19 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('tabla-solicitudEnc', [controladorEncargado::class, 'tableSolicitud'])->name('solicitudesEnc');
     Route::get('form-solicitud', [controladorEncargado::class, 'createSolicitud'])->name('createSolicitud');
 
+    //RUTAS DIRECCION   
+    Route::get('inicioDir',[controladorDir::class,'index'])->name('indexDir');
+    Route::get('tabla-solicitudesDir',[controladorDir::class,'tableSolicitud'])->name('solicitudesDir');
+    Route::get('cotizaciones/{id}',[controladorDir::class,'cotizaciones'])->name('verCotiza');
+
     //RUTAS BD
     Route::post('insert-unidad',[controladorBD::class,'insertUnidad'])->name('insertUnidad');
     Route::post('solicitud',[controladorEncargado::class,'insertSolicitud'])->name('insertSolicitud');
     Route::post('insert-User',[controladorBD::class,'insertUser'])->name('insertUser');
+    Route::put('validar-soli/{id}',[controladorBD::class,'validarSoli'])->name('validSoli');
+    Route::post('insert-compra',[controladorBD::class,'insertCompra'])->name('insertCompra');
+    Route::post('insert-cotiza',[controladorBD::class,'insertCotiza'])->name('insertCotiza');
+    Route::put('delete-cotiza/{id}',[controladorBD::class,'deleteCotiza'])->name('deleteCotiza');
+    Route::put('select-cotiza/{id}/{sid}',[controladorDir::class,'selectCotiza'])->name('selectCotiza');
     //Route::put('update-unidad/{id}',[controladorBD::class,'updateUnidad'])->name('updateUnidad');
 });

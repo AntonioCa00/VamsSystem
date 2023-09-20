@@ -1,4 +1,4 @@
-@extends('plantilla')
+@extends('plantillaAdm')
 
 @section('Contenido')
 
@@ -36,7 +36,6 @@
                             <th>{{$refaccion->modelo}}</th>
                             <th>{{$refaccion->anio}}</th>
                             <th>{{$refaccion->marca}}</th>
-                            <th>{{$refaccion->motor}}</th>
                             <th>{{$refaccion->descripcion}}</th>
                             <th>{{$refaccion->stock}}</th>
                             <th>

@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('compras', function (Blueprint $table) {
             $table->bigIncrements('id_compra');
-            $table->string('unidad_id');
-            $table->foreign('unidad_id')->references('id_unidad')->on('unidades');
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->bigInteger('solicitud_id')->unsigned();
+            $table->foreign('solicitud_id')->references('id_solicitud')->on('solicitudes');
             $table->float('costo', 10, 2);
-            $table->bigInteger('refaccion_id')->unsigned();
-            $table->foreign('refaccion_id')->references('id_refaccion')->on('refacciones');
             $table->string('factura');
             $table->tinyInteger('estatus')->default(1);
+            $table->bigInteger('administrador_id')->unsigned();
+            $table->foreign('administrador_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

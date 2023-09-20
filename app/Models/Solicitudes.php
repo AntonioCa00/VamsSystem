@@ -13,7 +13,6 @@ class Solicitudes extends Model
         'estado',
         'unidad_id',
         'descripcion',
-        'refaccion_id',
         'estatus',
         'created_at',
         'updated_at'
