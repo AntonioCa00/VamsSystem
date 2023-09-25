@@ -14,6 +14,30 @@
     </script> 
 @endif
 
+@if(session()->has('editado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Usuario editado',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
+@if(session()->has('eliminado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Usuario eliminado',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -47,9 +71,34 @@
                             <th>{{$encargado->correo}}</th>
                             <th>{{$encargado->rol}}</th>
                             <th>{{$encargado->password}}</th>
-                            <th>
-                                <a href="" class="btn btn-primary">Editar</a>
-                                <a href="" class="btn btn-primary">Eliminar</a>
+                            <th>        
+                                <a href="{{route('editUser',$encargado->id)}}" class="btn btn-primary">Editar</a>                                                       
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUser">
+                                    Eliminar
+                                </a>
+                                <!-- Logout Modal-->
+                                <div class="modal fade" id="eliminarUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">X</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Selecciona confirmar para eliminar este usuario</div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                <form action="{{route('deleteUser',$encargado->id)}}" method="POST">
+                                                    @csrf
+                                                    {!!method_field('PUT')!!}    
+                                                    <button type="submit" class="btn btn-primary">confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </th>
                         </tr>
                         @endforeach

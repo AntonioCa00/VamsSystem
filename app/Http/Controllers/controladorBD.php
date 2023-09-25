@@ -95,7 +95,7 @@ class controladorBD extends Controller
     }
 
     public function tableEncargado(){
-        $encargados = DB::table('users')->orderBy('nombre')->get();
+        $encargados = DB::table('users')->where('estatus','1')->orderBy('nombre')->get();
         return view('Admin.encargado',compact('encargados'));
     }
 
@@ -150,7 +150,7 @@ class controladorBD extends Controller
     }
 
     public function editUnidad($id){
-        $unidad= DB::table('unidad')->where('id_unidad',$id) ->first();
+        $unidad= Unidades::where('id_unidad',$id)->first();
         return view('Admin.editarUnidad',compact('unidad'));
     }
 
@@ -191,7 +191,34 @@ class controladorBD extends Controller
         ]);
         
         return redirect()->route('encargados')->with('creado','creado');
+    }
 
+    public function editUser($id){
+        $encargado = User::where('id',$id)->first();
+        return view('Admin.editarUser',compact('encargado'));
+    }
+
+    public function updateUser(Request $req, $id){
+        User::where('id',$id)->update([
+            "Nombre"=>$req->input('nombre'),
+            "telefono"=>$req->input('telefono'),
+            "correo"=>$req->input('correo'),
+            "password"=>$req->input('password'),
+            "rol"=>$req->input('rol'),
+            "estatus"=>'1',
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect('tabla-encargados')->with('editado','editado');
+    }
+
+    public function deleteUser($id){
+        User::where('id',$id)->update([
+            "estatus"=>'0',
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect('tabla-encargados')->with('eliminado','eliminado');
     }
 
     public function validarSoli($id){
