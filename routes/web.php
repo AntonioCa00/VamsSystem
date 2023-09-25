@@ -29,6 +29,7 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('graficas', [controladorBD::class, 'charts'])->name('charts');
     Route::get('tabla-unidades', [controladorBD::class, 'tableUnidad'])->name('unidades');
     Route::get('tabla-encargados', [controladorBD::class, 'tableEncargado'])->name('encargados');
+    Route::get('edit-user/{id}', [controladorBD::class, 'editUser'])->name('editUser');
     Route::get('tabla-refacciones', [controladorBD::class, 'tableRefaccion'])->name('refacciones');
     Route::get('tabla-salidas', [controladorBD::class, 'tableSalidas'])->name('salidas');
     Route::get('tabla-compras', [controladorBD::class, 'tableCompras'])->name('compras');
@@ -63,5 +64,7 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::post('insert-cotiza',[controladorBD::class,'insertCotiza'])->name('insertCotiza');
     Route::put('delete-cotiza/{id}',[controladorBD::class,'deleteCotiza'])->name('deleteCotiza');
     Route::put('select-cotiza/{id}/{sid}',[controladorDir::class,'selectCotiza'])->name('selectCotiza');
+    Route::put('update-user/{id}', [controladorBD::class, 'updateUser'])->name('updateUser');
+    Route::put('delete-user/{id}',[controladorBD::class,'deleteUser'])->name('deleteUser');
     //Route::put('update-unidad/{id}',[controladorBD::class,'updateUnidad'])->name('updateUnidad');
 });

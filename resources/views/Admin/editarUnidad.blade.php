@@ -42,7 +42,7 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Año:</label>
-                    <input name="anio_unidad" value="{{$unidad->ano_unidad}}" type="number" class="form-control" placeholder="Año de la unidad">
+                    <input name="anio_unidad" value="{{$unidad->anio_unidad}}" type="number" class="form-control" placeholder="Año de la unidad">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
