@@ -17,21 +17,18 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_refaccion</th>
-                            <th>Nombre</th>
-                            <th>Modelo</th>
-                            <th>Año</th>
-                            <th>Marca</th>
-                            <th>Motor</th>
-                            <th>Descripcion</th>
-                            <th>Stock</th>
+                            <th>Nombre:</th>
+                            <th>Modelo:</th>
+                            <th>Año:</th>
+                            <th>Marca:</th>
+                            <th>Descripcion:</th>
+                            <th>Stock:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($refacciones as $refaccion)
-                        <tr>
-                            <th>{{$refaccion->id_refaccion}}</th>
+                        <tr>                    
                             <th>{{$refaccion->nombre}}</th>
                             <th>{{$refaccion->modelo}}</th>
                             <th>{{$refaccion->anio}}</th>

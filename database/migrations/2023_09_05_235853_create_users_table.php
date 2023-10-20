@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('Nombre');
+            $table->string('nombre');
             $table->string('telefono');
             $table->string('correo');
             $table->string('password');
@@ -25,7 +25,7 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     */
+    */
     public function down(): void
     {
         Schema::dropIfExists('users');

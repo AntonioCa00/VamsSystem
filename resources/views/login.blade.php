@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-4<head>
+<head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -30,7 +30,19 @@
         Swal.fire({
         position: 'center',
         icon: 'error',
-        title: 'Usuario no encontrado, revise sus credenciales',
+        title: 'Usuario no encontrado, revise sus credenciales.',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+    @endif
+
+    @if(session()->has('contras'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Su contraseña no coincide, revisela por favor.',
         showConfirmButton: false,
         timer: 1000
         })
@@ -57,8 +69,8 @@
                                     <form class="user" method="POST" action="{{route('validate')}}">
                                         @csrf <!-- Agrega el campo CSRF token para protección -->
                                         <div class="form-group">
-                                            <input type="email" class="form-control form-control-user" name="correo"
-                                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu correo" required>
+                                            <input type="text" class="form-control form-control-user" name="nombre"
+                                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu nombre de usuario" required>
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user" name="contrasena"

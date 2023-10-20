@@ -2,6 +2,18 @@
 
 @section('contenido')
 
+@if(session()->has('entra'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Bienvenido a sistema VAMS.',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->

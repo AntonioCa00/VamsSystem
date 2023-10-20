@@ -29,23 +29,23 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Solicitud</th>
-                            <th>Encargado</th>
-                            <th>Proveedor</th>
-                            <th>Costo Total</th>
-                            <th>Archivo</th>
+                            <th>Encargado que cotizó:</th>
+                            <th>Requisición:</th>                            
+                            <th>Cotización:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr>
-                            <th>{{$cotizacion->solicitud_id}}</th>
-                            <th>{{$cotizacion->administrador_id}}</th>
-                            <th>{{$cotizacion->Proveedor}}</th>
-                            <th>{{$cotizacion->Costo_total}}</th>
+                            <th>{{$cotizacion->usuario}}</th>
                             <th class="text-center">
-                                <a href="{{ asset($cotizacion->archivo_pdf) }}" target="_blank">
+                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                </a>    
+                            </th>                            
+                            <th class="text-center">
+                                <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
@@ -67,7 +67,7 @@
                                             <div class="modal-body">Selecciona confirmar para validar unicamente esta cotización</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('selectCotiza',['id' => $cotizacion->id_cotizacion, 'sid' => $cotizacion->solicitud_id])}}" method="POST">
+                                                <form action="{{route('selectCotiza',['id' => $cotizacion->id_cotizacion, 'sid' => $cotizacion->requisicion_id])}}" method="POST">                                                
                                                     @csrf
                                                     {!!method_field('PUT')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
@@ -86,6 +86,4 @@
     </div>
 
 </div>
-<!-- /.container-fluid -->
-
 @endsection

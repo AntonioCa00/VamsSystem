@@ -26,6 +26,18 @@
     </script> 
 @endif
 
+@if(session()->has('eliminado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Unidad Eliminada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -41,11 +53,11 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_unidad</th>
-                            <th>Tipo</th>
-                            <th>Estado</th>
-                            <th>Año Unidad</th>
-                            <th>Marca</th>
+                            <th>ID_unidad:</th>
+                            <th>Tipo:</th>
+                            <th>Estado:</th>
+                            <th>Año Unidad:</th>
+                            <th>Marca:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -59,7 +71,32 @@
                             <th>{{$unidad->marca}}</th>
                             <th>
                                 <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
-                                <a href="" class="btn btn-primary">Eliminar</a>
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
+                                    Eliminar
+                                </a>
+                                <!-- Logout Modal-->
+                                <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">X</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Selecciona confirmar para eliminar esta unidad</div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                <form action="{{route('deleteUnidad',$unidad->id_unidad)}}" method="POST">
+                                                    @csrf
+                                                    {!!method_field('PUT')!!}    
+                                                    <button type="submit" class="btn btn-primary">confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </th>
                         </tr>
                         @endforeach
