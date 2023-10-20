@@ -41,30 +41,28 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Solicitud</th>
-                            <th>Encargado</th>
-                            <th>Proveedor</th>
-                            <th>Costo Total</th>
-                            <th>Archivo</th>
+                            <th>Requisicion:</th>
+                            <th>Archivo:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr>
-                            <th>{{$cotizacion->solicitud_id}}</th>
-                            <th>{{$cotizacion->administrador_id}}</th>
-                            <th>{{$cotizacion->Proveedor}}</th>
-                            <th>{{$cotizacion->Costo_total}}</th>
+                            <th>
+                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                </a>    
+                            </th>
                             <th class="text-center">
-                                <a href="{{ asset($cotizacion->archivo_pdf) }}" target="_blank">
+                                <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
                                 <form action="{{route('deleteCotiza',$cotizacion->id_cotizacion)}}" method="POST">
                                     @csrf
-                                    {!!method_field('PUT')!!}                            
+                                    {!!method_field('DELETE')!!}                            
                                     <button type="submit" class="btn btn-primary">Eliminar</button>
                                 </form>                                
                             </th>
@@ -77,15 +75,7 @@
                 <h5 class="text-center">Datos de registro</h5>
                 <form action="{{route('insertCotiza')}}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="solicitud" value="{{$id}}">
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Proveedor:</label>
-                        <input name="proveedor" type="text" class="form-control" placeholder="Proveedor de la cotizacion" required>
-                    </div>     
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Costo Total:</label>
-                        <input name="costo" type="number" class="form-control" placeholder="Costo total de la cotizacion" required>
-                    </div>
+                    <input type="hidden" name="requisicion" value="{{$id}}">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Archivo de cotización:</label>
                         <input name="archivo" type="file" class="form-control" required>

@@ -71,27 +71,45 @@
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('unidadesEnc')}}">
+                <a class="nav-link" href="">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('refaccionesEnc')}}">
+                <a class="nav-link" href="">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Refacciones</span></a>
+                    <span>Almacen</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('salidasEnc')}}">
+                <a class="nav-link" href="">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Proveedores</span></a>
+            </li>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Entradas</span></a>
+            </li>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('comprasEnc')}}">
+                <a class="nav-link" href="">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Compras</span></a>
+            </li>
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('encargados')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Usuarios</span></a>
             </li>
 
             <hr class="sidebar-divider d-none d-md-block">

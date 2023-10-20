@@ -14,7 +14,7 @@
         </div>
         <div class="card-body">
             <h3 class="text-center">Datos de registro</h3>
-            <form action="" method="post">
+            <form action="{{route('updateUnidad',$unidad->id_unidad)}}" method="POST">
                 @csrf
                 {!!method_field('PUT')!!}
                 <div class="form-group">

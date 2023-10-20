@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('salidas', function (Blueprint $table) {
             $table->bigIncrements('id_salida');
-            $table->bigInteger('solicitud_id')->unsigned();
-            $table->foreign('solicitud_id')->references('id_solicitud')->on('solicitudes');
-            $table->integer('cantidad');
-            $table->tinyInteger('estatus')->default(1);
-            $table->timestamps();
+            $table->integer('cantidad');            
+            $table->bigInteger('usuario_id')->unsigned();
+            $table->foreign('usuario_id')->references('id')->on('users');
             $table->bigInteger('refaccion_id')->unsigned();
-            $table->foreign('refaccion_id')->references('id_refaccion')->on('refacciones');
+            $table->foreign('refaccion_id')->references('id_refaccion')->on('almacen');          
+            $table->timestamps();
         });
     }
 

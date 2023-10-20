@@ -29,11 +29,13 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_compra:</th>
                             <th>Administrador:</th>
                             <th>Fecha de compra:</th>
                             <th>Unidad:</th>
+                            <th>Solicitud:</th>
+                            <th>Refaccion:</th>
                             <th>Costo:</th>
+                            <th>Cantidad:</th>
                             <th>Factura:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -41,11 +43,13 @@
                     <tbody>
                         @foreach ($compras as $compra)
                         <tr>
-                            <th>{{$compra->id_compra}}</th>
-                            <th>{{$compra->Nombre}}</th>
-                            <th>{{$compra->fecha_compra}}</th>
+                            <th>{{$compra->Administrador}}</th>
+                            <th>{{$compra->fechaCompra}}</th>
                             <th>{{$compra->id_unidad}}</th>                            
-                            <th>{{$compra->costo}}</th>
+                            <th>{{$compra->descripcion}}</th>
+                            <th>{{$compra->refaccion}}</th>
+                            <th>{{$compra->costo}}</th>                            
+                            <th>{{$compra->cantidad}}</th>
                             <th>{{$compra->factura}}</th>
                             <th>
                                 <a href="" class="btn btn-primary">Editar</a>

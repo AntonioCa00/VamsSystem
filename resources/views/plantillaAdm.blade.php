@@ -42,7 +42,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">VAM'S <sup>ADMIN</sup></div>
+                <div class="sidebar-brand-text mx-3">VAM'S <sup>COMPRAS</sup></div>
             </a>
 
             <!-- Divider -->
@@ -77,28 +77,33 @@
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('encargados')}}">
+                <a class="nav-link" href="{{route('proveedores')}}">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Usuarios</span></a>
+                    <span>Proveedores</span></a>
             </li>
 
             <li class="nav-item active">
+                <a class="nav-link" href="{{route('ordenesCompras')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Orden de compra</span></a>
+            </li>   
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Entradas</span></a>
+            </li>
+            <li class="nav-item active">
                 <a class="nav-link" href="{{route('refacciones')}}">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Refacciones</span></a>
+                    <span>Almacen</span></a>
             </li>
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('salidas')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('compras')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Compras</span></a>
-            </li>            
+            </li>        
 
             <hr class="sidebar-divider d-none d-md-block">
             <div class="sidebar-heading">

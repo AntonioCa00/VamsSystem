@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if(session()->has('eliminado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'solicitud eliminada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -29,29 +41,42 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Codigo</th>
-                            <th>Encargado</th>
-                            <th>Fecha solicitud</th>
-                            <th>Estado</th>
-                            <th>Unidad</th>
-                            <th>Descripcion</th>
+                            <th>ID requisicion</th>            
+                            <th>Encargado:</th>
+                            <th>Fecha solicitud:</th>
+                            <th>Estado:</th>
+                            <th>Unidad:</th>
+                            <th>Requisicion:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($solicitudes as $solicitudes)
                         <tr>
-                            <th>{{$solicitudes->id_solicitud}}</th>
-                            <th>{{$solicitudes->encargado}}</th>
-                            <th>{{$solicitudes->fecha_solicitud}}</th>
+                            <th>{{$solicitudes->id_requisicion}}</th>
+                            <th>{{$solicitudes->nombre}}</th>
+                            <th>{{$solicitudes->fecha_creacion}}</th>
                             <th>{{$solicitudes->estado}}</th>
-                            <th>{{$solicitudes->id_unidad}}</th>
-                            <th>{{$solicitudes->descripcion}}</th>
+                            <th>{{$solicitudes->unidad_id}}</th>
                             <th>
-                                <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_solicitud)}}">
-                                    Cotizar
+                                <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
-                                <a href="" class="btn btn-primary">Eliminar</a>
+                            </th>
+                            <th>
+                                @if ($solicitudes->estado === "Solicitado" || $solicitudes->estado === "Cotizado")
+                                    <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
+                                        Cotizar
+                                    </a>
+                                @elseif ($solicitudes->estado === "Validado")
+                                    <a class="btn btn-primary" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">
+                                        Orden de compra
+                                    </a>
+                                @else 
+                                    <a class="btn btn-primary" href="" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">
+                                        Eliminar
+                                    </a>
+                                @endif                                
                             </th>
                         </tr>
                         @endforeach
