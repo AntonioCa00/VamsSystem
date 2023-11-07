@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('entradas', function (Blueprint $table) {
             $table->bigIncrements('id_entrada');
-            $table->integer('cantidad');
             $table->bigInteger('orden_id')->unsigned();
-            $table->foreign('orden_id')->references('id_orden')->on('orden_compras');
+            $table->foreign('orden_id')->references('id_orden')->on('orden_compras')->onDelete('cascade');
             $table->string('factura');
             $table->timestamps();
         });

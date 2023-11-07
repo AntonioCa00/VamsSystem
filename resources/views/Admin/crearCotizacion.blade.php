@@ -40,7 +40,7 @@
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th>Requisicion:</th>
                             <th>Archivo:</th>
                             <th>Opciones:</th>
@@ -48,13 +48,13 @@
                     </thead>
                     <tbody>
                         @foreach ($cotizaciones as $cotizacion)
-                        <tr>
+                        <tr class="text-center">
                             <th>
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>    
                             </th>
-                            <th class="text-center">
+                            <th>
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
@@ -81,7 +81,7 @@
                         <input name="archivo" type="file" class="form-control" required>
                     </div>
     
-                    <button type="submit" class="btn btn-primary">Registrar compra</button>
+                    <button type="submit" class="btn btn-primary">Registrar cotizacion</button>
                 </form>
             </div>
         </div>

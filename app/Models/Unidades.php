@@ -14,7 +14,10 @@ class Unidades extends Model
         'estado',
         'anio_unidad',
         'marca',
+        'kilometraje',
         'estatus',
+        'created_at',
+        'updated_at'
     ];
 
     use HasFactory;

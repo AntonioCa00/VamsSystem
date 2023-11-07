@@ -20,9 +20,8 @@ return new class extends Migration
             $table->string('descripcion');
             $table->integer('stock');
             $table->bigInteger('entrada_id')->unsigned()->nullable();
-            $table->foreign('entrada_id')->references('id_entrada')->on('entradas');
+            $table->foreign('entrada_id')->references('id_entrada')->on('entradas')->onDelete('cascade');
             $table->tinyInteger('estatus')->default(1);
-
             $table->timestamps();
         });
     }

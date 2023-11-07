@@ -37,7 +37,7 @@
                         <option>Encargado</option>
                     </select>
                 </div>            
-                <button type="submit" class="btn btn-primary">Registrar unidad</button>
+                <button type="submit" class="btn btn-primary">Registrar usuario nuevo</button>
             </form>
         </div>
     </div>

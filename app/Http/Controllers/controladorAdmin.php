@@ -6,59 +6,17 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Almacen;
 use App\Models\User;
-use App\Models\Unidades;
 use App\Models\Proveedores;
 use App\Models\Requisiciones;
 use App\Models\Compras;
 use App\Models\Cotizaciones;
 use App\Models\Orden_Compras;
-use Session;
 use DB;
 use Carbon\Carbon;
 
 class controladorAdmin extends Controller
 {
-
-    public function login(){
-        return view("login");
-    }
-
-    public function loginUser (Request $req){
-        $user = User::where('nombre', '=', $req->nombre)->first();
-        if ($user){
-            if($user->password == $req->contrasena){
-
-                $req->session()->put('loginId',$user->id);
-                $req->session()->put('loginNombre',$user->nombre);
-                $req->session()->put('rol', $user->rol);
-
-
-                if($user->rol == "Compras"){
-                    return redirect('inicio/Compras')->with('entra','entra');
-                } elseif ($user->rol == "Direccion") {
-                    return redirect('inicio/Direccion')->with('entra','entra');
-                } elseif ($user->rol == "Almacen"){
-                    return redirect('inicio/Almacen')->with('entra','entra');
-                } else{
-                    return redirect('inicio')->with('entra','entra');
-                }
-            } else{
-                return back()->with('contras','contras');    
-            }
-        } else {
-            return back()->with('error','error');
-        }
-    }
-
-    public function logout(){
-        if(Session::has('loginId')){
-            Session::pull('loginId');
-            session()->forget('datos');
-            session()->forget('ordenCom');
-            return redirect('/');
-        }
-    }
-
+    
     public function index(){
         return view("Admin.index");
     }
@@ -94,13 +52,6 @@ class controladorAdmin extends Controller
 
     //VISTAS DE LAS TABLAS
 
-    public function tableUnidad()
-    {   
-        $unidades = Unidades::where('estatus','1')->get()->where("estatus",1);
-        return view('Admin.unidad',compact('unidades'));
-    }
-
-
     public function tableRefaccion(){
         $refacciones = Almacen::get()->where("estatus",1);
         return view('Admin.refaccion',compact('refacciones'));
@@ -119,80 +70,29 @@ class controladorAdmin extends Controller
     public function tableSolicitud(){
         $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
+        ->where(function($query) {
+            $query->where('requisiciones.estado', '=', 'Solicitado')
+                  ->orWhere('requisiciones.estado', '=', 'Cotizado')
+                  ->orWhere('requisiciones.estado', '=', 'Validado');
+        })
+        ->orderBy('requisiciones.created_at','desc')
         ->get();
         return view('Admin.solicitudes',compact('solicitudes'));
     }
 
     //VISTAS DE FORMULARIOS
-
-    public function CreateUnidad(){
-        return view('Admin.crearUnidad');
-    }
-
-    public function insertUnidad(Request $req){
-
-            Unidades::create([
-            "id_unidad"=>$req->input('id_unidad'),
-            "tipo"=>$req->input('tipo'),
-            "estado"=>$req->input('estado'),
-            "anio_unidad"=>$req->input('anio_unidad'),
-            "marca"=>$req->input('marca'),
-            "estatus"=>"1",
-            "created_at"=>Carbon::now()->format('Y-m-d'),
-            "updated_at"=>Carbon::now()->format('Y-m-d')
-            ]);
-
-            DB::table('logs')->insert([
-                "user_id"=>session('loginId'),
-                "table_name"=>"Unidades",
-                "action"=>"Se ha registrado una nueva unidad:".$req->input('id_unidad'),
-                "created_at"=>Carbon::now()->format('Y-m-d'),
-                "updated_at"=>Carbon::now()->format('Y-m-d')
-            ]);
-
-        return redirect()->route('unidades')->with('regis','regis');
-    }
-
-    public function editUnidad($id){
-        $unidad= Unidades::where('id_unidad',$id)->first();
-        return view('Admin.editarUnidad',compact('unidad'));
-    }
-
-    public function updateUnidad(Request $req, $id){
-        Unidades::where('id_unidad',$id)->update([
-            "tipo"=>$req->input('id_unidad'),
-            "tipo"=>$req->input('tipo'),
-            "estado"=>$req->input('estado'),
-            "anio_unidad"=>$req->input('anio_unidad'),
-            "estatus"=>"1",
-            "marca"=>$req->input('marca'),
-            "created_at"=>Carbon::now()->format('Y-m-d'),
-            "updated_at"=>Carbon::now()->format('Y-m-d')
-        ]);
-
-        return redirect()->route('unidades')->with('update','update');
-    }
-
-    public function deleteUnidad($id){        
-        Unidades::where('id_unidad',$id)->update([
-            "estatus"=>"0",
-            "updated_at"=>Carbon::now()->format('Y-m-d')
-        ]);
-        return back()->with('eliminado','eliminado');
-    }
-
     public function validarSoli($id){
         Requisiciones::where('id_solicitud', $id)->update([
             "estado" => "Validado",
-            "updated_at" => Carbon::now()->format('Y-m-d')
+            "updated_at" => Carbon::now()
         ]);
 
         DB::table('logs')->insert([
             "user_id"=>session('loginId'),
             "table_name"=>"Solicitudes",
             "action"=>"Se ha validado una solicitud:".$id,
-            "created_at"=>Carbon::now()->format('Y-m-d'),
-            "updated_at"=>Carbon::now()->format('Y-m-d')
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
         ]);
 
         return back()->with('validado','validado');    
@@ -201,7 +101,7 @@ class controladorAdmin extends Controller
     public function createCotiza($id){
         $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-        ->where('requisicion_id', $id)->where('estatus','1')->get();
+        ->where('cotizaciones.requisicion_id', $id)->where('cotizaciones.estatus','1')->get();
         return view('Admin.crearCotizacion',compact('cotizaciones','id'));
     }
 
@@ -325,6 +225,15 @@ class controladorAdmin extends Controller
         return back()->with('delete','delete');
     }
 
+    public function deleteReq($id){
+        Requisiciones::where('id_requisicion',$id)->update([
+            "estado"=>"Eliminado",
+             "updated_at"=>Carbon::now(),
+        ]);
+
+        return back()->with('eliminada','eliminada');
+    }
+
     public function ordenCompra($id){
         $cotizacion = Cotizaciones::select('cotizaciones.id_cotizacion','cotizaciones.pdf as cotPDF','requisiciones.pdf as reqPDF')
         ->join('requisiciones','cotizaciones.requisicion_id','=', 'requisiciones.id_requisicion')
@@ -435,7 +344,7 @@ class controladorAdmin extends Controller
             ]);
 
             Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
-                "estado"=>"Orden de Compra",
+                "estado"=>"Comprado",
                 "updated_at"=>Carbon::now(),
             ]);
 
@@ -447,8 +356,6 @@ class controladorAdmin extends Controller
                 "updated_at"=>Carbon::now()
             ]);
 
-
-
             session()->forget('datosOrden');
 
             return redirect('ordenesCompras');
@@ -456,12 +363,23 @@ class controladorAdmin extends Controller
     }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','users.nombre','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','users.nombre','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        ->where('requisiciones.estado','Eliminado')
         ->get();
         return view ('Admin.ordenesCompras',compact('ordenes'));
+    }
+
+    public function deleteOrd($id){
+        Requisiciones::where('id_requisicion',$id)->update([
+            "estado"=>"Validado",
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return back()->with('eliminada','eliminada');
     }
     
 

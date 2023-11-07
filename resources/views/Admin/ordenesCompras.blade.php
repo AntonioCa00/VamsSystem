@@ -2,6 +2,18 @@
 
 @section('Contenido')
 
+@if(session()->has('eliminada'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'solicitud eliminada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -17,13 +29,14 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_salida:</th>
+                            <th>ID orden:</th>
                             <th>Comprador:</th>
                             <th>Cotizacion:</th>
                             <th>Proveedor:</th>
                             <th>Costo total:</th>
                             <th>Orden de compra</th>
                             <th>Fecha de creacion:</th>
+                            <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,13 +50,41 @@
                                 </a>
                             </th>
                             <th>{{$orden->proveedor}}</th>
-                            <th>{{$orden->costo_total}}</th>
+                            <th>${{$orden->costo_total}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($orden->ordPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>{{$orden->created_at}}</th>
+                            <th>
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
+                                    Eliminar
+                                </a>
+                                <!-- Logout Modal-->
+                                <div class="modal fade" id="eliminarOrd{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">X</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Selecciona confirmar para eliminar esta orden de compra</div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                <form action="{{route('deleteOrd',$orden->id_requisicion)}}" method="POST">
+                                                    @csrf
+                                                    {!!method_field('PUT')!!}    
+                                                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
                         </tr>
                         @endforeach
                     </tbody>
@@ -51,8 +92,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

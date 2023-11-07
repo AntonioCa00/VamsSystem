@@ -50,11 +50,11 @@
                                 </a>
                             </th>
                             <th>
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#validarCotiza">
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#validarCotiza{{$cotizacion->id_cotizacion}}">
                                     Validar
                                 </a>
                                 <!-- Logout Modal-->
-                                <div class="modal fade" id="validarCotiza" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                <div class="modal fade" id="validarCotiza{{$cotizacion->id_cotizacion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">

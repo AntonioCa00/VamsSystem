@@ -23,7 +23,6 @@
                             <th>Marca:</th>
                             <th>Descripcion:</th>
                             <th>Stock:</th>
-                            <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,10 +34,6 @@
                             <th>{{$refaccion->marca}}</th>
                             <th>{{$refaccion->descripcion}}</th>
                             <th>{{$refaccion->stock}}</th>
-                            <th>
-                                <a href="" class="btn btn-primary">Editar</a>
-                                <a href="" class="btn btn-primary">Eliminar</a>
-                            </th>
                         </tr>
                         @endforeach
                     </tbody>

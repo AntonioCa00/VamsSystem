@@ -2,6 +2,18 @@
 
 @section('contenido')
 
+@if(session()->has('validacion'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Cotizacion validada!',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 @if(session()->has('eliminado'))
     <script type="text/javascript">          
         Swal.fire({
