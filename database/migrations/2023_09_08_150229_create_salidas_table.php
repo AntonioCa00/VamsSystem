@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('salidas', function (Blueprint $table) {
             $table->bigIncrements('id_salida');
+            $table->bigInteger('requisicion_id')->unsigned();
+            $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones');
             $table->integer('cantidad');            
             $table->bigInteger('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('users');

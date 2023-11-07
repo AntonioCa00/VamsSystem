@@ -1,6 +1,6 @@
-@extends('plantillaAdm')
+@extends('plantillaDir')
 
-@section('Contenido')
+@section('contenido')
 
 <div class="container-fluid">
 
@@ -42,11 +42,15 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Año:</label>
-                    <input name="anio_unidad" value="{{$unidad->anio_unidad}}" type="number" class="form-control" placeholder="Año de la unidad">
+                    <input name="anio_unidad" value="{{$unidad->anio_unidad}}" type="number" class="form-control" placeholder="Año de la unidad" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
-                    <input name="marca" value="{{$unidad->marca}}" type="text" class="form-control" placeholder="Marca de la unidad">
+                    <input name="marca" value="{{$unidad->marca}}" type="text" class="form-control" placeholder="Marca de la unidad" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Kilometraje:</label>
+                    <input name="kms" value="{{$unidad->kilometraje}}" type="text" class="form-control" placeholder="Marca de la unidad" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Editar unidad</button>
             </form>

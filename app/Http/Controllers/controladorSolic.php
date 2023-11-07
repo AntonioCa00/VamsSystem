@@ -50,7 +50,10 @@ class controladorSolic extends Controller
     //VISTAS DE LAS TABLAS
     
     public function tableRequisicion(){
-        $solicitudes = Requisiciones::get();
+        $solicitudes = Requisiciones::where('usuario_id',session('loginId'))
+        ->orderBy('created_at','desc')
+        ->where('estado','!=','Eliminado')
+        ->get();
         return view('Solicitante.requisiciones',compact('solicitudes'));
     }
 
@@ -147,7 +150,9 @@ class controladorSolic extends Controller
     }
 
     public function tableSalidas(){
-        $salidas = Salidas::get();
+        $salidas = Salidas::get()
+        ->join('requisiciones','salidas.requisicion_id','=','requisicion.id_requisicion')
+        ->where('requisiciones.usuario_id',session('loginId'));
         return view('Solicitante.salidas',compact('salidas'));
     }
 

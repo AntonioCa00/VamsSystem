@@ -18,30 +18,38 @@
                     <thead>
                         <tr>
                             <th>Codigo:</th>
-                            <th>Unidad:</th>                                                    
+                            <th>Unidad:</th>  
+                            <th>Encargado:</th>                                                  
                             <th>Descripcion:</th>
                             <th>Estado:</th>
-                            <th>Fecha solicitud:</th>
-                            <th>Requisición:</th>
+                            <th>Total:</th>
+                            <th>Orden Compra:</th>
+                            <th>Fecha creacion:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($solicitudes as $solicitud)
+                        @foreach ($ordenes as $orden)
                         <tr>
-                            <th>{{$solicitud->id_requisicion}}</th>
-                            <th>{{$solicitud->unidad_id}}</th>
-                            <th>{{$solicitud->descripcion}}</th>
-                            <th>{{$solicitud->estado}}</th>
-                            <th>{{$solicitud->created_at}}</th>
-                            <th>{{$solicitud->pdf}}</th>
-                            {{-- <th>                                
-                                @if($solicitud->estado === "Solicitado")
-                                    <a href="" class="btn btn-primary">Eliminar</a>
-                                @else 
-                                    <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
-                                @endif
-                            </th> --}}
+                            <th>{{$orden->id_requisicion}}</th>
+                            <th>{{$orden->unidad_id}}</th>
+                            <th>{{$orden->nombre}}</th>
+                            <th class="text-center">
+                                <a href="{{ asset($orden->reqPDF) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                </a>
+                            </th>
+                            <th>{{$orden->estado}}</th>
+                            <th>${{$orden->costo_total}}</th>
+                            <th class="text-center">
+                                <a href="{{ asset($orden->ordPDF) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                </a>
+                            </th>
+                            <th>{{$orden->created_at}}</th>
+                            <th>
+                                <a href="{{route('createEntrada',$orden->id_orden)}}" class="btn btn-primary">Registrar entrada</a>
+                            </th>
                         </tr>
                         @endforeach
                     </tbody>
@@ -49,7 +57,6 @@
             </div>
         </div>
     </div>
-
 </div>
 <!-- /.container-fluid -->
 

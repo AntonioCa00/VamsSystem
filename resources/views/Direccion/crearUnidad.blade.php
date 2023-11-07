@@ -1,6 +1,6 @@
-@extends('plantillaAdm')
+@extends('plantillaDir')
 
-@section('Contenido')
+@section('contenido')
 
 <div class="container-fluid">
 
@@ -46,6 +46,10 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
                     <input name="marca" type="text" class="form-control"     placeholder="Marca de la unidad">
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Kilometraje:</label>
+                    <input name="kms" type="text" class="form-control"     placeholder="Kilometraje actual de la unidad">
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar unidad</button>
             </form>

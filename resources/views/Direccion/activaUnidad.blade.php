@@ -1,42 +1,6 @@
-@extends('plantillaAdm')
+@extends('plantillaDir')
 
-@section('Contenido')
-
-@if(session()->has('regis'))
-    <script type="text/javascript">          
-        Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Unidad registrada',
-        showConfirmButton: false,
-        timer: 1000
-        })
-    </script> 
-@endif
-
-@if(session()->has('update'))
-    <script type="text/javascript">          
-        Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Unidad Editada',
-        showConfirmButton: false,
-        timer: 1000
-        })
-    </script> 
-@endif
-
-@if(session()->has('eliminado'))
-    <script type="text/javascript">          
-        Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Unidad Eliminada',
-        showConfirmButton: false,
-        timer: 1000
-        })
-    </script> 
-@endif
+@section('contenido')
 
 <div class="container-fluid">
 
@@ -46,7 +10,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <a class="btn btn-primary" href="{{route('CreateUnidad')}}">Registrar nueva unidad</a>
+            <h6 class="m-0 font-weight-bold text-primary">UNIDADES INACTIVAS</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -58,6 +22,7 @@
                             <th>Estado:</th>
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
+                            <th>Kilometraje:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -69,10 +34,10 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
+                            <th>{{$unidad->kilometraje}} kms</th>
                             <th>
-                                <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
-                                    Eliminar
+                                    Activar
                                 </a>
                                 <!-- Logout Modal-->
                                 <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -85,10 +50,10 @@
                                                     <span aria-hidden="true">X</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">Selecciona confirmar para eliminar esta unidad</div>
+                                            <div class="modal-body">Selecciona confirmar para activar esta unidad</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteUnidad',$unidad->id_unidad)}}" method="POST">
+                                                <form action="{{route('activateUnidad',$unidad->id_unidad)}}" method="POST">
                                                     @csrf
                                                     {!!method_field('PUT')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
