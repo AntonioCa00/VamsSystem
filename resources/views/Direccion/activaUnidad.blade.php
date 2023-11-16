@@ -39,7 +39,7 @@
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
                                     Activar
                                 </a>
-                                <!-- Logout Modal-->
+                                <!-- Activate Modal-->
                                 <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">

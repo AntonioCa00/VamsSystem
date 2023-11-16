@@ -92,7 +92,7 @@
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Refaccion a salir</label>
                         <select name="refaccion" id="refaccion" class="form-control" required>
-                            <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
+                            <option value="" selected disabled>Selecciona la refacción a salir</option>
                             @foreach ($refacciones as $refaccion)                            
                                 <option value="{{$refaccion->id_refaccion}}">{{$refaccion->nombre}}: {{$refaccion->marca}} {{$refaccion->modelo}}</option>
                             @endforeach

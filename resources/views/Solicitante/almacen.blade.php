@@ -2,6 +2,18 @@
 
 @section('contenido')
 
+@if(session()->has('entra'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Bienvenido a sistema VAMS.',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -10,7 +22,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Refacciones en existencia </h6>
+            <a class="btn btn-primary" href="{{route('solicitudAlm')}}">Solicitar de almacen</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">

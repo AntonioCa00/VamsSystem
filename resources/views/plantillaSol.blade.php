@@ -48,12 +48,13 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
+            <!-- Nav Item - Dashboard
             <li class="nav-item">
                 <a class="nav-link" href="{{route('indexSoli')}}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Sistema de informacion</span></a>
             </li>
+             -->
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -80,19 +81,7 @@
                 <a class="nav-link" href="{{route('salidasSoli')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>
-
-            <hr class="sidebar-divider d-none d-md-block">
-            <div class="sidebar-heading">
-                Gráficas
-            </div>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('chartsEnc')}}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>            
+            </li>        
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

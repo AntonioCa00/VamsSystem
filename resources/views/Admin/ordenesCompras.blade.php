@@ -58,32 +58,37 @@
                             </th>
                             <th>{{$orden->created_at}}</th>
                             <th>
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
-                                    Eliminar
-                                </a>
-                                <!-- Logout Modal-->
-                                <div class="modal fade" id="eliminarOrd{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
-                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">X</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">Selecciona confirmar para eliminar esta orden de compra</div>
-                                            <div class="modal-footer">
-                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
-                                                <form action="{{route('deleteOrd',$orden->id_requisicion)}}" method="POST">
-                                                    @csrf
-                                                    {!!method_field('PUT')!!}    
-                                                    <button type="submit" class="btn btn-primary">Confirmar</button>
-                                                </form>
+
+                                @if($orden->estado === "Comprado")
+                                    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
+                                        Eliminar
+                                    </a>
+                                    <!-- Logout Modal-->
+                                    <div class="modal fade" id="eliminarOrd{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Selecciona confirmar para eliminar esta orden de compra</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <form action="{{route('deleteOrd',$orden->id_requisicion)}}" method="POST">
+                                                        @csrf
+                                                        {!!method_field('PUT')!!}    
+                                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                @else
+                                <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
+                                @endif
                             </th>
                         </tr>
                         @endforeach

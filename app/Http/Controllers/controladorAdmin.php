@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Almacen;
+use App\Models\Entradas;
+use App\Models\Salidas;
 use App\Models\User;
 use App\Models\Proveedores;
-use App\Models\Requisiciones;
-use App\Models\Compras;
+use App\Models\Requisiciones;   
 use App\Models\Cotizaciones;
 use App\Models\Orden_Compras;
 use DB;
@@ -18,37 +19,95 @@ class controladorAdmin extends Controller
 {
     
     public function index(){
-        return view("Admin.index");
-    }
+        //Datos para graficas
+        $anio_actual = date('Y');
+        $Enero = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
+            ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
+            ->first();
 
-    public function charts(){
-        $Octubre = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as octubre'))
-            ->whereBetween('created_at', ['2023-10-01 00:00:00', '2023-10-31 23:59:59'])
-            ->get();
-    
-        $Septiembre = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as septiembre'))
-            ->whereBetween('created_at', ['2023-09-01 00:00:00', '2023-09-30 23:59:59'])
-            ->get();
-    
-        $Agosto = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as agosto'))
-            ->whereBetween('created_at', ['2023-08-01 00:00:00', '2023-08-31 23:59:59'])
-            ->get();
-    
-        $Julio = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as julio'))
-            ->whereBetween('created_at', ['2023-07-01 00:00:00', '2023-07-31 23:59:59'])
-            ->get();
-    
-        return view('Admin.charts', [
-            'octubre' => $Octubre,
+        $Febrero = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
+            ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
+            ->first();
+
+        $Marzo = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
+            ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
+            ->first();
+
+        $Abril = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
+            ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
+            ->first();
+
+        $Mayo = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
+            ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
+            ->first();
+
+        $Junio = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
+            ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
+            ->first();
+
+        $Julio = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
+            ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
+            ->first();
+
+        $Agosto = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
+            ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
+            ->first();
+
+        $Septiembre = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
+            ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
+            ->first();
+
+        $Octubre = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
+            ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
+            ->first();
+
+        $Noviembre = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
+            ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
+            ->first();
+
+        $Diciembre = Orden_compras::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
+            ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
+            ->first();
+
+        //Suma por mes
+        $mesActual = now()->format('m'); 
+        $TotalMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
+
+        //Suma por año 
+        $anioActual = now()->year;
+        $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
+        $completas = Requisiciones::where('estado', 'Entregado')->count();
+        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->count();
+        return view("Admin.index",[
+            'pendientes'=>$pendiente,
+            'completas'=>$completas,
+            'TotalMes'=>$TotalMes,
+            'TotalAnio'=>$TotalAnio,
+            'enero'      => $Enero,
+            'febrero'    => $Febrero,
+            'marzo'      => $Marzo,
+            'abril'      => $Abril,
+            'mayo'       => $Mayo,
+            'junio'      => $Junio,
+            'julio'      => $Julio,
+            'agosto'     => $Agosto,
             'septiembre' => $Septiembre,
-            'agosto' => $Agosto,
-            'julio' => $Julio,
-        ]);
-    }    
+            'octubre'    => $Octubre,
+            'noviembre'  => $Noviembre,
+            'diciembre'  => $Diciembre,]);
+    }  
 
     //VISTAS DE LAS TABLAS
 
@@ -57,8 +116,21 @@ class controladorAdmin extends Controller
         return view('Admin.refaccion',compact('refacciones'));
     }
 
+    public function tableEntradas(){
+        $entradas = Entradas::select('entradas.id_entrada','requisiciones.pdf as reqPDF','orden_compras.pdf as ordPDF','entradas.factura','entradas.created_at')
+        ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->get();
+        return view('Admin.entradas',compact('entradas'));
+    }
+
     public function tableSalidas(){
-        $salidas = DB::table('vista_salidas')->get();
+        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.nombre','almacen.marca','almacen.modelo','salidas.created_at')
+        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
+        ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','=','users.id')
+        ->get();
         return view('Admin.salidas',compact('salidas'));
     }
     
@@ -134,7 +206,7 @@ class controladorAdmin extends Controller
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]); 
-            return redirect('tabla-solicitud')->with('cotizacion','cotizacion');
+            return back()->with('cotizacion','cotizacion');
         } else {
             return back()->with('error', 'No se ha seleccionado ningún archivo.');
         }
@@ -197,7 +269,7 @@ class controladorAdmin extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
-        return redirect('proveedores')->with('insert','insert');
+        return redirect('proveedores/Compras')->with('insert','insert');
     }
 
     public function editProveedor($id){
@@ -363,12 +435,13 @@ class controladorAdmin extends Controller
     }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','users.nombre','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombre','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-        ->where('requisiciones.estado','Eliminado')
+        ->where('requisiciones.estado','!=','Eliminado')
+        ->orderBy('requisiciones.created_at','desc')
         ->get();
         return view ('Admin.ordenesCompras',compact('ordenes'));
     }
@@ -380,18 +453,5 @@ class controladorAdmin extends Controller
         ]);
 
         return back()->with('eliminada','eliminada');
-    }
-    
-
-    public function generateRandomPassword() {
-        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-        $password = '';
-    
-        for ($i = 0; $i < 6; $i++) {
-            $index = random_int(0, strlen($characters) - 1);
-            $password .= $characters[$index];
-        }
-    
-        return $password;
     }
 }
