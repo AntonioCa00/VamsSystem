@@ -17,36 +17,6 @@ class controladorSolic extends Controller
     public function index(){
         return view('Solicitante.index');
     }
-
-    public function charts(){
-        $Octubre = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as octubre'))
-            ->whereBetween('created_at', ['2023-10-01 00:00:00', '2023-10-31 23:59:59'])
-            ->get();
-    
-        $Septiembre = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as septiembre'))
-            ->whereBetween('created_at', ['2023-09-01 00:00:00', '2023-09-30 23:59:59'])
-            ->get();
-    
-        $Agosto = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as agosto'))
-            ->whereBetween('created_at', ['2023-08-01 00:00:00', '2023-08-31 23:59:59'])
-            ->get();
-    
-        $Julio = DB::table('compras')
-            ->select(DB::raw('SUM(costo) as julio'))
-            ->whereBetween('created_at', ['2023-07-01 00:00:00', '2023-07-31 23:59:59'])
-            ->get();
-    
-        return view('Solicitante.charts', [
-            'octubre' => $Octubre,
-            'septiembre' => $Septiembre,
-            'agosto' => $Agosto,
-            'julio' => $Julio,
-        ]);
-    }    
-
     //VISTAS DE LAS TABLAS
     
     public function tableRequisicion(){
@@ -59,7 +29,7 @@ class controladorSolic extends Controller
 
     public function createSolicitud(){
         $datos = session()->get('datos', []);
-        $unidades = Unidades::select('id_unidad')->get();
+        $unidades = Unidades::select('id_unidad')->where('estado','Activo')->where('estatus','1')->get();
         return view('Solicitante.crearSolicitud',compact('unidades','datos'));
     }
 
@@ -139,7 +109,7 @@ class controladorSolic extends Controller
 
             session()->forget('datos');
 
-            return redirect('solicitud');
+            return redirect('solicitud')->with('solicitado','solicitado');
         }
     }
 
@@ -147,6 +117,100 @@ class controladorSolic extends Controller
         requisiciones::where('id_requisicion',$id)->delete();
 
         return back()->with('eliminado','eliminado');  
+    }
+
+    public function solicitudAlm(){
+        $datosAlm = session()->get('datosAlm', []);
+        $refacciones = Almacen::where('estatus','1')->get();
+        $unidades = Unidades::select('id_unidad')->where('estado','Activo')->where('estatus','1')->get();
+        return view('Solicitante.solicAlm',compact('refacciones','datosAlm','unidades'));
+    }
+
+    public function ArraySolicitudAlm(Request $req){
+
+        $refaccion = Almacen::where('id_refaccion',$req->input('refaccion'))->first();
+
+        if($refaccion->stock >= $req->input('cantidad') && $req->input('cantidad') > 0){
+            $datosAlm = session()->get('datosAlm', []);
+            $refaccion = $req->input('refaccion');
+            $nombre = $req->input('nombre');
+            $cantidad = $req->input('cantidad');
+
+            $datosAlm[] = [
+                'id'=>$refaccion,
+                'nombre'=>$nombre,
+                'cantidad' => $cantidad,        
+            ];
+
+            session()->put('datosAlm', $datosAlm);
+
+            return back();
+        } else{
+            return back()->with('insuficiente','insuficiente');
+        }
+    }
+
+    public function deleteArraySolAlm($index){
+        $datosAlm = session()->get('datosAlm', []);
+
+        if (isset($datosAlm[$index])) {
+            unset($datosAlm[$index]);
+        }
+        session()->put('datosAlm', $datosAlm);
+
+        return back();
+    }
+
+    public function requisicionAlm(Request $req){
+        $datosRequisicion = session()->get('datosAlm', []);
+
+        if (empty($datosRequisicion)){
+            return back()->with('vacio','vacio');
+        }else {
+            $Nota = $req->input('Notas');
+
+            $datosEmpleado[] = [
+                'idEmpleado' => session('loginId'),
+                'nombre' => session('loginNombre'),
+                'rol' => session('rol'),
+            ];
+
+            // Serializar los datos del empleado y almacenarlos en un archivo
+            $datosSerializados = serialize($datosEmpleado);
+            $rutaArchivo = storage_path('app/datos_empleado.txt');
+            file_put_contents($rutaArchivo, $datosSerializados);
+
+            // Nombre y ruta del archivo en laravel
+            $numeroUnico = time(); // Genera un timestamp único
+            $nombreArchivo = 'requisicion_' . $numeroUnico . '.pdf';
+            $rutaDescargas = 'requisiciones/' . $nombreArchivo;
+
+            // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+            ob_start(); // Iniciar el búfer de salida
+            include(public_path('/pdf/TCPDF-main/examples/RequisicionAlm.php'));
+            ob_end_clean();            
+
+            Requisiciones::create([
+                "usuario_id"=>session('loginId'),
+                "unidad_id" => $req->input('unidad'),
+                "pdf" => $rutaDescargas,
+                "estado"=> "En Almacen",
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now(),
+            ]);
+
+            DB::table('logs')->insert([
+                "user_id"=>session('loginId'),
+                "table_name"=>"Solicitudes",
+                "action"=>"Se ha registrado una nueva solicitud: ".$Nota,
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+
+            session()->forget('datosAlm');
+
+            return redirect('solicitud')->with('solicitado','solicitado');
+        }
     }
 
     public function tableSalidas(){

@@ -19,7 +19,6 @@ class Almacen extends Model
         'motor',
         'descripcion',
         'stock',
-        'entrada_id',
         'estatus',
         'created_at',
         'updated_at'

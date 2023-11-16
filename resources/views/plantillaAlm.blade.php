@@ -86,19 +86,7 @@
                 <a class="nav-link" href="{{route('salidasAlm')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>
-
-            <hr class="sidebar-divider d-none d-md-block">
-            <div class="sidebar-heading">
-                Gráficas
-            </div>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('chartsEnc')}}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>            
+            </li>          
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

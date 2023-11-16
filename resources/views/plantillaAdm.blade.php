@@ -22,7 +22,6 @@
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Custom styles for this page -->
     <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -89,7 +88,7 @@
             </li>   
             
             <li class="nav-item active">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="{{route('entradas')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Entradas</span></a>
             </li>
@@ -103,19 +102,7 @@
                 <a class="nav-link" href="{{route('salidas')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>        
-
-            <hr class="sidebar-divider d-none d-md-block">
-            <div class="sidebar-heading">
-                Gráficas
-            </div>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('charts')}}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>            
+            </li>                
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

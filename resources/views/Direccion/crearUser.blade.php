@@ -31,12 +31,18 @@
 
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Rol del usuario:</label>
-                    <select name="rol" class="form-control">
+                    <select name="rol" class="form-control" id="rol">
                         <option selected disabled value="">Selecciona el rol que tendrá el usuario</option>
-                        <option>Administrador</option>
-                        <option>Encargado</option>
+                        <option>Direccion</option>
+                        <option>Compras</option>
+                        <option>Almacen</option>
+                        <option>Otro</option>
                     </select>
-                </div>            
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">¿Cual rol tendrá?</label>
+                    <input id="otro" name="otro" type="text" class="form-control" placeholder="Departamento o rol que tendrá el usuario nuevo" disabled>
+                </div>
                 <button type="submit" class="btn btn-primary">Registrar usuario nuevo</button>
             </form>
         </div>
@@ -45,4 +51,17 @@
 </div>
 <!-- /.container-fluid -->
 
+<script>    
+    const select = document.getElementById('rol');
+    const input = document.getElementById('otro');
+
+    select.addEventListener('change', function() {
+        if (select.value === 'Otro') {
+            input.disabled = false;
+        } else {
+            input.disabled = true;
+        }
+    });
+
+</script>
 @endsection

@@ -18,26 +18,24 @@
                     <thead>
                         <tr>
                             <th>ID_salida:</th>
-                            <th>Fecha de salida:</th>
-                            <th>Encargado:</th>
-                            <th>Estado_solicitud:</th>
-                            <th>Unidad:</th>
-                            <th>Descripcion</th>
-                            <th>Refaccion:</th>
+                            <th>Requisicion:</th>
                             <th>Cantidad:</th>
+                            <th>Refacción:</th>
+                            <th>Fecha salida:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($salidas as $salida)
                         <tr>
                             <th>{{$salida->id_salida}}</th>
-                            <th>{{$salida->fecha_salida}}</th>
-                            <th>{{$salida->encargado}}</th>
-                            <th>{{$salida->estado}}</th>
-                            <th>{{$salida->id_unidad}}</th>
-                            <th>{{$salida->descripcion}}</th>
-                            <th>{{$salida->refaccion}}</th>
+                            <th>
+                                <a href="{{ asset($salida->reqPDF) }}" target="_blank">
+                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                </a>                                 
+                            </th>
                             <th>{{$salida->cantidad}}</th>
+                            <th>{{$salida->nombre}} {{$salida->marca}} {{$salida->modelo}}</th>
+                            <th>{{$salida->created_at}}</th>
                         </tr>
                         @endforeach
                     </tbody>
@@ -45,8 +43,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

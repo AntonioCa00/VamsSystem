@@ -18,7 +18,6 @@
                     <thead>
                         <tr>
                             <th>ID_entrada:</th>
-                            <th>Cantidad:</th>
                             <th>Compra:</th>
                             <th>Fecha:</th>
                         </tr>
@@ -27,8 +26,10 @@
                         @foreach ($entradas as $entrada)
                         <tr>
                             <th>{{$entrada->id_entrada}}</th>
-                            <th>{{$entrada->cantidad}}</th>
-                            <th>{{$entrada->compra_id}}</th>
+                            
+                            <th><a href="{{ asset($entrada->factura) }}" target="_blank">
+                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                            </a></th>
                             <th>{{$entrada->created_at}}</th>
                         </tr>
                         @endforeach

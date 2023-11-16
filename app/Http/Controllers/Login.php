@@ -30,7 +30,7 @@ class Login extends Controller
                 } elseif ($user->rol == "Almacen"){
                     return redirect('inicio/Almacen')->with('entra','entra');
                 } else{
-                    return redirect('inicio')->with('entra','entra');
+                    return redirect('almacen')->with('entra','entra');
                 }
             } else{
                 return back()->with('contras','contras');    
@@ -46,6 +46,8 @@ class Login extends Controller
             session()->forget('datos');
             session()->forget('ordenCom');
             session()->forget('entrada');
+            session()->forget('salida');
+            session()->forget('datosAlm');
             return redirect('/');
         }
     }

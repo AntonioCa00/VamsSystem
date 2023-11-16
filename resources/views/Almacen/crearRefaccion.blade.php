@@ -13,7 +13,8 @@
             <h6 class="m-0 font-weight-bold text-primary">DATOS DE REGISTRO</h6>
         </div>
         <div class="card-body">
-            <form action="">
+            <form action="{{route('insertRefaccion')}}" method="post">
+                @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Nombre de la refacción:</label>
                     <input name="nombre" type="text" class="form-control" placeholder="Escribe el nombre de la refaccción" required>

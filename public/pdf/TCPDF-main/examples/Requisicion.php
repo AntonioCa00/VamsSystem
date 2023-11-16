@@ -38,7 +38,7 @@ $pdf->AddPage();
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Requsicion de unsumos ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Requsicion de insumos ", 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
@@ -76,35 +76,26 @@ $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(20, 10, 'cantidad', 1, 0, 'C', 1);
-$pdf->Cell(100, 10, 'Descripción', 1, 0, 'C', 1);
-$pdf->Cell(30, 10, 'Precio_unitario', 1, 0, 'C', 1);
-$pdf->Cell(30, 10, 'Monto_total', 1, 1, 'C', 1);
+$pdf->Cell(140, 10, 'Descripción', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($datosRequisicion as $requisicion) {
     $montoTotal = $requisicion['cantidad'] * 0; // Calcular el monto total (en este caso, se multiplica por 0, ajusta esto según tus necesidades)
     $pdf->Cell(20, 10, $requisicion['cantidad'], 1);
-    $pdf->Cell(100, 10, $requisicion['descripcion'], 1);
-    $pdf->Cell(30, 10, 0, 1); // El tercer valor en este Cell no está claro en tu solicitud, ajusta según tus necesidades
-    $pdf->Cell(30, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
+    $pdf->Cell(140, 10, $requisicion['descripcion'], 1,1);    
 }
 
 // Calcular el total de montos totales
 $totalGastos = array_sum(array_column($datosRequisicion, 4));
 
-// Imprimir el total de montos totales
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(150, 10, 'Total sin IVA:', 1);
-$pdf->Cell(30, 10, '$' . number_format($totalGastos, 2), 1, 1, 'R');
-
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
+$pdf->Cell(160, 5, 'Notas', 1, 1, 'C', 1);
 // notas que agrega el solicitante
 
-$pdf->Cell(180, 5, $Nota, 1, 1 ,'C', 0 );
+$pdf->Cell(160, 5, $Nota, 1, 1 ,'C', 0 );
 
 
 $pdf->SetY(260); // Ajusta la posición Y según tus necesidades

@@ -53,7 +53,7 @@
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#validarCotiza{{$cotizacion->id_cotizacion}}">
                                     Validar
                                 </a>
-                                <!-- Logout Modal-->
+                                <!-- Validate Modal-->
                                 <div class="modal fade" id="validarCotiza{{$cotizacion->id_cotizacion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -76,6 +76,32 @@
                                         </div>
                                     </div>
                                 </div>
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#EliminarCotiza{{$cotizacion->id_cotizacion}}">
+                                    Eliminar
+                                </a>
+                                <!-- Validate Modal-->
+                                <div class="modal fade" id="EliminarCotiza{{$cotizacion->id_cotizacion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">X</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Selecciona confirmar para eliminar esta cotización</div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                <form action="{{route('deleteCotiza', $cotizacion->id_cotizacion)}}" method="POST">                                                
+                                                    @csrf
+                                                    {!!method_field('DELETE')!!}    
+                                                    <button type="submit" class="btn btn-primary">confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> 
                             </th>
                         </tr>
                         @endforeach
