@@ -19,13 +19,15 @@ use App\Http\Controllers\controladorAlm;
 */
 
 //RUTAS DEL LOGIN
-Route::get('/',[Login::class,'login'])->name('login')->middleware('alreadyLoggedIn');
+//Route::get('/',[Login::class,'login'])->name('login')->middleware('alreadyLoggedIn');
 Route::post('validar-login',[Login::class,'loginUser'])->name('validate');
 Route::get('logout',[Login::class,'logout'])->name('logout');
 
-//RUTAS DE INTERFACES
-Route::middleware(['isLoggedIn'])->group(function () {
+Route::middleware(['alreadyLoggedIn'])->group(function () {
+    Route::get('/',[Login::class,'login'])->name('login');
+});
 
+Route::middleware(['check.role:Compras'])->group(function () {
     //------------------------RUTAS DE LAS VISTAS------------------------//
 
     //RUTAS ADMIN-COMPRAS
@@ -44,15 +46,26 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('form/{id}/cotizar',[controladorAdmin::class,'createCotiza'])->name('createCotiza');
     Route::get('ordenCompra/{id}',[controladorAdmin::class,'ordenCompra'])->name('ordenCompra');
     Route::get('ordenesCompras',[controladorAdmin::class,'ordenesCompras'])->name('ordenesCompras');
+    
+    //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
-    //RUTAS SOLICITANTE
-    Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
-    Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
-    Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
-    Route::get('salidas', [controladorSolic::class, 'tableSalidas'])->name('salidasSoli');
-    Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
-    Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
-    Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
+    //RUTAS COMPRAS
+    Route::put('validar-soli/{id}',[controladorAdmin::class,'validarSoli'])->name('validSoli');
+    Route::post('insert-compra',[controladorAdmin::class,'insertCompra'])->name('insertCompra');
+    Route::post('insert-cotiza',[controladorAdmin::class,'insertCotiza'])->name('insertCotiza');
+    Route::delete('delete-cotiza/{id}',[controladorAdmin::class,'deleteCotiza'])->name('deleteCotiza');
+    Route::post('insert-proveedor',[controladorAdmin::class,'insertProveedor'])->name('insertProveedor');
+    Route::put('update-proveedor/{id}',[controladorAdmin::class,'updateProveedor'])->name('updateProveedor');
+    Route::put('delete-proveedor/{id}',[controladorAdmin::class,'deleteProveedor'])->name('deleteProveedor');
+    Route::put('deleteReq/{id}',[controladorAdmin::class, 'deleteReq'])->name('deleteReq');
+    Route::put('deleteOrd/{id}',[controladorAdmin::class,'deleteOrd'])->name('deleteOrd');
+    Route::post('array-ordenCom',[controladorAdmin::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
+    Route::delete('delete-arrayOrden/{index}',[controladorAdmin::class,'deleteArray'])->name('eliminarElemOrden');
+    Route::post('ordenCompra',[controladorAdmin::class,'insertOrdenCom'])->name('createOrdenCompra');
+});
+
+Route::middleware(['check.role:Direccion'])->group(function () {
+    //------------------------RUTAS DE LAS VISTAS------------------------//
 
     //RUTAS DIRECCION   
     Route::get('inicio/Direccion',[controladorDir::class,'index'])->name('indexDir');
@@ -71,44 +84,7 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('edit-user/{id}', [controladorDir::class, 'editUser'])->name('editUser');
     Route::get('cotizaciones/{id}',[controladorDir::class,'cotizaciones'])->name('verCotiza');
 
-    //RUTAS ALMACEN
-    Route::get('inicio/Almacen',[controladorAlm::class,'index'])->name('indexAlm');
-    Route::get('solicitudes/Almacen',[controladorAlm::class,'requisiciones'])->name('requisicionesAlm');
-    Route::get('regEntrada/Almacen/{id}',[controladorAlm::class, 'createEntrada'])->name('createEntrada');
-    Route::get('entradas/Almacen',[controladorAlm::class,'entradas'])->name('entradasAlm');
-    Route::get('almacen/Almacen',[controladorAlm::class, 'almacen'])->name('almacenAlm');
-    Route::get('refaccion',[controladorAlm::class,'createRefaccion'])->name('createRefaccion');
-    Route::get('edit-refaccion/{id}',[controladorAlm::class,'editRefaccion'])->name('editRefaccion');
-    Route::get('salidas/Almacen',[controladorAlm::class, 'salidas'])->name('salidasAlm');
-    Route::get('crearSalida/{id}',[controladorAlm::class,'crearSalida'])->name('crearSalida');
-    Route::get('solicitudesAlm/Almacen',[controladorAlm::class,'requisicionesAlm'])->name('requisicionesAlma');
-    Route::get('crearSalidaAlm/{id}',[controladorAlm::class,'crearSalidaAlm'])->name('crearSalidaAlm');
-
     //------------------------RUTAS CON ACCIONES EN BD------------------------//
-
-    //RUTAS ADMIN
-    Route::put('validar-soli/{id}',[controladorAdmin::class,'validarSoli'])->name('validSoli');
-    Route::post('insert-compra',[controladorAdmin::class,'insertCompra'])->name('insertCompra');
-    Route::post('insert-cotiza',[controladorAdmin::class,'insertCotiza'])->name('insertCotiza');
-    Route::delete('delete-cotiza/{id}',[controladorAdmin::class,'deleteCotiza'])->name('deleteCotiza');
-    Route::post('insert-proveedor',[controladorAdmin::class,'insertProveedor'])->name('insertProveedor');
-    Route::put('update-proveedor/{id}',[controladorAdmin::class,'updateProveedor'])->name('updateProveedor');
-    Route::put('delete-proveedor/{id}',[controladorAdmin::class,'deleteProveedor'])->name('deleteProveedor');
-    Route::put('deleteReq/{id}',[controladorAdmin::class, 'deleteReq'])->name('deleteReq');
-    Route::put('deleteOrd/{id}',[controladorAdmin::class,'deleteOrd'])->name('deleteOrd');
-    Route::post('array-ordenCom',[controladorAdmin::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
-    Route::delete('delete-arrayOrden/{index}',[controladorAdmin::class,'deleteArray'])->name('eliminarElemOrden');
-    Route::post('ordenCompra',[controladorAdmin::class,'insertOrdenCom'])->name('createOrdenCompra');
-
-    //RUTAS SOLICITANTE
-    Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
-    Route::delete('delete-array/{index}',[controladorSolic::class,'deleteArray'])->name('eliminarElemento');
-    Route::post('solicitud',[controladorSolic::class,'insertSolicitud'])->name('insertSolicitud');
-    Route::delete('delete-solici/{id}',[controladorSolic::class,'deleteSolicitud'])->name('deleteSolicitud');
-    Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
-    Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
-    Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
-    Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
 
     //RUTAS DIRECCION
     Route::post('insert-unidad',[controladorDir::class,'insertUnidad'])->name('insertUnidad');
@@ -122,6 +98,25 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::put('update-user/{id}', [controladorDir::class, 'updateUser'])->name('updateUser');
     Route::put('delete-user/{id}',[controladorDir::class,'deleteUser'])->name('deleteUser');
     Route::put('select-cotiza/{id}/{sid}',[controladorDir::class,'selectCotiza'])->name('selectCotiza');    
+});
+
+Route::middleware(['check.role:Almacen'])->group(function () {
+    //------------------------RUTAS DE LAS VISTAS------------------------//
+
+    //RUTAS ALMACEN
+    Route::get('inicio/Almacen',[controladorAlm::class,'index'])->name('indexAlm');
+    Route::get('solicitudes/Almacen',[controladorAlm::class,'requisiciones'])->name('requisicionesAlm');
+    Route::get('regEntrada/Almacen/{id}',[controladorAlm::class, 'createEntrada'])->name('createEntrada');
+    Route::get('entradas/Almacen',[controladorAlm::class,'entradas'])->name('entradasAlm');
+    Route::get('almacen/Almacen',[controladorAlm::class, 'almacen'])->name('almacenAlm');
+    Route::get('refaccion',[controladorAlm::class,'createRefaccion'])->name('createRefaccion');
+    Route::get('edit-refaccion/{id}',[controladorAlm::class,'editRefaccion'])->name('editRefaccion');
+    Route::get('salidas/Almacen',[controladorAlm::class, 'salidas'])->name('salidasAlm');
+    Route::get('crearSalida/{id}',[controladorAlm::class,'crearSalida'])->name('crearSalida');
+    Route::get('solicitudesAlm/Almacen',[controladorAlm::class,'requisicionesAlm'])->name('requisicionesAlma');
+    Route::get('crearSalidaAlm/{id}',[controladorAlm::class,'crearSalidaAlm'])->name('crearSalidaAlm'); 
+
+    //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
     //RUTAS ALMACEN
     Route::post('insert-refaccion',[controladorAlm::class,'insertRefaccion'])->name('insertRefaccion');
@@ -137,3 +132,27 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('createSalida/{id}',[controladorAlm::class,'createSalida'])->name('createSalida');
     Route::get('createSalidaAlm/{id}',[controladorAlm::class,'createSalidaAlm'])->name('createSalidaAlm');
 });
+
+/*
+Route::middleware(['isLoggedIn'])->group(function () {
+
+    //RUTAS SOLICITANTE
+    Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
+    Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
+    Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
+    Route::get('salidas', [controladorSolic::class, 'tableSalidas'])->name('salidasSoli');
+    Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
+    Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
+    Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
+
+    //RUTAS SOLICITANTE
+    Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
+    Route::delete('delete-array/{index}',[controladorSolic::class,'deleteArray'])->name('eliminarElemento');
+    Route::post('solicitud',[controladorSolic::class,'insertSolicitud'])->name('insertSolicitud');
+    Route::delete('delete-solici/{id}',[controladorSolic::class,'deleteSolicitud'])->name('deleteSolicitud');
+    Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
+    Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
+    Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
+    Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
+});
+*/
