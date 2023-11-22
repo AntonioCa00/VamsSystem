@@ -286,16 +286,17 @@ class controladorDir extends Controller
     public function insertUser(Request $req){
         $password = $this->generateRandomPassword();
 
-        if ($req->rol === "Otro"){
-            User::create([
+        if ($req->rol === "Otro"){            
+            DB::table('users')->insert([
                 "nombre"=>$req->input('nombre'),
                 "telefono"=>$req->input('telefono'),
                 "correo"=>$req->input('correo'),
                 "password"=>$password,
-                "rol"=>$req->input('otro'),
+                "rol"=>'General',
+                "departamento"=>$req->input('otro'),
                 "estatus"=>'1',
-                "created_at"=>Carbon::now()->format('Y-m-d'),
-                "updated_at"=>Carbon::now()->format('Y-m-d')
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
             ]);
     
             DB::table('logs')->insert([
@@ -315,8 +316,8 @@ class controladorDir extends Controller
                 "password"=>$password,
                 "rol"=>$req->input('rol'),
                 "estatus"=>'1',
-                "created_at"=>Carbon::now()->format('Y-m-d'),
-                "updated_at"=>Carbon::now()->format('Y-m-d')
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
             ]);
     
             DB::table('logs')->insert([
@@ -344,7 +345,7 @@ class controladorDir extends Controller
             "password"=>$req->input('password'),
             "rol"=>$req->input('rol'),
             "estatus"=>'1',
-            "updated_at"=>Carbon::now()->format('Y-m-d')
+            "updated_at"=>Carbon::now()
         ]);
 
         DB::table('logs')->insert([
@@ -361,7 +362,7 @@ class controladorDir extends Controller
     public function deleteUser($id){
          User::where('id',$id)->update([
              "estatus"=>'0',
-             "updated_at"=>Carbon::now()->format('Y-m-d')
+             "updated_at"=>Carbon::now()
          ]);
 
          DB::table('logs')->insert([

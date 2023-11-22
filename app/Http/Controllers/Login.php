@@ -22,7 +22,6 @@ class Login extends Controller
                 $req->session()->put('loginNombre',$user->nombre);
                 $req->session()->put('rol', $user->rol);
 
-
                 if($user->rol == "Compras"){
                     return redirect('inicio/Compras')->with('entra','entra');
                 } elseif ($user->rol == "Direccion") {
@@ -30,6 +29,7 @@ class Login extends Controller
                 } elseif ($user->rol == "Almacen"){
                     return redirect('inicio/Almacen')->with('entra','entra');
                 } else{
+                    $req->session()->put('dpto', $user->departamento);
                     return redirect('almacen')->with('entra','entra');
                 }
             } else{
