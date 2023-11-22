@@ -59,7 +59,7 @@ $datosEmpleado = unserialize($datosEmpleadoSerializados);
 
 // Datos del empleado (simulados)
 $nombreEmpleado = $datosEmpleado[0]['nombre'];
-$posicionEmpleado = $datosEmpleado[0]['rol'];
+$posicionEmpleado = $datosEmpleado[0]['dpto'];
 $idEmpleado = $datosEmpleado[0]['idEmpleado'];
 $fechaEmpleado = date("Y/m/d");
 

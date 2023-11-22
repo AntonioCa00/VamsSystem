@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('correo');
             $table->string('password');
             $table->string('rol');
+            $table->string('departamento')->nullable();
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });

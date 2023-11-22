@@ -133,10 +133,9 @@ Route::middleware(['check.role:Almacen'])->group(function () {
     Route::get('createSalidaAlm/{id}',[controladorAlm::class,'createSalidaAlm'])->name('createSalidaAlm');
 });
 
-/*
-Route::middleware(['isLoggedIn'])->group(function () {
+Route::middleware(['check.role:General'])->group(function () {
+    //------------------------RUTAS DE LAS VISTAS------------------------//
 
-    //RUTAS SOLICITANTE
     Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
     Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
     Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
@@ -145,7 +144,7 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
     Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
 
-    //RUTAS SOLICITANTE
+    //------------------------RUTAS CON ACCIONES EN BD------------------------//
     Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
     Route::delete('delete-array/{index}',[controladorSolic::class,'deleteArray'])->name('eliminarElemento');
     Route::post('solicitud',[controladorSolic::class,'insertSolicitud'])->name('insertSolicitud');
@@ -155,4 +154,3 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
     Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
 });
-*/

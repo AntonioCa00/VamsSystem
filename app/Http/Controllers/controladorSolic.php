@@ -73,6 +73,7 @@ class controladorSolic extends Controller
                 'idEmpleado' => session('loginId'),
                 'nombre' => session('loginNombre'),
                 'rol' => session('rol'),
+                'dpto' =>session('dpto')
             ];
 
             // Serializar los datos del empleado y almacenarlos en un archivo
@@ -173,6 +174,7 @@ class controladorSolic extends Controller
                 'idEmpleado' => session('loginId'),
                 'nombre' => session('loginNombre'),
                 'rol' => session('rol'),
+                'dpto' =>session('dpto')
             ];
 
             // Serializar los datos del empleado y almacenarlos en un archivo
