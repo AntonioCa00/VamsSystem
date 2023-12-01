@@ -48,13 +48,12 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard
+            <!-- Nav Item - Dashboard-->
             <li class="nav-item">
                 <a class="nav-link" href="{{route('indexSoli')}}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Sistema de informacion</span></a>
             </li>
-             -->
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -123,7 +122,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{session('loginNombre')}}</span>
                                 <img class="img-profile rounded-circle"
-                                     src="{{ asset('img/undraw_profile.svg') }}">
+                                     src="{{ asset('img/usuario.png')}}">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

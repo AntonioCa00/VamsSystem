@@ -77,7 +77,7 @@
                                                 <div class="modal-body">Selecciona confirmar para eliminar esta orden de compra</div>
                                                 <div class="modal-footer">
                                                     <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
-                                                    <form action="{{route('deleteOrd',$orden->id_requisicion)}}" method="POST">
+                                                    <form action="{{route('deleteOrd',['id' => $orden->id_orden, 'sid' => $orden->id_requisicion])}}" method="POST">
                                                         @csrf
                                                         {!!method_field('PUT')!!}    
                                                         <button type="submit" class="btn btn-primary">Confirmar</button>

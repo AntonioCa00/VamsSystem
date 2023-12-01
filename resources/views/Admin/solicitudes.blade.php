@@ -69,7 +69,7 @@
                                         Cotizar
                                     </a>
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
-                                        Eliminar
+                                        Rechazar
                                     </a>
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="eliminarReq{{$solicitudes->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -82,7 +82,7 @@
                                                         <span aria-hidden="true">X</span>
                                                     </button>
                                                 </div>
-                                                <div class="modal-body">Selecciona confirmar para eliminar esta solicitud</div>
+                                                <div class="modal-body">Selecciona confirmar para rechazar esta solicitud</div>
                                                 <div class="modal-footer">
                                                     <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
                                                     <form action="{{route('deleteReq',$solicitudes->id_requisicion)}}" method="POST">
@@ -111,8 +111,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

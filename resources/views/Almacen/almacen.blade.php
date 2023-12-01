@@ -47,7 +47,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <a href="{{route('createRefaccion')}}" class="btn btn-primary">Añadir nueva refaccion</a>
-            <a class="btn btn-primary" href="{{route('requisicionesAlm')}}" style="margin-left: 75%;">Dar salida</a>
+            <a class="btn btn-primary" href="{{route('requisicionesAlma')}}" style="margin-left: 75%;">Dar salida</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">

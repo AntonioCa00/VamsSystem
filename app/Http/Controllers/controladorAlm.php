@@ -18,94 +18,13 @@ class controladorAlm extends Controller
     * Display a listing of the resource.
     */
     public function index(){
-        //Datos para graficas
-        $anio_actual = date('Y');
-        $Enero = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
-            ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
-            ->first();
-
-        $Febrero = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
-            ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
-            ->first();
-
-        $Marzo = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
-            ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
-            ->first();
-
-        $Abril = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
-            ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
-            ->first();
-
-        $Mayo = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
-            ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
-            ->first();
-
-        $Junio = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
-            ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
-            ->first();
-
-        $Julio = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
-            ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
-            ->first();
-
-        $Agosto = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
-            ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
-            ->first();
-
-        $Septiembre = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
-            ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
-            ->first();
-
-        $Octubre = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
-            ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
-            ->first();
-
-        $Noviembre = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
-            ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
-            ->first();
-
-        $Diciembre = Orden_compras::
-            select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
-            ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
-            ->first();
-
-        //Suma por mes
-        $mesActual = now()->format('m'); 
-        $TotalMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
-
-        //Suma por año 
-        $anioActual = now()->year;
-        $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
+        $almacen = Almacen::where('estatus','1')->get();
         $completas = Requisiciones::where('estado', 'Entregado')->count();
-        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->count();
+        $pendiente = Requisiciones::where('estado','=', 'En Almacen')->count();
         return view("Almacen.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
-            'TotalMes'=>$TotalMes,
-            'TotalAnio'=>$TotalAnio,
-            'enero'      => $Enero,
-            'febrero'    => $Febrero,
-            'marzo'      => $Marzo,
-            'abril'      => $Abril,
-            'mayo'       => $Mayo,
-            'junio'      => $Junio,
-            'julio'      => $Julio,
-            'agosto'     => $Agosto,
-            'septiembre' => $Septiembre,
-            'octubre'    => $Octubre,
-            'noviembre'  => $Noviembre,
-            'diciembre'  => $Diciembre,]);
+            'almacen'=>$almacen]);
     }
 
     public function requisiciones(){
@@ -370,6 +289,16 @@ class controladorAlm extends Controller
                 if ($refaccion->stock < $salida[$i]['cantidad']){
                     return back()->with('insuficiente','insuficiente');
                 } else{
+
+                    Salidas::create([
+                        "requisicion_id"=>$id,
+                        "cantidad"=>$salida[$i]['cantidad'],
+                        "usuario_id"=>session('loginId'),
+                        "refaccion_id"=>$salida[$i]['id'],
+                        "created_at"=>Carbon::now(),
+                        "updated_at"=>Carbon::now()
+                    ]);
+
                     Almacen::where('id_refaccion',$salida[$i]['id'])->update([
                         "stock"=>$refaccion->stock - $salida[$i]['cantidad'],
                         "updated_at"=>Carbon::now()
@@ -450,6 +379,16 @@ class controladorAlm extends Controller
                 if ($refaccion->stock < $salida[$i]['cantidad']){
                     return back()->with('insuficiente','insuficiente');
                 } else{
+
+                    Salidas::create([
+                        "requisicion_id"=>$id,
+                        "cantidad"=>$salida[$i]['cantidad'],
+                        "usuario_id"=>session('loginId'),
+                        "refaccion_id"=>$salida[$i]['id'],
+                        "created_at"=>Carbon::now(),
+                        "updated_at"=>Carbon::now()
+                    ]);
+
                     Almacen::where('id_refaccion',$salida[$i]['id'])->update([
                         "stock"=>$refaccion->stock - $salida[$i]['cantidad'],
                         "updated_at"=>Carbon::now()

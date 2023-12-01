@@ -11,7 +11,7 @@ function generarGraficaCombinada(enero, febrero, marzo, abril, mayo, junio, juli
   data: {
       labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
       datasets: [{
-      label: "Earnings",
+      label: "Gastos",
       lineTension: 0.3,
       backgroundColor: "rgba(78, 115, 223, 0.05)",
       borderColor: "rgba(78, 115, 223, 1)",
