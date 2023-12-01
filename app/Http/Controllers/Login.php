@@ -30,7 +30,7 @@ class Login extends Controller
                     return redirect('inicio/Almacen')->with('entra','entra');
                 } else{
                     $req->session()->put('dpto', $user->departamento);
-                    return redirect('almacen')->with('entra','entra');
+                    return redirect('inicio')->with('entra','entra');
                 }
             } else{
                 return back()->with('contras','contras');    

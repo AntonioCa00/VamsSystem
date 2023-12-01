@@ -8,6 +8,7 @@ use App\Models\Almacen;
 use App\Models\Entradas;
 use App\Models\Salidas;
 use App\Models\User;
+use App\Models\Unidades;
 use App\Models\Proveedores;
 use App\Models\Requisiciones;   
 use App\Models\Cotizaciones;
@@ -89,7 +90,7 @@ class controladorAdmin extends Controller
         $anioActual = now()->year;
         $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
         $completas = Requisiciones::where('estado', 'Entregado')->count();
-        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->count();
+        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->where('estado','!=','Rechazado')->count();
         return view("Admin.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
@@ -123,6 +124,11 @@ class controladorAdmin extends Controller
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->get();
         return view('Admin.entradas',compact('entradas'));
+    }
+
+    public function tableUnidad(){
+        $unidades = Unidades::where('estatus','1')->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+        return view('Admin.unidad',compact('unidades'));
     }
 
     public function tableSalidas(){
@@ -299,8 +305,8 @@ class controladorAdmin extends Controller
 
     public function deleteReq($id){
         Requisiciones::where('id_requisicion',$id)->update([
-            "estado"=>"Eliminado",
-             "updated_at"=>Carbon::now(),
+            "estado"=>"Rechazado",
+            "updated_at"=>Carbon::now(),
         ]);
 
         return back()->with('eliminada','eliminada');
@@ -440,18 +446,21 @@ class controladorAdmin extends Controller
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-        ->where('requisiciones.estado','!=','Eliminado')
+        ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('requisiciones.created_at','desc')
         ->get();
         return view ('Admin.ordenesCompras',compact('ordenes'));
     }
 
-    public function deleteOrd($id){
-        Requisiciones::where('id_requisicion',$id)->update([
+    public function deleteOrd($id,$sid){
+        Orden_compras::where('id_orden',$id)->delete();
+
+        return back()->with('eliminada','eliminada');
+
+        Requisiciones::where('requisicion_id',$sid)->update([
             "estado"=>"Validado",
             "updated_at"=>Carbon::now()
         ]);
 
-        return back()->with('eliminada','eliminada');
     }
 }

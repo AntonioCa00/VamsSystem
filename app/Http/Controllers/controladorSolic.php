@@ -15,14 +15,17 @@ use Session;
 class controladorSolic extends Controller
 {
     public function index(){
-        return view('Solicitante.index');
+        $completas = Requisiciones::where('estado', 'Entregado')->where('usuario_id',session('loginId'))->count();
+        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->where('usuario_id',session('loginId'))->count();
+        return view("Solicitante.index",[
+            'pendientes'=>$pendiente,
+            'completas'=>$completas]);
     }
     //VISTAS DE LAS TABLAS
     
     public function tableRequisicion(){
         $solicitudes = Requisiciones::where('usuario_id',session('loginId'))
         ->orderBy('created_at','desc')
-        ->where('estado','!=','Eliminado')
         ->get();
         return view('Solicitante.requisiciones',compact('solicitudes'));
     }

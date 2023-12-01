@@ -66,7 +66,7 @@
                             <th>{{$proveedor->telefono}}</th>
                             <th>{{$proveedor->correo}}</th>
                             <th>
-                                <a href="{{route('editProveedor ',$proveedor->id_proveedor)}}" class="btn btn-primary">Editar</a>
+                                <a href="{{route('editProveedor',$proveedor->id_proveedor)}}" class="btn btn-primary">Editar</a>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarProv{{$proveedor->id_proveedor}}">
                                     Eliminar
                                 </a>

@@ -49,7 +49,7 @@ $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(40, 5, 'Nombre', 1, 0, 'C', 1);
-$pdf->Cell(40, 5, 'Tipo_Perfil', 1, 0, 'C', 1);
+$pdf->Cell(40, 5, 'Departamento_perfil', 1, 0, 'C', 1);
 $pdf->Cell(40, 5, 'ID del Empleado', 1, 0, 'C', 1);
 $pdf->Cell(40, 5, 'Fecha', 1, 1, 'C', 1);
 

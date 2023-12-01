@@ -107,7 +107,7 @@
                 </form>
             </div>
             <div class="card-footer py-3 text-center">
-                <a href="{{route('createSalida',$id)}}" class="btn btn-primary">Generar salida</a>
+                <a href="{{route('createSalidaAlm',$id)}}" class="btn btn-primary">Generar salida</a>
             </div>
         </div>
     </div>

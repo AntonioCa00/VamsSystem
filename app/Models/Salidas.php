@@ -9,10 +9,11 @@ class Salidas extends Model
 {
 
     protected $fillable = [
-        'id_ssalida',
-        'solicitud_id',
+        'id_salida',
+        'requisicion_id',
         'cantidad',
-        'estatus',
+        'usuario_id',
+        'refaccion_id',
         'created_at',
         'updated_at'
     ];
