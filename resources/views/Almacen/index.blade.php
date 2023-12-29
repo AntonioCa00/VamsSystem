@@ -88,26 +88,24 @@
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
-                                <tr class=>
-                                    <th>Codigo:</th>
-                                    <th>Nombre</th>
-                                    <th>Marca</th>
-                                    <th>Año</th>  
-                                    <th>Modelo</th>                                                      
-                                    <th>Descripcion</th>
+                                <tr>
+                                    <th>Clave:</th>
+                                    <th>Ubicación:</th>
+                                    <th>Descripcion:</th>
+                                    <th>Medida:</th>  
+                                    <th>Marca:</th>                                                      
                                     <th>Stock:</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($almacen as $refaccion)
                                 <tr>
-                                    <th>{{$refaccion->id_refaccion}}</th>
-                                    <th>{{$refaccion->nombre}}</th>
-                                    <th>{{$refaccion->marca}}</th>
-                                    <th>{{$refaccion->anio}}</th>
-                                    <th>{{$refaccion->modelo}}</th>
+                                    <th>{{$refaccion->clave}}</th>
+                                    <th>{{$refaccion->ubicacion}}</th>
                                     <th>{{$refaccion->descripcion}}</th>
-                                    <th>{{$refaccion->stock}}</th>
+                                    <th>{{$refaccion->medida}}</th>
+                                    <th>{{$refaccion->marca}}</th>
+                                    <th>{{$refaccion->cantidad}}</th>
                                 </tr>
                                 @endforeach
                             </tbody>

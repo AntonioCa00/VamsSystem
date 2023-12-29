@@ -13,6 +13,7 @@ use App\Models\Proveedores;
 use App\Models\Requisiciones;   
 use App\Models\Cotizaciones;
 use App\Models\Orden_Compras;
+use App\Models\Logs;
 use DB;
 use Carbon\Carbon;
 
@@ -131,9 +132,97 @@ class controladorAdmin extends Controller
         return view('Admin.unidad',compact('unidades'));
     }
 
+    public function CreateUnidad(){
+        return view('Admin.crearUnidad');
+    }
+
+    public function insertUnidad(Request $req){
+
+        Unidades::create([
+        "id_unidad"=>$req->input('id_unidad'),
+        "tipo"=>$req->input('tipo'),
+        "estado"=>$req->input('estado'),
+        "anio_unidad"=>$req->input('anio_unidad'),
+        "marca"=>$req->input('marca'),
+        "kilometraje"=>$req->input('kms'),
+        "estatus"=>"1",
+        "created_at"=>Carbon::now(),
+        "updated_at"=>Carbon::now()
+        ]);
+
+        DB::table('logs')->insert([
+            "user_id"=>session('loginId'),
+            "table_name"=>"Unidades",
+            "action"=>"Se ha registrado una nueva unidad:".$req->input('id_unidad'),
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect()->route('unidades')->with('regis','regis');
+    }
+
+    public function editUnidad($id){
+        $unidad= Unidades::where('id_unidad',$id)->first();
+        return view('Admin.editarUnidad',compact('unidad'));
+    }
+
+    public function updateUnidad(Request $req, $id){
+        Unidades::where('id_unidad',$id)->update([
+            "id_unidad"=>$req->input('id_unidad'),
+            "tipo"=>$req->input('tipo'),
+            "estado"=>$req->input('estado'),
+            "anio_unidad"=>$req->input('anio_unidad'),
+            "marca"=>$req->input('marca'),
+            "kilometraje"=>$req->input('kms'),
+            "estatus"=>"1",
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect()->route('unidades')->with('update','update');
+    }
+
+    public function deleteUnidad($id){        
+        Unidades::where('id_unidad',$id)->update([
+            "estatus"=>"0",
+            "updated_at"=>Carbon::now()->format('Y-m-d')
+        ]);
+        return back()->with('eliminado','eliminado');
+    }
+
+    public function bajaUnidad($id){        
+        Unidades::where('id_unidad',$id)->update([            
+            "estado"=>"Inactivo",
+            "updated_at"=>Carbon::now()->format('Y-m-d')
+        ]);
+        return back()->with('baja','baja');
+    }
+
+    public function activarUnidad(){
+        $unidades = Unidades::where("estado",'Inactivo')->get();
+        return view('Admin.activaUnidad',compact('unidades'));
+    }
+
+    public function activateUnidad($id){
+        Unidades::where('id_unidad',$id)->update([
+            "estado"=>"Activo",
+            "updated_at"=>Carbon::now()
+        ]); 
+
+        DB::table('logs')->insert([
+            "user_id"=>session('loginId'),
+            "table_name"=>"Unidades",
+            "action"=>"Se ha activado una unidad:".$id,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect()->route('unidades')->with('activado','activado');
+    }
+
     public function tableSalidas(){
-        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.nombre','almacen.marca','almacen.modelo','salidas.created_at')
-        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
+        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
+        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
         ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->get();
@@ -149,7 +238,7 @@ class controladorAdmin extends Controller
         $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->where(function($query) {
-            $query->where('requisiciones.estado', '=', 'Solicitado')
+            $query->where('requisiciones.estado', '=', 'Aprobado')
                   ->orWhere('requisiciones.estado', '=', 'Cotizado')
                   ->orWhere('requisiciones.estado', '=', 'Validado');
         })
@@ -165,10 +254,11 @@ class controladorAdmin extends Controller
             "updated_at" => Carbon::now()
         ]);
 
-        DB::table('logs')->insert([
+        Logs::create([
             "user_id"=>session('loginId'),
+            "requisicion_id"=>$id,
             "table_name"=>"Solicitudes",
-            "action"=>"Se ha validado una solicitud:".$id,
+            "action"=>"Se ha registrado una nueva solicitud: ".$Nota,
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
@@ -204,14 +294,15 @@ class controladorAdmin extends Controller
                 "estado" => "Cotizado",
                 "updated_at" => Carbon::now()
             ]);
-    
-            DB::table('logs')->insert([
+
+            Logs::create([
                 "user_id"=>session('loginId'),
+                "requisicion_id"=>$req->input('requisicion'),
                 "table_name"=>"Solicitudes",
                 "action"=>"Se ha hecho una cotizacion en la solicitud:".$req->input('solicitud'),
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
-            ]); 
+            ]);
             return back()->with('cotizacion','cotizacion');
         } else {
             return back()->with('error', 'No se ha seleccionado ningún archivo.');
@@ -240,10 +331,11 @@ class controladorAdmin extends Controller
             "admin_id"=>session('loginId')
         ]);
 
-        DB::table('logs')->insert([
+        Logs::create([
             "user_id"=>session('loginId'),
+            "requisicion_id"=>$req->input('solicitudId'),
             "table_name"=>"Compras",
-            "action"=>"Se ha registrado una nueva compra:".$req->input('factura'),
+            "action"=>"Se ha registrado una nueva compra:".$req->input('solicitudId'),
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
@@ -301,15 +393,6 @@ class controladorAdmin extends Controller
         ]);
 
         return back()->with('delete','delete');
-    }
-
-    public function deleteReq($id){
-        Requisiciones::where('id_requisicion',$id)->update([
-            "estado"=>"Rechazado",
-            "updated_at"=>Carbon::now(),
-        ]);
-
-        return back()->with('eliminada','eliminada');
     }
 
     public function ordenCompra($id){
@@ -426,17 +509,18 @@ class controladorAdmin extends Controller
                 "updated_at"=>Carbon::now(),
             ]);
 
-            DB::table('logs')->insert([
+            Logs::create([
                 "user_id"=>session('loginId'),
+                "requisicion_id"=>$req->input('requisicion'),
                 "table_name"=>"Orden_compras",
-                "action"=>"Se ha registrado una nueva orden de compra: ".$Nota,
+                "action"=>"Se ha registrado una nueva orden de compra: ".$req->input('requisicion'),
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
 
             session()->forget('datosOrden');
 
-            return redirect('ordenesCompras');
+            return redirect('ordenesCompras')->with('orden','orden');
         }
     }
 
@@ -462,5 +546,114 @@ class controladorAdmin extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        Logs::create([
+            "user_id"=>session('loginId'),
+            "requisicion_id"=>$sid,
+            "table_name"=>"Solicitudes",
+            "action"=>"Se ha eliminad una nueva orden de compra: ".$Nota,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+    }
+
+    public function reportes() {
+        $encargados = User::where('rol','General')->where('estatus','1')
+        ->orderBy('nombre','asc')->get();
+        $unidades = Unidades::where('estatus','1')
+        ->orderBy('id_unidad','asc')->get();
+        return view('Admin.reportes',compact('encargados','unidades'));
+    }
+
+    public function reporteEnc(Request $req){
+
+        $idEncargado = $req->encargado;
+        
+        $encargado = User::where('id',$idEncargado)->first();
+        $solicitudes = Requisiciones::where('usuario_id',$idEncargado)->count();
+        $completas = Requisiciones::where('estado','Entregado')->where('usuario_id',$idEncargado)->count();
+        $Requisiciones = Requisiciones::where('usuario_id',$idEncargado)->get();
+        $salidas = Salidas::select('salidas.id_salida','salidas.created_at','salidas.cantidad','requisiciones.unidad_id','almacen.descripcion')
+        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
+        ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')    
+        ->where('requisiciones.usuario_id',$idEncargado)
+        ->get();
+
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombre' => session('loginNombre'),
+            'rol' => session('rol'),
+        ];
+
+        // Serializar los datos del empleado y almacenarlos en un archivo
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleados.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_encargado.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
+    }
+
+    public function reporteUnid(Request $req){
+
+        $idUnidad = $req->unidad;
+
+        $unidad = Unidades::where('id_unidad',$idUnidad)->first();
+
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombre' => session('loginNombre'),
+            'rol' => session('rol'),
+        ];
+
+        // Serializar los datos del empleado y almacenarlos en un archivo
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleados.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_por_unidad.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
+    }
+
+    public function reporteGen(){
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombre' => session('loginNombre'),
+            'rol' => session('rol'),
+        ];
+
+        $compras = Orden_compras::select('orden_compras.id_orden','users.nombre','orden_compras.created_at','requisiciones.unidad_id','orden_compras.costo_total')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('users','orden_compras.admin_id','users.id')
+        ->get();
+        $unidades = Unidades::where('estatus','1')->get();
+        $usuarios = User::where('estatus','1')->get();
+        $refacciones = Almacen::where('estatus','1')->get();
+
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombre' => session('loginNombre'),
+            'rol' => session('rol'),
+        ];
+
+        // Serializar los datos del empleado y almacenarlos en un archivo
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleados.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_General2.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
     }
 }

@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Unidades;
 use App\Models\Proveedores;
+use App\Models\Comentarios;
 use App\Models\Entradas;
 use App\Models\Salidas;
 use App\Models\Orden_compras;
 use App\Models\Requisiciones;
 use App\Models\cotizaciones;
 use App\Models\Almacen;
+use App\Models\Logs;
 use Carbon\Carbon;
 use DB;
 
@@ -115,96 +117,8 @@ class controladorDir extends Controller
 
     public function tableUnidad()
     {   
-        $unidades = Unidades::where('estatus','1')->where('estado','Activo')->orderBy('unidad_id','asc')->get();
+        $unidades = Unidades::where('estatus','1')->where('estado','Activo')->orderBy('id_unidad','asc')->get();
         return view('Direccion.unidad',compact('unidades'));
-    }
-
-    public function CreateUnidad(){
-        return view('Direccion.crearUnidad');
-    }
-
-    public function insertUnidad(Request $req){
-
-        Unidades::create([
-        "id_unidad"=>$req->input('id_unidad'),
-        "tipo"=>$req->input('tipo'),
-        "estado"=>$req->input('estado'),
-        "anio_unidad"=>$req->input('anio_unidad'),
-        "marca"=>$req->input('marca'),
-        "kilometraje"=>$req->input('kms'),
-        "estatus"=>"1",
-        "created_at"=>Carbon::now(),
-        "updated_at"=>Carbon::now()
-        ]);
-
-        DB::table('logs')->insert([
-            "user_id"=>session('loginId'),
-            "table_name"=>"Unidades",
-            "action"=>"Se ha registrado una nueva unidad:".$req->input('id_unidad'),
-            "created_at"=>Carbon::now(),
-            "updated_at"=>Carbon::now()
-        ]);
-
-        return redirect()->route('unidades')->with('regis','regis');
-    }
-
-    public function editUnidad($id){
-        $unidad= Unidades::where('id_unidad',$id)->first();
-        return view('Direccion.editarUnidad',compact('unidad'));
-    }
-
-    public function updateUnidad(Request $req, $id){
-        Unidades::where('id_unidad',$id)->update([
-            "id_unidad"=>$req->input('id_unidad'),
-            "tipo"=>$req->input('tipo'),
-            "estado"=>$req->input('estado'),
-            "anio_unidad"=>$req->input('anio_unidad'),
-            "marca"=>$req->input('marca'),
-            "kilometraje"=>$req->input('kms'),
-            "estatus"=>"1",
-            "created_at"=>Carbon::now(),
-            "updated_at"=>Carbon::now()
-        ]);
-
-        return redirect()->route('unidades')->with('update','update');
-    }
-
-    public function deleteUnidad($id){        
-        Unidades::where('id_unidad',$id)->update([
-            "estatus"=>"0",
-            "updated_at"=>Carbon::now()->format('Y-m-d')
-        ]);
-        return back()->with('eliminado','eliminado');
-    }
-
-    public function bajaUnidad($id){        
-        Unidades::where('id_unidad',$id)->update([            
-            "estado"=>"Inactivo",
-            "updated_at"=>Carbon::now()->format('Y-m-d')
-        ]);
-        return back()->with('baja','baja');
-    }
-
-    public function activarUnidad(){
-        $unidades = Unidades::where("estado",'Inactivo')->get();
-        return view('Direccion.activaUnidad',compact('unidades'));
-    }
-
-    public function activateUnidad($id){
-        Unidades::where('id_unidad',$id)->update([
-            "estado"=>"Activo",
-            "updated_at"=>Carbon::now()
-        ]); 
-
-        DB::table('logs')->insert([
-            "user_id"=>session('loginId'),
-            "table_name"=>"Unidades",
-            "action"=>"Se ha activado una unidad:".$id,
-            "created_at"=>Carbon::now(),
-            "updated_at"=>Carbon::now()
-        ]);
-
-        return redirect()->route('unidades')->with('activado','activado');
     }
 
     public function tableEntradas(){
@@ -217,8 +131,8 @@ class controladorDir extends Controller
     }
 
     public function tableSalidas(){
-        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.nombre','almacen.marca','almacen.modelo','salidas.created_at')
-        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
+        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
+        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
         ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->get();
@@ -376,6 +290,50 @@ class controladorDir extends Controller
          return redirect('usuarios/Direccion')->with('eliminado','eliminado');
     }
 
+    public function deleteReq(Request $req, $id){
+        Comentarios::create([
+            "requisicion_id"=>$id,
+            "usuario_id"=>session('loginId'),
+            "detalles"=>$req->comentario,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]); 
+
+        Requisiciones::where('id_requisicion',$id)->update([
+            "estado"=>"Rechazado",
+            "updated_at"=>Carbon::now(),
+        ]);    
+        
+        Logs::create([
+            "user_id"=>session('loginId'),
+            "requisicion_id"=>$id,
+            "table_name"=>"Solicitudes",
+            "action"=>"Se ha eliminado la solicitud".$id,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return back()->with('eliminada','eliminada');
+    }
+
+    public function validarRequisicion($id){
+        Requisiciones::where('id_requisicion',$id)->update([
+            "estado"=>"Aprobado",
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        Logs::create([
+            "user_id"=>session('loginId'),
+            "requisicion_id"=>$id,
+            "table_name"=>"Requisiciones",
+            "action"=>"Se ha aprobado su solicitud".$id,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return back()->with('validado','validado');
+    }
+
 
     public function selectCotiza($id,$sid){
         Cotizaciones::where('id_cotizacion', '!=', $id)
@@ -390,9 +348,10 @@ class controladorDir extends Controller
             "updated_at" => Carbon::now()
         ]);
 
-        DB::table('logs')->insert([
+        Logs::create([
             "user_id"=>session('loginId'),
             "table_name"=>"Solicitudes",
+            "requisicion_id"=>$sid,
             "action"=>"Se ha validado una cotizacion de la solicitud: ".$sid,
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
@@ -417,7 +376,7 @@ class controladorDir extends Controller
         $completas = Requisiciones::where('estado','Entregado')->where('usuario_id',$idEncargado)->count();
         $Requisiciones = Requisiciones::where('usuario_id',$idEncargado)->get();
         $salidas = Salidas::select('salidas.id_salida','salidas.created_at','salidas.cantidad','requisiciones.unidad_id','almacen.nombre')
-        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
+        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
         ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')    
         ->where('requisiciones.usuario_id',$idEncargado)
         ->get();

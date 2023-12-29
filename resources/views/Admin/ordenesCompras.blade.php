@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if(session()->has('orden'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'solicitud eliminada',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->

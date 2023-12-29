@@ -1,5 +1,6 @@
 @php
-    $notifications = DB::table('logs')->orderBy('created_at','desc')->limit(3)->get();
+    $notifications = DB::table('logs')
+    ->orderBy('created_at','desc')->limit(3)->get();
     $count= DB::table('logs')->select(DB::raw('COUNT(*) as total'))->get();
 @endphp
 

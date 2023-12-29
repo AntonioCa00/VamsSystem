@@ -73,7 +73,7 @@
                     <select name="refaccion" class="form-control" id="refaccion" required>
                         <option value="" selected disabled>Selecciona la refaccion que requiere:</option>
                         @foreach ($refacciones as $refaccion)                            
-                            <option value="{{$refaccion->id_refaccion}}">{{$refaccion->nombre}} {{$refaccion->marca}} {{$refaccion->modelo}}</option>
+                            <option value="{{$refaccion->clave}}">{{$refaccion->descripcion}}</option>
                         @endforeach
                     </select>
                     <input type="hidden" id="opcionSeleccionada" name="nombre" value="">
@@ -117,19 +117,20 @@
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>Nombre:</th>
-                                        <th>Marca:</th>
-                                        <th>Modelo:</th>  
-                                        <th>Stock:</th>  
+                                        <th>Clave:</th>
+                                        <th>Ubicacion:</th>
+                                        <th>Descripcion:</th>  
+                                        <th>Medida:</th>  
+                                        <th>Cantidad:</th>  
                                     </tr>
                                 </thead>    
                                 <tbody>
                                     @foreach($refacciones as $refaccion)
                                     <tr>
-                                        <th>{{ $refaccion->nombre}}</th>
-                                        <th>{{ $refaccion->marca}}</th>
-                                        <th>{{ $refaccion->modelo}}</th>
-                                        <th>{{ $refaccion->stock}}</th>
+                                        <th>{{ $refaccion->clave}}</th>
+                                        <th>{{ $refaccion->ubicacion}}</th>
+                                        <th>{{ $refaccion->medida}}</th>
+                                        <th>{{ $refaccion->cantidad}}</th>
                                     </tr>
                                     @endforeach
                                 </tbody>

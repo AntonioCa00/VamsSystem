@@ -18,7 +18,7 @@
                     <thead>
                         <tr>
                             <th>ID_entrada:</th>
-                            <th>Compra:</th>
+                            <th>Orden de compra:</th>
                             <th>Fecha:</th>
                         </tr>
                     </thead>
@@ -38,8 +38,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('cantidad');            
             $table->bigInteger('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('users');
-            $table->bigInteger('refaccion_id')->unsigned();
-            $table->foreign('refaccion_id')->references('id_refaccion')->on('almacen');          
+            $table->string('refaccion_id');
+            $table->foreign('refaccion_id')->references('clave')->on('almacen');          
             $table->timestamps();
         });
     }

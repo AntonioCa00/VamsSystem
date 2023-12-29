@@ -47,10 +47,7 @@
             </form>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 <script>    
     const select = document.getElementById('rol');
     const input = document.getElementById('otro');

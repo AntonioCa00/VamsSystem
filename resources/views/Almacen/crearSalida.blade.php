@@ -94,7 +94,7 @@
                         <select name="refaccion" id="refaccion" class="form-control" required>
                             <option value="" selected disabled>Selecciona la refacción a salir</option>
                             @foreach ($refacciones as $refaccion)                            
-                                <option value="{{$refaccion->id_refaccion}}">{{$refaccion->nombre}}: {{$refaccion->marca}} {{$refaccion->modelo}}</option>
+                                <option value="{{$refaccion->clave}}">{{$refaccion->ubicacion}}: {{$refaccion->descripcion}}, {{$refaccion->marca}}</option>
                             @endforeach
                         </select>
                         <input type="hidden" id="opcionSeleccionada" name="nombre" value="">
@@ -107,7 +107,22 @@
                 </form>
             </div>
             <div class="card-footer py-3 text-center">
-                <a href="{{route('createSalida',$refacciones[0]->id_requisicion)}}" class="btn btn-primary">Generar salida</a>
+                <form action="{{route('createSalida',$refacciones[0]->id_requisicion)}}" method="post">
+                    @csrf
+                <label for="exampleFormControlInput1">¿La entrada esta completa?</label>
+                    <div class="form-check">                        
+                        <input class="form-check-input" type="radio" name="entrada" id="exampleRadios1" value="Completo" required>
+                        <label class="form-check-label" for="exampleRadios1">
+                          Entrada completa
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="entrada" id="exampleRadios2" value="Pendiente">
+                        <label class="form-check-label" for="exampleRadios2">
+                          Articulos pendientes
+                        </label>
+                    </div>  
+                <button type="submit" class="btn btn-primary">Generar salida</button>
             </div>
         </div>
     </div>

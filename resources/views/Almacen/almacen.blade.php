@@ -54,33 +54,31 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Codigo:</th>
-                            <th>Nombre</th>
-                            <th>Marca</th>
-                            <th>Año</th>  
-                            <th>Modelo</th>                                                      
-                            <th>Descripcion</th>
-                            <th>Stock:</th>
+                            <th>Clave:</th>
+                            <th>Ubicacion:</th>
+                            <th>Descripcion:</th>
+                            <th>Medida:</th>  
+                            <th>Marca:</th>                                                      
+                            <th>Cantidad:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($refacciones as $refaccion)
                         <tr>
-                            <th>{{$refaccion->id_refaccion}}</th>
-                            <th>{{$refaccion->nombre}}</th>
-                            <th>{{$refaccion->marca}}</th>
-                            <th>{{$refaccion->anio}}</th>
-                            <th>{{$refaccion->modelo}}</th>
+                            <th>{{$refaccion->clave}}</th>
+                            <th>{{$refaccion->ubicacion}}</th>
                             <th>{{$refaccion->descripcion}}</th>
-                            <th>{{$refaccion->stock}}</th>
+                            <th>{{$refaccion->medida}}</th>
+                            <th>{{$refaccion->marca}}</th>
+                            <th>{{$refaccion->cantidad}}</th>
                             <th>    
-                                <a href="{{route('editRefaccion',$refaccion->id_refaccion)}}" class="btn btn-primary">Editar</a>                                                       
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarRef{{$refaccion->id_refaccion}}">
+                                <a href="{{route('editRefaccion',$refaccion->clave)}}" class="btn btn-primary">Editar</a>                                                       
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarRef{{$refaccion->clave}}">
                                     Eliminar
                                 </a>
                                 <!-- DeleteRef Modal-->
-                                <div class="modal fade" id="eliminarRef{{$refaccion->id_refaccion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                <div class="modal fade" id="eliminarRef{{$refaccion->clave}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -93,7 +91,7 @@
                                                 <div class="modal-body">Selecciona confirmar para eliminar esta refacción</div>
                                                 <div class="modal-footer">
                                                     <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                    <form action="{{route('deleteRefaccion',$refaccion->id_refaccion)}}" method="POST">
+                                                    <form action="{{route('deleteRefaccion',$refaccion->clave)}}" method="POST">
                                                         @csrf
                                                         {!!method_field('PUT')!!}    
                                                         <button type="submit" class="btn btn-primary">confirmar</button>
@@ -110,8 +108,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

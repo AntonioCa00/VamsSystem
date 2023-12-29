@@ -16,27 +16,23 @@
             <form action="{{route('insertRefaccion')}}" method="post">
                 @csrf
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Nombre de la refacción:</label>
-                    <input name="nombre" type="text" class="form-control" placeholder="Escribe el nombre de la refaccción" required>
+                    <label for="exampleFormControlInput1">Ubicación:</label>
+                    <input name="ubicacion" type="text" class="form-control" placeholder="Escribe la ubicacion de la refaccción" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Descripcion</label>
+                    <input name="descripcion" type="text" min="1981" class="form-control" placeholder="Escribe una descripcion de la refaccción" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Medida:</label>
+                    <input name="medida" type="text" class="form-control" placeholder="Escribe la medida de la refaccción" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
-                    <input name="marca" type="text" class="form-control" placeholder="Escribe la marca de la refaccción" required>
+                    <input name="marca" type="text" class="form-control" placeholder="Escribe la marca la refacción" required>
                 </div>
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Año:</label>
-                    <input name="anio" type="number" min="1981" class="form-control" placeholder="Escribe año de la refaccción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Modelo:</label>
-                    <input name="modelo" type="text" class="form-control" placeholder="Escribe el modelo de la refaccción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Descipción:</label>
-                    <input name="descripcion" type="text" class="form-control" placeholder="Describe un poco más la refacción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Stock:</label>
+                    <label for="exampleFormControlInput1">Cantidad:</label>
                     <input name="cantidad" type="text" class="form-control" placeholder="Ingresa que cantidad a registrar" required>
                 </div>
 
@@ -46,8 +42,5 @@
             </form>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

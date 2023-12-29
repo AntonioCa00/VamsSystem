@@ -11,14 +11,12 @@ class Almacen extends Model
     protected $table = 'almacen';
 
     protected $fillable = [       
-        'id_refaccion',
-        'nombre',
-        'modelo',
-        'anio',
-        'marca',
-        'motor',
+        'clave',
+        'ubicacion',
         'descripcion',
-        'stock',
+        'medida',
+        'marca',
+        'cantidad',
         'estatus',
         'created_at',
         'updated_at'

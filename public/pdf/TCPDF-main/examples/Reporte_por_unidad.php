@@ -9,7 +9,7 @@ $pdf->setAuthor('Javier Chavez');
 $pdf->setTitle('Reporte Por unidad ');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' de unidad cuatrimestral ', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' de reporte de unidad cuatrimestral', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));

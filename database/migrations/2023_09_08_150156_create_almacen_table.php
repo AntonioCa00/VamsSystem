@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('almacen', function (Blueprint $table) {
-            $table->bigIncrements('id_refaccion');
-            $table->string('nombre');
-            $table->string('marca');
-            $table->string('anio'); 
-            $table->string('modelo');           
+            $table->string('clave')->primary();
+            $table->string('ubicacion');
             $table->string('descripcion');
-            $table->integer('stock');
+            $table->string('medida'); 
+            $table->string('marca');           
+            $table->string('cantidad');
             $table->bigInteger('entrada_id')->unsigned()->nullable();
             $table->foreign('entrada_id')->references('id_entrada')->on('entradas')->onDelete('cascade');
             $table->tinyInteger('estatus')->default(1);
