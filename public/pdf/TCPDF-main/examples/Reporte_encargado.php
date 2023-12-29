@@ -11,7 +11,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' de solicitud por encargado ', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' de reporte de tickets por encargado ', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -109,9 +109,9 @@ $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(20, 7, 'Id_Solicitud', 1, 0, 'C', 1);
 $pdf->Cell(35, 7, 'Fecha', 1, 0, 'C', 1);
-$pdf->Cell(25, 7, 'Estatus', 1, 0, 'C', 1);
+$pdf->Cell(35, 7, 'Estatus', 1, 0, 'C', 1);
 $pdf->Cell(25, 7, 'Unidad', 1, 0, 'C', 1);
-$pdf->Cell(60, 7, 'Pdf', 1, 1, 'C', 1);
+$pdf->Cell(50, 7, 'Pdf', 1, 1, 'C', 1);
 
 $datosSolicitud = $Requisiciones;
 
@@ -119,9 +119,9 @@ $datosSolicitud = $Requisiciones;
 foreach ($datosSolicitud as $soli) {
     $pdf->Cell(20, 7, $soli->id_requisicion, 1);
     $pdf->Cell(35, 7, $soli->created_at, 1);
-    $pdf->Cell(25, 7, $soli->estado, 1);
+    $pdf->Cell(35, 7, $soli->estado, 1);
     $pdf->Cell(25, 7, $soli->unidad_id, 1);
-	$pdf->Cell(60, 7, $soli[4], 1, 1);
+	$pdf->Cell(50, 7, $soli[4], 1, 1);
 }
 
 $pdf->Ln(10); // Salto de línea antes de la tabla

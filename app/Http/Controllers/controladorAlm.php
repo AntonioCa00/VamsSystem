@@ -8,6 +8,7 @@ use App\Models\Salidas;
 use App\Models\Requisiciones;
 use App\Models\Entradas;
 use App\Models\Orden_compras;
+use App\Models\Logs;
 use Session;
 use DB;
 use Carbon\Carbon;
@@ -20,7 +21,8 @@ class controladorAlm extends Controller
     public function index(){
         $almacen = Almacen::where('estatus','1')->get();
         $completas = Requisiciones::where('estado', 'Entregado')->count();
-        $pendiente = Requisiciones::where('estado','=', 'En Almacen')->count();
+        $pendiente = Requisiciones::where('estado','=', 'En Almacen')
+        ->orWhere('estado','=','Entrada Pendiente')->count();
         return view("Almacen.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
@@ -34,6 +36,8 @@ class controladorAlm extends Controller
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
         ->where('requisiciones.estado','Comprado')
+        ->orWhere('requisiciones.estado','Entrada Pendiente')
+        ->orWhere('requisiciones.estado','Entrada/Salida Pendiente')
         ->orderBy('requisiciones.created_at','desc')
         ->get();
         return view ('Almacen.requisiciones',compact('ordenes'));
@@ -49,26 +53,32 @@ class controladorAlm extends Controller
     }
 
     public function ArrayRefaccion(Request $req){
+
+        $refaccion = Almacen::where('clave',$req->input('clave'))->first();
+
+        if (empty($refaccion)){
         $entrada = session()->get('entrada', []);
-        $nombre = $req->input('Nombre');
-        $marca = $req->input('Marca');
-        $anio = $req->input('Anio');
-        $modelo = $req->input('Modelo');
-        $descripcion = $req->input('Descripcion');
+        $clave = $req->input('clave');
+        $ubicacion = $req->input('ubicacion');
+        $descripcion = $req->input('descripcion');
+        $medida = $req->input('medida');
+        $marca = $req->input('marca');
         $cantidad = $req->input('cantidad');
 
         $entrada[] = [
-            'nombre'=>$nombre,
-            'marca'=>$marca,
-            'anio'=>$anio,
-            'modelo'=>$modelo,
-            'descripcion' => $descripcion,
+            'clave'=>$clave,
+            'ubicacion'=>$ubicacion,
+            'descripcion'=>$descripcion,
+            'medida'=>$medida,
+            'marca' => $marca,
             'cantidad' => $cantidad,        
         ];
 
         session()->put('entrada', $entrada);
-
         return back();
+        } else{
+            return back()->with('duplicado','duplicado');
+        }
     }
 
     public function deleteArrayRef($index){
@@ -108,33 +118,33 @@ class controladorAlm extends Controller
     
                 for ($i = 0; $i < count($entradas); $i++) {
                     $refaccion = Almacen::where(function($query) use ($i, $entradas) {
-                        $query->where('nombre', $entradas[$i]['nombre'])
-                              ->Where('marca', $entradas[$i]['marca'])
-                              ->Where('anio', $entradas[$i]['anio'])
-                              ->Where('modelo', $entradas[$i]['modelo']);
+                        $query->where('clave', $entradas[$i]['clave'])
+                              ->Where('ubicacion', $entradas[$i]['ubicacion'])
+                              ->Where('medida', $entradas[$i]['medida'])
+                              ->Where('marca', $entradas[$i]['marca']);
                     })->first();
                 
                     if (!$refaccion) {
                         // El artículo no existe en la base de datos, crear uno nuevo
                         DB::table('almacen')->insert([
-                            "nombre" => $entradas[$i]['nombre'],
-                            "marca" => $entradas[$i]['marca'],
-                            "anio" => $entradas[$i]['anio'],
-                            "modelo" => $entradas[$i]['modelo'],
+                            "clave" => $entradas[$i]['clave'],
+                            "ubicacion" => $entradas[$i]['ubicacion'],
                             "descripcion" => $entradas[$i]['descripcion'],
-                            "stock" => $entradas[$i]['cantidad'],
+                            "medida" => $entradas[$i]['medida'],
+                            "marca" => $entradas[$i]['marca'],
+                            "cantidad" => $entradas[$i]['cantidad'],
                             "entrada_id"=>$entrada->id_entrada
                         ]);
                     } else {
                         // El artículo ya existe en la base de datos, actualizar el stock
                         Almacen::where(function($query) use ($i, $entradas) {
-                            $query->where('nombre', $entradas[$i]['nombre'])
-                                  ->orWhere('marca', $entradas[$i]['marca'])
-                                  ->orWhere('anio', $entradas[$i]['anio'])
-                                  ->orWhere('modelo', $entradas[$i]['modelo']);
+                            $query->where('clave', $entradas[$i]['clave'])
+                                  ->Where('ubicacion', $entradas[$i]['ubicacion'])
+                                  ->Where('medida', $entradas[$i]['medida'])
+                                  ->Where('marca', $entradas[$i]['marca']);
                         })->update([
                             "estatus"=>"1",
-                            "stock" => $refaccion->stock + $entradas[$i]['cantidad'],
+                            "cantidad" => $refaccion->cantidad + $entradas[$i]['cantidad'],
                             "updated_at" => Carbon::now()
                         ]);
                     }
@@ -147,10 +157,35 @@ class controladorAlm extends Controller
                 ->select('requisiciones.id_requisicion')
                 ->first();
 
-                requisiciones::where('id_requisicion',$idRequisicion->id_requisicion)->update([
-                    "estado"=>"En Almacen",
-                    "updated_at"=>Carbon::now()
-                ]);
+                if ($req->input('entrada') === "Completo"){
+                    requisiciones::where('id_requisicion',$idRequisicion->id_requisicion)->update([
+                        "estado"=>"En Almacen",
+                        "updated_at"=>Carbon::now()
+                    ]);
+    
+                    Logs::create([
+                        "user_id"=>session('loginId'),
+                        "requisicion_id"=>$idRequisicion->id_requisicion,
+                        "table_name"=>"Entradas",
+                        "action"=>"Han entrado sus refacciones a almacen de la requisicion: ".$idRequisicion->id_requisicionid,
+                        "created_at"=>Carbon::now(),
+                        "updated_at"=>Carbon::now()
+                    ]);
+                } else {
+                    requisiciones::where('id_requisicion',$idRequisicion->id_requisicion)->update([
+                        "estado"=>"Entrada Pendiente",
+                        "updated_at"=>Carbon::now()
+                    ]);
+    
+                    Logs::create([
+                        "user_id"=>session('loginId'),
+                        "requisicion_id"=>$idRequisicion->id_requisicion,
+                        "table_name"=>"Entradas",
+                        "action"=>"Han entrado algunas de sus refacciones a almacen de la requisicion: ".$idRequisicion->id_requisicionid,
+                        "created_at"=>Carbon::now(),
+                        "updated_at"=>Carbon::now()
+                    ]);
+                }          
 
                 session()->forget('entrada');
                 return redirect('almacen/Almacen')->with('agregado','agregado');
@@ -162,11 +197,18 @@ class controladorAlm extends Controller
 
     public function entradas () {
         $entradas = Entradas::get();
+
+        // Obtener los IDs de las entradas
+        $ids_entradas = $entradas->pluck('id_entrada');
+        
+        $almacen = Almacen::join('entradas','almacen.entrada_id','=','entradas.id_entrada')
+        ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
+        ->whereIn('entrada_id', $ids_entradas)->get();
         return view('Almacen.entradas', compact('entradas'));
     }
 
     public function almacen (){
-        $refacciones = Almacen::where('estatus', '1')->orderBy('nombre', 'asc')->get();
+        $refacciones = Almacen::where('estatus', '1')->orderBy('clave', 'asc')->get();
         return view('Almacen.almacen',compact ('refacciones'));
     }
 
@@ -175,33 +217,39 @@ class controladorAlm extends Controller
     }
 
     public function insertRefaccion(Request $req){
+
+        $ultima_ref = Almacen::where('ubicacion', $req->ubicacion)
+        ->orderBy('clave', 'desc')
+        ->value('clave');
+
+        return $ultima_ref+1;
+
         Almacen::create([
-            "nombre" => $req->nombre,
-            "marca" => $req->marca,
-            "anio" => $req->anio,
-            "modelo" => $req->modelo,
+            "clave" => $ultima_ref+1,
+            "ubicacion" => $req->ubicacion,
             "descripcion" => $req->descripcion,
-            "stock" => $req->cantidad,
-            "entrada_id"=> 0,
+            "medida" => $req->medida,
+            "marca" => $req->marca, 
+            "cantidad" => $req->cantidad,            
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
 
-        return redirect()->route('almacenAlm')->with('agregado');
+        return redirect()->route('almacenAlm')->with('agregado','agregado');
     }
 
     public function editRefaccion($id){
-        $refaccion = Almacen::where('id_refaccion',$id)->first();
+        $refaccion = Almacen::where('clave',$id)->first();
         return view('Almacen.editarRefaccion',compact('refaccion'));
     }
 
     public function updateRefaccion(Request $req, $id){
-        Almacen::where('id_refaccion',$id)->update([
-            "nombre"=> $req->nombre,
-            "marca"=> $req->marca,
-            "anio"=> $req->anio,
-            "modelo"=> $req->modelo,
-            "descripcion"=> $req->descripcion,
+        Almacen::where('clave',$id)->update([
+            "clave" => $req->clave,
+            "ubicacion" => $req->ubicacion,
+            "descripcion" => $req->descripcion,
+            "medida" => $req->medida,
+            "marca" => $req->marca,          
             "updated_at"=>Carbon::now()
         ]);
 
@@ -209,7 +257,7 @@ class controladorAlm extends Controller
     }
 
     public function deleteRefaccion($id){
-        Almacen::where('id_refaccion',$id)->update([
+        Almacen::where('clave',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now()
         ]);
@@ -218,24 +266,27 @@ class controladorAlm extends Controller
     }
 
     public function salidas(){
-        $salidas = Requisiciones::select('requisiciones.id_requisicion', 'orden_compras.id_orden', 'entradas.id_entrada', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
+        $salidas = Requisiciones::select('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->join('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->join('entradas', 'entradas.orden_id', '=', 'orden_compras.id_orden')
         ->where('requisiciones.estado', 'En Almacen')
+        ->orWhere('requisiciones.estado','Entrada Pendiente')
+        ->orWhere('requisiciones.estado','Salida Pendiente')
+        ->orWhere('requisiciones.estado','Entrada/Salida Pendiente')
+        ->groupBy('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at')
         ->get();
         return view('Almacen.salidas',compact('salidas'));
     }
 
     public function crearSalida($id){
-        $refacciones = Almacen::select('requisiciones.id_requisicion','requisiciones.pdf','almacen.id_refaccion','almacen.nombre','almacen.marca','almacen.anio','almacen.modelo','almacen.descripcion')
-        ->where('orden_compras.id_orden',$id)
+        $refacciones = Almacen::select('requisiciones.id_requisicion','requisiciones.pdf','almacen.clave','almacen.ubicacion','almacen.descripcion','almacen.medida','almacen.marca')
+        ->where('requisiciones.id_requisicion',$id)
         ->join('entradas','almacen.entrada_id','=','entradas.id_entrada')
         ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-        ->where('orden_compras.id_orden',$id)
         ->get();
 
         $salida = session()->get('salida', []);
@@ -244,9 +295,9 @@ class controladorAlm extends Controller
 
     public function ArraySalida(Request $req){
 
-        $refaccion = Almacen::where('id_refaccion',$req->input('refaccion'))->first();
+        $refaccion = Almacen::where('clave',$req->input('refaccion'))->first();
         
-        if($refaccion->stock >= $req->input('cantidad') && $req->input('cantidad') > 0){
+        if($refaccion->cantidad >= $req->input('cantidad') && $req->input('cantidad') > 0){
             $salida = session()->get('salida', []);
             $refaccion = $req->input('refaccion');
             $nombre = $req->input('nombre');
@@ -277,16 +328,17 @@ class controladorAlm extends Controller
         return back();
     }
 
-    public function createSalida($id){
+    public function createSalida(Request $req,$id){
+
         $salida = session()->get('salida', []);
         if (empty($salida)){
             return back()->with('vacio','vacio');
         } else{
             for ($i = 0; $i < count($salida); $i++) {
                 $refaccion = Almacen::where(function($query) use ($i, $salida) {
-                    $query->where('id_refaccion', $salida[$i]['id']);            
+                    $query->where('clave', $salida[$i]['id']);            
                 })->first();
-                if ($refaccion->stock < $salida[$i]['cantidad']){
+                if ($refaccion->cantidad < $salida[$i]['cantidad']){
                     return back()->with('insuficiente','insuficiente');
                 } else{
 
@@ -299,20 +351,64 @@ class controladorAlm extends Controller
                         "updated_at"=>Carbon::now()
                     ]);
 
-                    Almacen::where('id_refaccion',$salida[$i]['id'])->update([
-                        "stock"=>$refaccion->stock - $salida[$i]['cantidad'],
+                    Almacen::where('clave',$salida[$i]['id'])->update([
+                        "cantidad"=>$refaccion->cantidad - $salida[$i]['cantidad'],
                         "updated_at"=>Carbon::now()
                     ]);
 
-                    Requisiciones::where('id_requisicion',$id)->update([
-                        "estado"=>"Entregado",
-                        "updated_at"=>Carbon::now()
-                    ]);
+                    $requisicion = Requisiciones::where('id_requisicion',$id)->first();
+                    if ($requisicion->estado === "Entrada Pendiente"){
+                        if ($req->input('entrada') === "Completo"){
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Entrada Pendiente",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        } else {
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Entrada/Salida Pendiente",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        }
+                    } elseif($requisicion->estado === "Entrada/Salida Pendiente") {
+                        if ($req->input('entrada') === "Completo"){
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Entrada Pendiente",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        } else {
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Entrada/Salida Pendiente",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        }
+                    } elseif ($requisicion->estado === "En Almacen"){
+                        if ($req->input('entrada') === "Completo"){
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Entregado",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        } else {
+                            Requisiciones::where('id_requisicion',$id)->update([
+                                "estado"=>"Salida Pendiente",
+                                "updated_at"=>Carbon::now()
+                            ]);
+                        }
+                    }                           
                 }
+
+                Logs::create([
+                    "user_id"=>session('loginId'),
+                    "requisicion_id"=>$id,
+                    "table_name"=>"Salidas",
+                    "action"=>"Se ha registrado una nueva salida de requisicion".$id,
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                ]);
             }
-            session()->forget('salida');
-            return redirect('salidas/Almacen')->with('salida','salida');
-        }              
+        }
+        session()->forget('salida');
+        return redirect('salidas/Almacen')->with('salida','salida');
+
     }
 
     public function requisicionesAlm(){
@@ -322,7 +418,6 @@ class controladorAlm extends Controller
                 ->whereRaw('cotizaciones.requisicion_id = requisiciones.id_requisicion');
         })->where('estado', 'En Almacen')->get();        
         return view('Almacen.requisicionesAlm',compact('requisiciones'));     
-
     }
 
     public function crearSalidaAlm($id){
@@ -334,9 +429,9 @@ class controladorAlm extends Controller
 
     public function ArryaSalidaAlm(Request $req){
 
-        $refaccion = Almacen::where('id_refaccion',$req->input('refaccion'))->first();
+        $refaccion = Almacen::where('clave',$req->input('refaccion'))->first();
 
-        if($refaccion->stock >= $req->input('cantidad') && $req->input('cantidad') > 0){
+        if($refaccion->cantidad >= $req->input('cantidad') && $req->input('cantidad') > 0){
             $salida = session()->get('salida', []);
             $refaccion = $req->input('refaccion');
             $nombre = $req->input('nombre');
@@ -367,19 +462,18 @@ class controladorAlm extends Controller
         return back();
     }
     
-    public function createSalidaAlm($id){
+    public function createSalidaAlm(Request $req, $id){
         $salida = session()->get('salida', []);
         if (empty($salida)){
             return back()->with('vacio','vacio');
         } else{
             for ($i = 0; $i < count($salida); $i++) {
                 $refaccion = Almacen::where(function($query) use ($i, $salida) {
-                    $query->where('id_refaccion', $salida[$i]['id']);            
+                    $query->where('clave', $salida[$i]['id']);            
                 })->first();
-                if ($refaccion->stock < $salida[$i]['cantidad']){
+                if ($refaccion->cantidad < $salida[$i]['cantidad']){
                     return back()->with('insuficiente','insuficiente');
                 } else{
-
                     Salidas::create([
                         "requisicion_id"=>$id,
                         "cantidad"=>$salida[$i]['cantidad'],
@@ -389,15 +483,22 @@ class controladorAlm extends Controller
                         "updated_at"=>Carbon::now()
                     ]);
 
-                    Almacen::where('id_refaccion',$salida[$i]['id'])->update([
-                        "stock"=>$refaccion->stock - $salida[$i]['cantidad'],
+                    Almacen::where('clave',$salida[$i]['id'])->update([
+                        "cantidad"=>$refaccion->cantidad - $salida[$i]['cantidad'],
                         "updated_at"=>Carbon::now()
                     ]);
 
-                    Requisiciones::where('id_requisicion',$id)->update([
-                        "estado"=>"Entregado",
-                        "updated_at"=>Carbon::now()
-                    ]);
+                    if ($req->input('entrada') === "Completo"){
+                        Requisiciones::where('id_requisicion',$id)->update([
+                            "estado"=>"Entregado",
+                            "updated_at"=>Carbon::now()
+                        ]);
+                    }else{
+                        Requisiciones::where('id_requisicion',$id)->update([
+                            "estado"=>"Salida Pendiente",
+                            "updated_at"=>Carbon::now()
+                        ]);
+                    } 
                 }
             }
             session()->forget('salida');

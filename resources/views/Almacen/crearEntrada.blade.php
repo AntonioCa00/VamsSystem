@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if(session()->has('duplicado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Esa clave ya existe, por favor ingresa una diferente',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 @if(session()->has('vacio'))
     <script type="text/javascript">          
         Swal.fire({
@@ -60,11 +72,11 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nombre:</th>
+                            <th>Clave:</th>
+                            <th>Ubicacion:</th>
+                            <th>Descripcion:</th>
+                            <th>Medida:</th>
                             <th>Marca:</th>
-                            <th>Año:</th>
-                            <th>Modelo:</th>
-                            <th>Descripción:</th>
                             <th>Cantidad:</th>
                             <th>Opciones:</th>  
                         </tr>
@@ -72,11 +84,11 @@
                     <tbody>
                         @foreach($entrada as $index => $entrada)
                         <tr>
-                            <th>{{ $entrada['nombre'] }}</th>
-                            <th>{{ $entrada['marca'] }}</th>
-                            <th>{{ $entrada['anio'] }}</th>
-                            <th>{{ $entrada['modelo'] }}</th>
+                            <th>{{ $entrada['clave'] }}</th>
+                            <th>{{ $entrada['ubicacion'] }}</th>
                             <th>{{ $entrada['descripcion'] }}</th>
+                            <th>{{ $entrada['medida'] }}</th>
+                            <th>{{ $entrada['marca'] }}</th>
                             <th>{{ $entrada['cantidad'] }}</th>
                             <th>
                                 <form action="{{ route('deleteArrayRef', ['index' => $index]) }}" method="post">
@@ -96,25 +108,25 @@
                 <form action="{{route('arrayEntrada')}}" method="post">
                     @csrf
                     <div class="form-group">
-                        <label for="exampleFormControlInput1">Nombre:</label>
-                        <input id="nombre" name="Nombre" type="text" class="form-control" placeholder="Nombre de la refacción" required>
+                        <label for="exampleFormControlInput1">Clave:</label>
+                        <input id="nombre" name="clave" type="text" class="form-control" placeholder="Clave de la refacción" required>
                         <div id="suggestions"></div>
                     </div>
                     <div class="form-group">
-                        <label for="exampleFormControlInput1">Marca:</label>
-                        <input id="marca" name="Marca" type="text" class="form-control" placeholder="Marca de la refacción" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Año:</label>
-                        <input id="anio" name="Anio" type="text" class="form-control" placeholder="Año de fabricación de la refacción" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Modelo:</label>
-                        <input id="modelo" name="Modelo" type="text" class="form-control" placeholder="Modelo de la refacción" required>
+                        <label for="exampleFormControlInput1">Ubicacion:</label>
+                        <input id="marca" name="ubicacion" type="text" class="form-control" placeholder="Ubicacion fisica de la refacción" required>
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Descripcion:</label>
-                        <input id="descripcion" name="Descripcion" type="text" class="form-control" placeholder="Descripcion particular de la refacción" required>
+                        <input id="anio" name="descripcion" type="text" class="form-control" placeholder="Descripcion detallada de la refacción" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Medida:</label>
+                        <input id="modelo" name="medida" type="text" class="form-control" placeholder="Medida de la refacción" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Marca:</label>
+                        <input id="descripcion" name="marca" type="text" class="form-control" placeholder="Marca de la refacción" required>
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Cantidad:</label>
@@ -127,9 +139,22 @@
                 <form action="{{route('entradaAlm',$id)}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="exampleFormControlInput1">Factura/comprobante:</label>
+                        <label for="exampleFormControlInput1">Orden de compra correspondiente a la entrada:</label>
                         <input name="archivo" type="file" class="form-control" placeholder="Agrega notas si necesario" required>
-                    </div>                    
+                    </div>   
+                    <label for="exampleFormControlInput1">¿La entrada esta completa?</label>
+                    <div class="form-check">                        
+                        <input class="form-check-input" type="radio" name="entrada" id="exampleRadios1" value="Completo" required>
+                        <label class="form-check-label" for="exampleRadios1">
+                          Entrada completa
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="entrada" id="exampleRadios2" value="Pendiente">
+                        <label class="form-check-label" for="exampleRadios2">
+                          Articulos pendientes
+                        </label>
+                    </div>                
                     <button type="submit" class="btn btn-primary">Enviar articulos a almacen</button>
                 </form>
             </div>

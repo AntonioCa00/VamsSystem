@@ -10,6 +10,7 @@ use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Salidas;
 use App\Models\Almacen;
+use App\Models\Logs;
 use Session;
 
 class controladorSolic extends Controller
@@ -24,8 +25,11 @@ class controladorSolic extends Controller
     //VISTAS DE LAS TABLAS
     
     public function tableRequisicion(){
-        $solicitudes = Requisiciones::where('usuario_id',session('loginId'))
-        ->orderBy('created_at','desc')
+        $solicitudes = Requisiciones::where('requisiciones.usuario_id',session('loginId'))
+        ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
+        ->leftJoin('users','users.id','=','comentarios.usuario_id')
+        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol','comentarios.created_at as fechaCom')
+        ->orderBy('requisiciones.created_at','desc')
         ->get();
         return view('Solicitante.requisiciones',compact('solicitudes'));
     }
@@ -103,13 +107,10 @@ class controladorSolic extends Controller
                 "updated_at"=>Carbon::now(),
             ]);
 
-            DB::table('logs')->insert([
-                "user_id"=>session('loginId'),
-                "table_name"=>"Solicitudes",
-                "action"=>"Se ha registrado una nueva solicitud: ".$Nota,
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
+            $ultimaReq = Requisiciones::where('usuario_id',session('loginId'))
+            ->orderBy('created_at','desc')
+            ->limit(1)
+            ->first();
 
             session()->forget('datos');
 
@@ -132,9 +133,9 @@ class controladorSolic extends Controller
 
     public function ArraySolicitudAlm(Request $req){
 
-        $refaccion = Almacen::where('id_refaccion',$req->input('refaccion'))->first();
+        $refaccion = Almacen::where('clave',$req->input('refaccion'))->first();
 
-        if($refaccion->stock >= $req->input('cantidad') && $req->input('cantidad') > 0){
+        if($refaccion->cantidad >= $req->input('cantidad') && $req->input('cantidad') > 0){
             $datosAlm = session()->get('datosAlm', []);
             $refaccion = $req->input('refaccion');
             $nombre = $req->input('nombre');

@@ -46,6 +46,7 @@
                             <th>Estado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Requisición:</th>
+                            <th>Comentarios:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -60,6 +61,51 @@
                                 <a href="{{ asset($solicitud->pdf) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
+                            </th>
+                            <th>
+                                <a href="#" data-toggle="modal" data-target="#Comentarios">
+                                    <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
+                                </a>
+                                
+                                @if (empty($solicitud->detalles))
+                                    <div class="modal fade" id="Comentarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Seguimiento de comentarios</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">No existen comentarios de seguimiento en este momento</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="modal fade" id="Comentarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Seguimiento de comentarios</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Comentario emitido por: <strong>{{$solicitud->rol}}</strong></div>
+                                                <div class="modal-body">Comentario: <strong>{{$solicitud->detalles}}</strong></div>
+                                                <div class="modal-body">Fecha del comentario: <strong>{{$solicitud->fechaCom}}</strong></div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </th>
                             <th>                                
                                 @if($solicitud->estado === "Solicitado")
@@ -100,8 +146,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

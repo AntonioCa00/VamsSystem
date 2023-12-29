@@ -39,16 +39,25 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/Compras', [controladorAdmin::class, 'tableSolicitud'])->name('solicitudes');
         Route::get('proveedores/Compras',[controladorAdmin::class, 'tableProveedor'])->name('proveedores');
         Route::get('unidades/Compras',[controladorAdmin::class,'tableUnidad'])->name('unidades');
+        Route::get('form-Unidad', [controladorAdmin::class, 'createUnidad'])->name('CreateUnidad');
+        Route::get('edit-Unidad/{id}', [controladorAdmin::class, 'editUnidad'])->name('editUnidad');
+        Route::get('activ-Unidad',[controladorAdmin::class,'activarUnidad'])->name('actUnui');
         Route::get('form-proveedor',[controladorAdmin::class, 'createProveedor'])->name('createProveedor');
         Route::get('edit-proveedor/{id}',[controladorAdmin::class,'editProveedor'])->name('editProveedor');
         Route::get('form-compra',[controladorAdmin::class,'createCompra'])->name('createCompra');
         Route::get('form/{id}/cotizar',[controladorAdmin::class,'createCotiza'])->name('createCotiza');
         Route::get('ordenCompra/{id}',[controladorAdmin::class,'ordenCompra'])->name('ordenCompra');
         Route::get('ordenesCompras',[controladorAdmin::class,'ordenesCompras'])->name('ordenesCompras');
+        Route::get('reportesAdm',[controladorAdmin::class,'reportes'])->name('reportesAdm');
         
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
         //RUTAS COMPRAS
+        Route::post('insert-unidad',[controladorAdmin::class,'insertUnidad'])->name('insertUnidad');
+        Route::put('update-unidad/{id}',[controladorAdmin::class, 'updateUnidad'])->name('updateUnidad');
+        Route::put('delete-Unidad/{id}',[controladorAdmin::class,'deleteUnidad'])->name('deleteUnidad');
+        Route::put('baja-Unidad/{id}',[controladorAdmin::class,'bajaUnidad'])->name('bajaUnidad');
+        Route::put('activ-unidad/{id}',[controladorAdmin::class,'activateUnidad'])->name('activateUnidad');
         Route::put('validar-soli/{id}',[controladorAdmin::class,'validarSoli'])->name('validSoli');
         Route::post('insert-compra',[controladorAdmin::class,'insertCompra'])->name('insertCompra');
         Route::post('insert-cotiza',[controladorAdmin::class,'insertCotiza'])->name('insertCotiza');
@@ -56,11 +65,13 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('insert-proveedor',[controladorAdmin::class,'insertProveedor'])->name('insertProveedor');
         Route::put('update-proveedor/{id}',[controladorAdmin::class,'updateProveedor'])->name('updateProveedor');
         Route::put('delete-proveedor/{id}',[controladorAdmin::class,'deleteProveedor'])->name('deleteProveedor');
-        Route::put('deleteReq/{id}',[controladorAdmin::class, 'deleteReq'])->name('deleteReq');
         Route::put('deleteOrd/{id}/{sid}',[controladorAdmin::class,'deleteOrd'])->name('deleteOrd');
         Route::post('array-ordenCom',[controladorAdmin::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
         Route::delete('delete-arrayOrden/{index}',[controladorAdmin::class,'deleteArray'])->name('eliminarElemOrden');
         Route::post('ordenCompra',[controladorAdmin::class,'insertOrdenCom'])->name('createOrdenCompra');
+        Route::post('reporteEncAdm',[controladorAdmin::class,'reporteEnc'])->name('reporteEncargadoAdm');
+        Route::post('reporteUniAdm',[controladorAdmin::class,'reporteUnid'])->name('reporteUnidadAdm');
+        Route::get('reporteGenAdm',[controladorAdmin::class,'reporteGen'])->name('reporteGeneralAdm');
     });
     
     Route::middleware(['check.role:Direccion'])->group(function () {
@@ -68,10 +79,7 @@ Route::middleware(['authcheck'])->group(function () {
     
         //RUTAS DIRECCION   
         Route::get('inicio/Direccion',[controladorDir::class,'index'])->name('indexDir');
-        Route::get('unidades/Direccion', [controladorDir::class, 'tableUnidad'])->name('unidadesDir');
-        Route::get('form-Unidad', [controladorDir::class, 'createUnidad'])->name('CreateUnidad');
-        Route::get('edit-Unidad/{id}', [controladorDir::class, 'editUnidad'])->name('editUnidad');
-        Route::get('activ-Unidad',[controladorDir::class,'activarUnidad'])->name('actUnui');
+        Route::get('unidades/Direccion', [controladorDir::class, 'tableUnidad'])->name('unidadesDir');        
         Route::get('entradas/Direccion',[controladorDir::class,'tableEntradas'])->name('entradasDir');
         Route::get('salidas/Direccion', [controladorDir::class, 'tableSalidas'])->name('salidasDir');
         Route::get('proveedores/Direccion',[controladorDir::class,'tableProveedores'])->name('proveedoresDir');
@@ -87,16 +95,13 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
         //RUTAS DIRECCION
-        Route::post('insert-unidad',[controladorDir::class,'insertUnidad'])->name('insertUnidad');
-        Route::put('update-unidad/{id}',[controladorDir::class, 'updateUnidad'])->name('updateUnidad');
-        Route::put('delete-Unidad/{id}',[controladorDir::class,'deleteUnidad'])->name('deleteUnidad');
-        Route::put('baja-Unidad/{id}',[controladorDir::class,'bajaUnidad'])->name('bajaUnidad');
-        Route::put('activ-unidad/{id}',[controladorDir::class,'activateUnidad'])->name('activateUnidad');
         Route::put('update-proveedorD/{id}',[controladorDir::class,'updateProveedor'])->name('updateProveedorDir');
         Route::put('delete-proveedorD/{id}',[controladorDir::class,'deleteProveedor'])->name('deleteProveedorDir');
         Route::post('insert-User',[controladorDir::class,'insertUser'])->name('insertUser');
         Route::put('update-user/{id}', [controladorDir::class, 'updateUser'])->name('updateUser');
         Route::put('delete-user/{id}',[controladorDir::class,'deleteUser'])->name('deleteUser');
+        Route::put('deleteReq/{id}',[ControladorDir::class, 'deleteReq'])->name('deleteReq');
+        Route::put('validar/{id}',[controladorDir::class,'validarRequisicion'])->name('validar');
         Route::put('select-cotiza/{id}/{sid}',[controladorDir::class,'selectCotiza'])->name('selectCotiza');    
         Route::post('reporteEnc',[controladorDir::class,'reporteEnc'])->name('reporteEncargado');
         Route::post('reporteUni',[controladorDir::class,'reporteUnid'])->name('reporteUnidad');
@@ -132,7 +137,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-ArraySal/{index}',[controladorAlm::class,'deleteArraySal'])->name('deleteArraySal');
         Route::post('array-SalidaAlm',[controladorAlm::class,'ArryaSalidaAlm'])->name('ArraySalidaAlm');
         Route::delete('delete-ArraySalAlm/{index}',[controladorAlm::class,'deleteArraySalAlm'])->name('deleteArraySalAlm');
-        Route::get('createSalida/{id}',[controladorAlm::class,'createSalida'])->name('createSalida');
+        Route::post('createSalida/{id}',[controladorAlm::class,'createSalida'])->name('createSalida');
         Route::get('createSalidaAlm/{id}',[controladorAlm::class,'createSalidaAlm'])->name('createSalidaAlm');
     });
     

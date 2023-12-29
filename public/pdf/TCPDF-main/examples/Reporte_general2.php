@@ -168,25 +168,23 @@ $pdf->Cell(0, 10, $Subtitulo_refacciones, 0, 1, 'A');
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(20, 7, 'Id_refaccion', 1, 0, 'C', 1);
-$pdf->Cell(38, 7, 'Nombre', 1, 0, 'C', 1);
-$pdf->Cell(20, 7, 'Modelo', 1, 0, 'C', 1);
-$pdf->Cell(15, 7, 'Año', 1, 0, 'C', 1);
-$pdf->Cell(15, 7, 'Marca', 1, 0, 'C', 1);
-$pdf->Cell(60, 7, 'Descripcion', 1, 0, 'C', 1);
-$pdf->Cell(10, 7, 'Stock ', 1, 1, 'C', 1);
+$pdf->Cell(20, 7, 'Clave', 1, 0, 'C', 1);
+$pdf->Cell(15, 7, 'Ubicacion', 1, 0, 'C', 1);
+$pdf->Cell(65, 7, 'Descripcion', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Medida', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Marca', 1, 0, 'C', 1);
+$pdf->Cell(15, 7, 'Cantidad', 1, 1, 'C', 1);
 
 $datosStock = $refacciones;
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($datosStock as $gastoR) {
-    $pdf->Cell(20, 7, $gastoR->id_refaccion, 1);
-    $pdf->Cell(38, 7, $gastoR->nombre, 1);
-    $pdf->Cell(20, 7, $gastoR->modelo, 1);
-    $pdf->Cell(15, 7, $gastoR->anio, 1);
-    $pdf->Cell(15, 7, $gastoR->marca, 1); 
-	$pdf->Cell(60, 7, $gastoR->descripcion, 1); 
-	$pdf->Cell(10, 7, $gastoR->stock, 1, 1);
+    $pdf->Cell(20, 7, $gastoR->clave, 1);
+    $pdf->Cell(15, 7, $gastoR->ubicacion, 1);
+    $pdf->Cell(65, 7, $gastoR->descripcion, 1);
+    $pdf->Cell(25, 7, $gastoR->medida, 1);
+    $pdf->Cell(25, 7, $gastoR->marca, 1); 
+	$pdf->Cell(15, 7, $gastoR->cantidad, 1, 1);
 	  
 }
 

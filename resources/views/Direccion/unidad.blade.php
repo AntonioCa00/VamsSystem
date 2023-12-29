@@ -70,8 +70,7 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <a class="btn btn-primary" href="{{route('CreateUnidad')}}">Registrar nueva unidad</a>
-            <a class="btn btn-primary" href="{{route('actUnui')}}" style="margin-left: 70%;">Reactivar unidad</a>
+            <h6 class="m-0 font-weight-bold text-primary">Unidades en existencia</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -84,7 +83,6 @@
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
                             <th>Kilometraje:</th>
-                            <th>Opciones:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,41 +93,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->kilometraje}} kms</th>
-                            <th>
-                                <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
-                                    Quitar
-                                </a>
-                                <!-- deleteUnidad Modal-->
-                                <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
-                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">X</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">Selecciona que hacer con esta unidad</div>
-                                            <div class="modal-footer">
-                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteUnidad',$unidad->id_unidad)}}" method="POST">
-                                                    @csrf
-                                                    {!!method_field('PUT')!!}    
-                                                    <button type="submit" class="btn btn-primary">Eliminar</button>
-                                                </form>
-                                                <form action="{{route('bajaUnidad',$unidad->id_unidad)}}" method="POST">
-                                                    @csrf
-                                                    {!!method_field('PUT')!!}    
-                                                    <button type="submit" class="btn btn-primary">Inactivar</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </th>
+                            <th>{{$unidad->kilometraje}} kms</th>                        
                         </tr>
                         @endforeach
                     </tbody>
@@ -137,8 +101,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

@@ -52,7 +52,7 @@
                                 </a>
                             </th>
                             <th>
-                                <a class="btn btn-primary" href="{{route('crearSalida',$salida->id_orden)}}">
+                                <a class="btn btn-primary" href="{{route('crearSalida',$salida->id_requisicion)}}">
                                     Dar salida
                                 </a>                                
                             </th>
@@ -63,8 +63,5 @@
             </div>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection

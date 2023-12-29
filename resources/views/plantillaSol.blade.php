@@ -112,7 +112,7 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
-                        @include('shared.notifications')
+                        @include('shared.notificationsG')
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 

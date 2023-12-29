@@ -13,32 +13,32 @@
             <h6 class="m-0 font-weight-bold text-primary">DATOS DE REGISTRO</h6>
         </div>
         <div class="card-body">
-            <form action="{{route('updateRefaccion',$refaccion->id_refaccion)}}" method="post">
+            <form action="{{route('updateRefaccion',$refaccion->clave)}}" method="post">
                 {!!method_field('PUT')!!}    
                 @csrf
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Nombre de la refacción:</label>
-                    <input value="{{$refaccion->nombre}}" name="nombre" type="text" class="form-control" placeholder="Escribe el nombre de la refaccción" required>
+                    <label for="exampleFormControlInput1">Clave de la refacción:</label>
+                    <input value="{{$refaccion->clave}}" name="clave" type="text" class="form-control" placeholder="Escribe la clave de la refaccción" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Ubicación:</label>
+                    <input value="{{$refaccion->ubicacion}}" name="ubicacion" type="text" class="form-control" placeholder="Escribe la marca de la refaccción" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Descripcion:</label>
+                    <input value="{{$refaccion->descripcion}}" name="descripcion" type="text" class="form-control" placeholder="Descripcion de la refaccción" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Medida:</label>
+                    <input value="{{$refaccion->medida}}" name="medida" type="text" class="form-control" placeholder="Escribe la medida de la refaccción" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
-                    <input value="{{$refaccion->marca}}" name="marca" type="text" class="form-control" placeholder="Escribe la marca de la refaccción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Año:</label>
-                    <input value="{{$refaccion->anio}}" name="anio" type="number" min="1981" class="form-control" placeholder="Escribe año de la refaccción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Modelo:</label>
-                    <input value="{{$refaccion->modelo}}" name="modelo" type="text" class="form-control" placeholder="Escribe el modelo de la refaccción" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Descipción:</label>
-                    <input value="{{$refaccion->descripcion}}" name="descripcion" type="text" class="form-control" placeholder="Describe un poco más la refacción" required>
+                    <input value="{{$refaccion->marca}}" name="marca" type="text" class="form-control" placeholder="Escribe la marca la refacción" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Stock:</label>
-                    <input value="{{$refaccion->stock}}" value="{{$refaccion->cantidad}}" name="cantidad" type="text" class="form-control" placeholder="Ingresa que cantidad a registrar" disabled>
+                    <input value="{{$refaccion->cantidad}}" value="{{$refaccion->cantidad}}" name="cantidad" type="text" class="form-control" placeholder="Ingresa que cantidad a registrar" disabled>
                 </div>
 
                 <div class="form-group">
@@ -47,8 +47,5 @@
             </form>
         </div>
     </div>
-
 </div>
-<!-- /.container-fluid -->
-
 @endsection
