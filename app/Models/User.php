@@ -15,6 +15,7 @@ class User extends Model
         'correo',
         'password',
         'rol',
+        'departamento',
         'estatus',
         'created_at',
         'updated_at'

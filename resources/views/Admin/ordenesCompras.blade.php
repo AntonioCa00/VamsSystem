@@ -19,7 +19,7 @@
         Swal.fire({
         position: 'center',
         icon: 'success',
-        title: 'solicitud eliminada',
+        title: 'Orden de compra creada',
         showConfirmButton: false,
         timer: 1000
         })

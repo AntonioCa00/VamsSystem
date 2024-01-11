@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('requisicion_id')->unsigned();
             $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones')->onDelete('cascade');
             $table->bigInteger('usuario_id')->unsigned();
-            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('detalles');
             $table->timestamps();
         });

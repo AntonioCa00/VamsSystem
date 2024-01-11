@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('salidas', function (Blueprint $table) {
             $table->bigIncrements('id_salida');
             $table->bigInteger('requisicion_id')->unsigned();
-            $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones');
+            $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones')->onDelete('cascade');
             $table->integer('cantidad');            
             $table->bigInteger('usuario_id')->unsigned();
-            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('refaccion_id');
-            $table->foreign('refaccion_id')->references('clave')->on('almacen');          
+            $table->foreign('refaccion_id')->references('clave')->on('almacen')->onDelete('cascade');
             $table->timestamps();
         });
     }

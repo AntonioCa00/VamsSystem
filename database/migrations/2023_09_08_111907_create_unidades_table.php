@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('estado');
             $table->string('anio_unidad');
             $table->string('marca');
-            $table->string('kilometraje');
+            $table->string('modelo');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });

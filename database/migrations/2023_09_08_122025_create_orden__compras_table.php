@@ -16,9 +16,9 @@ return new class extends Migration
             $table->bigInteger('admin_id')->unsigned();
             $table->foreign('admin_id')->references('id')->on('users');
             $table->bigInteger('cotizacion_id')->unsigned();
-            $table->foreign('cotizacion_id')->references('id_cotizacion')->on('cotizaciones');
+            $table->foreign('cotizacion_id')->references('id_cotizacion')->on('cotizaciones')->onDelete('cascade');
             $table->bigInteger('proveedor_id')->unsigned();
-            $table->foreign('proveedor_id')->references('id_proveedor')->on('proveedores');
+            $table->foreign('proveedor_id')->references('id_proveedor')->on('proveedores')->onDelete('cascade');
             $table->float('costo_total',10,2);
             $table->string('pdf');
             $table->timestamps();

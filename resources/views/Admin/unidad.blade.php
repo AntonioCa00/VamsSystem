@@ -95,7 +95,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->kilometraje}} kms</th>
+                            <th>{{$unidad->modelo}}</th>
                             <th>
                                 <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
