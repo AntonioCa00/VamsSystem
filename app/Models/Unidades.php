@@ -14,7 +14,7 @@ class Unidades extends Model
         'estado',
         'anio_unidad',
         'marca',
-        'kilometraje',
+        'modelo',
         'estatus',
         'created_at',
         'updated_at'

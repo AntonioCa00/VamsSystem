@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('requisiciones', function (Blueprint $table) {
             $table->bigIncrements('id_requisicion');
             $table->bigInteger('usuario_id')->unsigned();
-            $table->foreign('usuario_id')->references('id')->on('users');
-            $table->string('unidad_id');
-            $table->foreign('unidad_id')->references('id_unidad')->on('unidades');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('unidad_id')->nullable();
+            $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
             $table->string('pdf');
             $table->string('estado');           
             $table->timestamps();

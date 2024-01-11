@@ -21,15 +21,17 @@ class Login extends Controller
                 $req->session()->put('loginId',$user->id);
                 $req->session()->put('loginNombre',$user->nombre);
                 $req->session()->put('rol', $user->rol);
+                $req->session()->put('departamento', $user->departamento);
 
                 if($user->rol == "Compras"){
                     return redirect('inicio/Compras')->with('entra','entra');
-                } elseif ($user->rol == "Direccion") {
-                    return redirect('inicio/Direccion')->with('entra','entra');
+                }elseif ($user->rol == "Gerencia General"){
+                    return redirect('inicio/GerenciaGeneral')->with('entra','entra');            
+                }elseif ($user->rol == "Gerente Area") {
+                    return redirect('inicio/GtArea')->with('entra','entra');
                 } elseif ($user->rol == "Almacen"){
                     return redirect('inicio/Almacen')->with('entra','entra');
-                } else{
-                    $req->session()->put('dpto', $user->departamento);
+                } else{                    
                     return redirect('inicio')->with('entra','entra');
                 }
             } else{

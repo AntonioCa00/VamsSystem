@@ -76,11 +76,11 @@
                     <span>Almacen</span></a>
             </li>
 
-            <li class="nav-item active">
+            {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('salidasSoli')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>        
+            </li>         --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -112,7 +112,7 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
-                        @include('shared.notificationsG')
+                        @include('shared.notifications')
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -120,7 +120,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{session('loginNombre')}}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Usuario:</b>{{session('loginNombre')}}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Departamento:</b>{{session('departamento')}}</span>
                                 <img class="img-profile rounded-circle"
                                      src="{{ asset('img/usuario.png')}}">
                             </a>

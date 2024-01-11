@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('cotizaciones', function (Blueprint $table) {
             $table->bigIncrements('id_cotizacion');
             $table->bigInteger('requisicion_id')->unsigned();
-            $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones');
+            $table->foreign('requisicion_id')->references('id_requisicion')->on('requisiciones')->onDelete('cascade');
             $table->bigInteger('usuario_id')->unsigned();
-            $table->foreign('usuario_id')->references('id')->on('users');              
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('pdf');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();

@@ -10,6 +10,7 @@ use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Salidas;
 use App\Models\Almacen;
+use App\Models\Articulos;
 use App\Models\Logs;
 use Session;
 
@@ -36,18 +37,22 @@ class controladorSolic extends Controller
 
     public function createSolicitud(){
         $datos = session()->get('datos', []);
-        $unidades = Unidades::select('id_unidad')->where('estado','Activo')->where('estatus','1')->get();
+        $unidades = Unidades::where('estado','Activo')->where('estatus','1')->get();
         return view('Solicitante.crearSolicitud',compact('unidades','datos'));
     }
 
     public function ArraySolicitud(Request $req){
         $datos = session()->get('datos', []);
+
         $cantidad = $req->input('Cantidad');
+        $unidad = $req->input('Unidad');
         $descripcion = $req->input('Descripcion');
+
         $notas = $req->input('Notas');
 
         $datos[] = [
             'cantidad' => $cantidad,
+            'unidad'=>$unidad,
             'descripcion' => $descripcion,
         ];
 
@@ -55,6 +60,25 @@ class controladorSolic extends Controller
 
         return back();
     }
+
+    public function editArray(Request $req, $index){
+        $datos = session()->get('datos', []);
+    
+        $cantidadEditada = $req->input('editCantidad');
+        $unidadEditada = $req->input('editUnidad');
+        $descripcionEditada = $req->input('editDescripcion');
+    
+        if (isset($datos[$index])) {
+            $datos[$index]['cantidad'] = $cantidadEditada;
+            $datos[$index]['unidad'] = $unidadEditada;
+            $datos[$index]['descripcion'] = $descripcionEditada;
+        }
+    
+        session()->put('datos', $datos);
+    
+        return back();
+    }
+    
 
     public function deleteArray($index){
         $datos = session()->get('datos', []);
@@ -80,37 +104,72 @@ class controladorSolic extends Controller
                 'idEmpleado' => session('loginId'),
                 'nombre' => session('loginNombre'),
                 'rol' => session('rol'),
-                'dpto' =>session('dpto')
+                'dpto' =>session('departamento')
             ];
 
-            // Serializar los datos del empleado y almacenarlos en un archivo
+            $ultimarequisicion = Requisiciones::select('id_requisicion')->latest('id_requisicion')->first();
+            if (empty($ultimarequisicion)){
+                $idcorresponde = 1;
+            } else {
+                $idcorresponde = $ultimarequisicion->id_requisicion + 1;
+            }
+
+            if(session('departamento') === "Mantenimiento"){
+                $unidad = Unidades::where('id_unidad',$req->input('unidad'))->first();
+            }else{
+                $unidad = null;
+            }
+
+            // Serializar los datos del empleado y almacenarlos en un archivo para pasarlos al PDF
             $datosSerializados = serialize($datosEmpleado);
             $rutaArchivo = storage_path('app/datos_empleado.txt');
             file_put_contents($rutaArchivo, $datosSerializados);
 
-            // Nombre y ruta del archivo en laravel
+            // Se genera el nombre y ruta para guardar PDF
             $numeroUnico = time(); // Genera un timestamp único
             $nombreArchivo = 'requisicion_' . $numeroUnico . '.pdf';
             $rutaDescargas = 'requisiciones/' . $nombreArchivo;
 
             // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
-            ob_start(); // Iniciar el búfer de salida
+            ob_start(); // Iniciar el búfer de salida para pasar las variables al PDF
             include(public_path('/pdf/TCPDF-main/examples/Requisicion.php'));
-            ob_end_clean();            
-
-            Requisiciones::create([
-                "usuario_id"=>session('loginId'),
-                "unidad_id" => $req->input('unidad'),
-                "pdf" => $rutaDescargas,
-                "estado"=> "Solicitado",
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now(),
-            ]);
+            ob_end_clean();    
+            
+            if(session('departamento') === "Mantenimiento"){
+                DB::table('requisiciones')->insert([
+                    "usuario_id"=>session('loginId'),
+                    "unidad_id" => $req->input('unidad'),
+                    "pdf" => $rutaDescargas,                    
+                    "estado"=> "Solicitado",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now(),
+                ]);
+            } else{
+                Requisiciones::create([
+                    "usuario_id"=>session('loginId'),
+                    "pdf" => $rutaDescargas,
+                    "estado"=> "Solicitado",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now(),
+                ]);
+            }
 
             $ultimaReq = Requisiciones::where('usuario_id',session('loginId'))
             ->orderBy('created_at','desc')
             ->limit(1)
             ->first();
+
+            //Una vez creada la requisicion, agregar los articulos a la tabla, estos ya serán los definitivos        
+            foreach ($datosRequisicion as $dato) {
+                Articulos::create([
+                    'requisicion_id' => $ultimaReq->id_requisicion,
+                    'cantidad' => $dato['cantidad'],
+                    'unidad' => $dato['unidad'],
+                    'descripcion' => $dato['descripcion'],
+                    'created_at'=>Carbon::now(),
+                    'updated_at'=>Carbon::now(),
+                ]);
+            }
 
             session()->forget('datos');
 
@@ -220,9 +279,10 @@ class controladorSolic extends Controller
     }
 
     public function tableSalidas(){
-        $salidas = Salidas::get()
-        ->join('requisiciones','salidas.requisicion_id','=','requisicion.id_requisicion')
-        ->where('requisiciones.usuario_id',session('loginId'));
+        $salidas = Salidas::
+        join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
+        ->where('requisiciones.usuario_id',session('loginId'))
+        ->get();
         return view('Solicitante.salidas',compact('salidas'));
     }
 

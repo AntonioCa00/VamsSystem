@@ -38,60 +38,33 @@
                 </table>
             </div>
 
+            <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Cantidad:</th>
+                            <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
                             <th>Precio unitario:</th>
-                            <th>Opciones:</th>  
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($ordenCom as $index => $ordenCom)
+                        <form action="{{route('createOrdenCompra',['cid' => $cotizacion->id_cotizacion, 'rid' => $id])}}" method="post">
+                            @csrf
+                        @foreach($articulos as $index => $articulo)
                         <tr>
-                            <th>{{ $ordenCom['cantidad'] }}</th>
-                            <th>{{ $ordenCom['descripcion'] }}</th>
-                            <th>{{ $ordenCom['precio'] }}</th>
-                            <th>
-                                <form action="{{ route('eliminarElemOrden', ['index' => $index]) }}" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-primary">Eliminar</button>
-                                </form>                                
-                            </th>
+                            <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
+                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
+                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
+                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
+                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" required></th>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-
-            <div class="card-body">
-                <h5 class="text-center">Datos para orden de compra</h5>
-                <form action="{{route('arrayOrdenCom')}}" method="post">
-                    @csrf
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Cantidad:</label>
-                        <input name="Cantidad" type="number" class="form-control" placeholder="Cantidad de refacciones a comprar" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Descripcion:</label>
-                        <input name="Descripcion" type="text" class="form-control" placeholder="Describe la refaccion o articulo a comprar" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Precio unitario:</label>
-                        <input name="PrecioUni" type="number" step="0.01" pattern="\d+(\.\d{1,2})?" class="form-control" placeholder="Precio por pieza" required>                        
-                    </div>                    
-                    <button type="submit" class="btn btn-primary">Agregar articulo</button>
-                </form>
-            </div>
-
             <div class="card-footer py-3 text-center">
-                <form action="{{route('createOrdenCompra')}}" method="post">
-                    @csrf
-                    <input type="hidden" name="cotizacion" value="{{$coti}}">
-                    <input type="hidden" name="requisicion" value="{{$id}}">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Notas:</label>
                         <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
