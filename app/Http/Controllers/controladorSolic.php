@@ -102,7 +102,9 @@ class controladorSolic extends Controller
 
             $datosEmpleado[] = [
                 'idEmpleado' => session('loginId'),
-                'nombre' => session('loginNombre'),
+                'nombres' => session('loginNombres'),
+                'apellidoP' => session('loginApepat'),
+                'apellidoM' => session('loginApemat'),
                 'rol' => session('rol'),
                 'dpto' =>session('departamento')
             ];

@@ -81,7 +81,7 @@
                                 @if (session('departamento') === $solicitudes->departamento || $solicitudes->estado === "Pre Validado")                        
                                 <tr>
                                     <th>{{$solicitudes->id_requisicion}}</th>
-                                    <th>{{$solicitudes->nombre}}</th>
+                                    <th>{{$solicitudes->nombres}}</th>
                                     <th>{{$solicitudes->departamento}}</th>
                                     <th>{{$solicitudes->fecha_creacion}}</th>
                                     <th>{{$solicitudes->estado}}</th>
@@ -192,7 +192,7 @@
                                 @if (session('departamento') === $solicitudes->departamento)                        
                                 <tr>
                                     <th>{{$solicitudes->id_requisicion}}</th>
-                                    <th>{{$solicitudes->nombre}}</th>
+                                    <th>{{$solicitudes->nombres}}</th>
                                     <th>{{$solicitudes->departamento}}</th>
                                     <th>{{$solicitudes->created_at}}</th>
                                     <th>{{$solicitudes->estado}}</th>

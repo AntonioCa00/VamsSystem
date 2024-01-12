@@ -19,7 +19,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Nombre completo:</label>
-                    <input name="nombre" type="text" class="form-control" value="{{$encargado->nombre}}" placeholder="Nombre completo del usuario">
+                    <input name="nombre" type="text" class="form-control" value="{{$encargado->nombres}}" placeholder="Nombre completo del usuario">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Telefono:</label>

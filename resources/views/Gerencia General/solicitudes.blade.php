@@ -55,7 +55,7 @@
                         @foreach ($solicitudes as $solicitudes)
                         <tr>
                             <th>{{$solicitudes->id_requisicion}}</th>
-                            <th>{{$solicitudes->nombre}}</th>
+                            <th>{{$solicitudes->nombres}}</th>
                             <th>{{$solicitudes->fecha_creacion}}</th>
                             <th>{{$solicitudes->estado}}</th>
                             @if (empty($solicitudes->unidad_id))

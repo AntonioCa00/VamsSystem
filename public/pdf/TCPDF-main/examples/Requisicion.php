@@ -59,12 +59,14 @@ $datosEmpleadoSerializados = file_get_contents($rutaArchivo);
 $datosEmpleado = unserialize($datosEmpleadoSerializados);
 
 // Datos del empleado (simulados)
-$nombreEmpleado = $datosEmpleado[0]['nombre'];
+$nombreEmpleado = $datosEmpleado[0]['nombres'];
+$apepatEmpleado = $datosEmpleado[0]['apellidoP'];
+$apematEmpleado = $datosEmpleado[0]['apellidoM'];
 $posicionEmpleado = $datosEmpleado[0]['dpto'];
 $idEmpleado = $datosEmpleado[0]['idEmpleado'];
 $fechaEmpleado = date("Y/m/d");
 
-$pdf->Cell(40, 5, $nombreEmpleado, 1);
+$pdf->Cell(40, 5, $nombreEmpleado.' '.$apepatEmpleado, 1);
 $pdf->Cell(40, 5, $posicionEmpleado, 1);
 $pdf->Cell(40, 5, $idEmpleado, 1);
 $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
@@ -132,11 +134,11 @@ $pdf->Line(75, $y, 130, $y);
 $pdf->Line(140, $y, 190, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '              Solicita                                         Encargado área                              Autoriza dirección ', 0, 1, 'A', 0);
+$pdf->Cell(0, 10, '              Solicita                                         Encargado área                              Autoriza Gerencia ', 0, 1, 'A', 0);
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'requisicion_' . $numeroUnico . '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

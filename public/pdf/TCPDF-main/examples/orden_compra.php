@@ -59,12 +59,14 @@ $datosEmpleadoSerializados = file_get_contents($rutaArchivo);
 $datosEmpleado = unserialize($datosEmpleadoSerializados);
 
 // Datos del empleado (simulados)
-$nombreEmpleado = $datosEmpleado[0]['nombre'];
+$nombreEmpleado = $datosEmpleado[0]['nombres'];
+$apepatEmpleado = $datosEmpleado[0]['apellidoP'];
+$apematEmpleado = $datosEmpleado[0]['apellidoM'];
 $posicionEmpleado = $datosEmpleado[0]['rol'];
 $idEmpleado = $datosEmpleado[0]['idEmpleado'];
 $fechaEmpleado = date("Y/m/d");
 
-$pdf->Cell(40, 5, $nombreEmpleado, 1);
+$pdf->Cell(40, 5, $nombreEmpleado.' '.$apepatEmpleado, 1);
 $pdf->Cell(40, 5, $posicionEmpleado, 1);
 $pdf->Cell(40, 5, $idEmpleado, 1);
 $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
@@ -109,7 +111,7 @@ if(!empty($unidad)){
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
     $pdf->Cell(180, 7, 'Unidad', 1, 1, 'C', 1);
     // notas que agrega el solicitante
-    $pdf->MultiCell(180, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+    $pdf->MultiCell(180, 6,'Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
 }
 
 $pdf->Ln(10); // Salto de línea antes de la tabla   
@@ -169,6 +171,6 @@ $pdf->Cell(0, 10, '              Gerente de area                                
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $numeroUnico . '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

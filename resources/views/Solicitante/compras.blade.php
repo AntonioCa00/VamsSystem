@@ -33,7 +33,7 @@
                             <th>{{$compra->id_compra}}</th>
                             <th>{{$compra->fecha_compra}}</th>
                             <th>{{$compra->id_unidad}}</th>
-                            <th>{{$compra->Nombre}}</th>
+                            <th>{{$compra->Nombres}}</th>
                             <th>{{$compra->costo}}</th>
                             <th>{{$compra->refaccion}}</th>
                             <th>{{$compra->factura}}</th>

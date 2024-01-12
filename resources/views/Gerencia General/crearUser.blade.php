@@ -17,8 +17,16 @@
             <form action="{{route('insertUser')}}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Nombre completo:</label>
-                    <input name="nombre" type="text" class="form-control" placeholder="Nombre completo del usuario" required>
+                    <label for="exampleFormControlInput1">Nombre(s):</label>
+                    <input name="nombres" type="text" class="form-control" placeholder="Nombre(s) del usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Apellido Paterno:</label>
+                    <input name="apepat" type="text" class="form-control" placeholder="Apellido paterno del usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Apellido Materno:</label>
+                    <input name="apemat" type="text" class="form-control" placeholder="Apellido materno del usuario" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Telefono:</label>

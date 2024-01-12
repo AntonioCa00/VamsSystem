@@ -33,7 +33,7 @@
                         <tr>
                             <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->unidad_id}}</th>
-                            <th>{{$orden->nombre}}</th>
+                            <th>{{$orden->nombres}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($orden->reqPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

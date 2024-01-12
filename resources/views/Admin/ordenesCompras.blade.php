@@ -55,7 +55,7 @@
                         @foreach ($ordenes as $orden)
                         <tr>
                             <th>{{$orden->id_orden}}</th>
-                            <th>{{$orden->nombre}}</th>
+                            <th>{{$orden->nombres}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($orden->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

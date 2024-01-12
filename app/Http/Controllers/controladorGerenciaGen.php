@@ -104,7 +104,7 @@ class controladorGerenciaGen extends Controller
     }  
 
     public function tableSolicitud(){
-        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado','orden_compras.pdf as ordenCompra', 'requisiciones.created_at as fecha_creacion')
+        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado','orden_compras.pdf as ordenCompra', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->join('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
@@ -114,7 +114,7 @@ class controladorGerenciaGen extends Controller
     }
 
     public function tableEncargado(){
-        $encargados = User::where('estatus','1')->orderBy('nombre')->get()
+        $encargados = User::where('estatus','1')->orderBy('nombres')->get()
         ->where("estatus",1);
         return view('Gerencia General.encargado',compact('encargados'));
     }
@@ -128,7 +128,9 @@ class controladorGerenciaGen extends Controller
 
         if($req->rol === "Otro"){
             DB::table('users')->insert([
-                "nombre"=>$req->input('nombre'),
+                "nombres"=>$req->input('nombres'),
+                "apellidoP"=>$req->input('apepat'),
+                "apellidoM"=>$req->input('apemat'),
                 "telefono"=>$req->input('telefono'),
                 "correo"=>$req->input('correo'),
                 "password"=>$password,
@@ -140,7 +142,9 @@ class controladorGerenciaGen extends Controller
             ]);
         }elseif ($req->rol === "Gerente Area"){
             DB::table('users')->insert([
-                "nombre"=>$req->input('nombre'),
+                "nombres"=>$req->input('nombres'),
+                "apellidoP"=>$req->input('apepat'),
+                "apellidoM"=>$req->input('apemat'),
                 "telefono"=>$req->input('telefono'),
                 "correo"=>$req->input('correo'),
                 "password"=>$password,
@@ -152,7 +156,9 @@ class controladorGerenciaGen extends Controller
             ]);
         } else {
             DB::table('users')->insert([
-                "nombre"=>$req->input('nombre'),
+                "nombres"=>$req->input('nombres'),
+                "apellidoP"=>$req->input('apepat'),
+                "apellidoM"=>$req->input('apemat'),
                 "telefono"=>$req->input('telefono'),
                 "correo"=>$req->input('correo'),
                 "password"=>$password,
@@ -172,20 +178,14 @@ class controladorGerenciaGen extends Controller
 
     public function updateUser(Request $req, $id){
         User::where('id',$id)->update([
-            "Nombre"=>$req->input('nombre'),
+            "nombres"=>$req->input('nombres'),
+            "apellidoP"=>$req->input('apepat'),
+            "apellidoM"=>$req->input('apemat'),
             "telefono"=>$req->input('telefono'),
             "correo"=>$req->input('correo'),
             "password"=>$req->input('password'),
             "rol"=>$req->input('rol'),
             "estatus"=>'1',
-            "updated_at"=>Carbon::now()
-        ]);
-
-        DB::table('logs')->insert([
-            "user_id"=>session('loginId'),
-            "table_name"=>"Usuarios",
-            "action"=>"Se ha actualizado un usuario: ".$req->input('nombre'),
-            "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
 

@@ -42,7 +42,7 @@
                         @foreach ($salidas as $salida)
                         <tr>
                             <th>{{$salida->id_requisicion}}</th>
-                            <th>{{$salida->nombre}}</th>
+                            <th>{{$salida->nombres}}</th>
                             <th>{{$salida->fecha_creacion}}</th>
                             <th>{{$salida->estado}}</th>
                             <th>{{$salida->unidad_id}}</th>
