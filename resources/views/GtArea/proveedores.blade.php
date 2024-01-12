@@ -62,7 +62,7 @@
                     <tbody>
                         @foreach ($proveedores as $proveedor)
                         <tr>                    
-                            <th>{{$proveedor->nombres}}</th>
+                            <th>{{$proveedor->nombre}}</th>
                             <th>{{$proveedor->telefono}}</th>
                             <th>{{$proveedor->correo}}</th>
                             <th>
