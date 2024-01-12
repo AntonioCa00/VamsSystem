@@ -87,7 +87,7 @@
                     <span>Orden de compra</span></a>
             </li>   
             
-            <li class="nav-item active">
+            {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('entradas')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Entradas</span></a>
@@ -102,7 +102,7 @@
                 <a class="nav-link" href="{{route('salidas')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>                
+            </li>                 --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -142,7 +142,7 @@
                         <li class="nav-item dropdown no-arrow">                            
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{session('loginNombre')}}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Usuario:</b>{{session('loginNombres')}} {{session('loginApepat')}} {{session('loginApemat')}}</span>
                                 <img class="img-profile rounded-circle"
                                      src="{{ asset('img/undraw_profile.svg') }}">
                             </a>

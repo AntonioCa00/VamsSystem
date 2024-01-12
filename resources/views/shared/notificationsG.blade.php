@@ -1,9 +1,14 @@
 @php
     $notifications = DB::table('logs')
-    ->join('requisiciones','requisiciones.id_requisicion','=','logs.requisicion_id')
-    ->where('requisiciones.usuario_id',session('loginId'))
-    ->orderBy('logs.created_at','desc')->limit(3)->get();
-    $count= DB::table('logs')->select(DB::raw('COUNT(*) as total'))->get();
+    ->orderBy('logs.created_at','desc')
+    ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
+    ->join('users','requisiciones.usuario_id','=','users.id')
+    ->where('users.departamento',session('departamento'))
+    ->limit(6)->get();
+    $count= DB::table('logs')->select(DB::raw('COUNT(*) as total'))
+    ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
+    ->join('users','requisiciones.usuario_id','=','users.id')
+    ->where('users.departamento',session('departamento'))->get();
 @endphp
 
 <!-- Nav Item - Alerts -->

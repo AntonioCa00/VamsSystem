@@ -66,7 +66,7 @@
                         @foreach ($encargados as $encargado)
                         <tr>
                             <th>{{$encargado->id}}</th>
-                            <th>{{$encargado->nombre}}</th>
+                            <th>{{$encargado->nombres}}</th>
                             <th>{{$encargado->telefono}}</th>
                             <th>{{$encargado->correo}}</th>
                             <th>{{$encargado->rol}}</th>
@@ -107,5 +107,8 @@
             </div>
         </div>
     </div>
+
 </div>
+<!-- /.container-fluid -->
+
 @endsection

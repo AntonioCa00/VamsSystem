@@ -11,7 +11,6 @@ class Requisiciones extends Model
     protected $fillable = [ 
     'id_requisicion',
         'usuario_id',        
-        'unidad_id',
         'pdf',
         'estado',
         'created_at',

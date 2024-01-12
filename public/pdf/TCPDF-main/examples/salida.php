@@ -33,7 +33,8 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-
+$pdf->Cell(0, 10, "Salida n° 123", 0, 1, 'L'); // Print the number "123" at the top left of the page
+// set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte

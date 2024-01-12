@@ -30,23 +30,64 @@
                     <thead>
                         <tr>
                             <th>Cantidad:</th>
+                            <th>Unidad:</th>
                             <th>Descripcion:</th>
-                            <th>Opciones:</th>  
+                            <th>Editar:</th>
+                            <th>Eliminar:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($datos as $index => $dato)
                         <tr>
                             <th>{{ $dato['cantidad'] }}</th>
-                            <th>{{ $dato['descripcion'] }}</th>
+                            <th>{{ $dato['unidad'] }}</th>
+                            <th>{{ $dato['descripcion'] }}</th>                            
+                            <th>
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $index }}">
+                                    Editar
+                                </button>                                
+                            </th>
                             <th>
                                 <form action="{{ route('eliminarElemento', ['index' => $index]) }}" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-primary">Eliminar</button>
-                                </form>                                
+                                </form>
                             </th>
                         </tr>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="editarModal{{ $index }}" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel{{ $index }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editarModalLabel{{ $index }}">Editar Elemento</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('editArray', ['index' => $index]) }}" method="post">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="editCantidad{{ $index }}">Cantidad:</label>
+                                                <input type="text" class="form-control" name="editCantidad" id="editCantidad{{ $index }}" value="{{ $dato['cantidad'] }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editCantidad{{ $index }}">Unidad de medida:</label>
+                                                <input type="text" class="form-control" name="editUnidad" id="editCantidad{{ $index }}" value="{{ $dato['unidad'] }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editCantidad{{ $index }}">Descripcion:</label>
+                                                <input type="text" class="form-control" name="editDescripcion" id="editCantidad{{ $index }}" value="{{ $dato['descripcion'] }}">
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -55,11 +96,15 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Cantidad:</label>
-                    <input name="Cantidad" type="number" class="form-control" placeholder="Cantidad de refacciones necesarias" required>
+                    <input name="Cantidad" type="number" class="form-control" placeholder="Cantidad necesaria del articulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Unidad de medidad:</label>
+                    <input name="Unidad" type="text" class="form-control" placeholder="Unidad de medida de articulo" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
-                    <input name="Descripcion" type="text" class="form-control" placeholder="Describe la solicitud" required>
+                    <input name="Descripcion" type="text" class="form-control" placeholder="Describe el articulo" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
@@ -71,15 +116,17 @@
                     <label for="exampleFormControlInput1">Notas:</label>
                     <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
                 </div>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
-                    <select name="unidad" class="form-control" required>
-                        <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
-                        @foreach ($unidades as $unidad)                            
-                            <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if(session('departamento')=== "Mantenimiento")
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
+                        <select name="unidad" class="form-control" required>
+                            <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
+                            @foreach ($unidades as $unidad)                            
+                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
                 <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
             </form>
         </div>
