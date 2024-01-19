@@ -131,8 +131,8 @@ class controladorDir extends Controller
     }
 
     public function tableSalidas(){
-        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
-        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
+        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombres','almacen.nombre','almacen.marca','almacen.modelo','salidas.created_at')
+        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
         ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->get();
@@ -170,7 +170,7 @@ class controladorDir extends Controller
     }
 
     public function tableSolicitud(){
-        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
+        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('requisiciones.created_at','desc')
@@ -179,7 +179,7 @@ class controladorDir extends Controller
     }
     
     public function cotizaciones($id){
-        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombre as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
@@ -376,7 +376,7 @@ class controladorDir extends Controller
         $completas = Requisiciones::where('estado','Entregado')->where('usuario_id',$idEncargado)->count();
         $Requisiciones = Requisiciones::where('usuario_id',$idEncargado)->get();
         $salidas = Salidas::select('salidas.id_salida','salidas.created_at','salidas.cantidad','requisiciones.unidad_id','almacen.nombre')
-        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
+        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
         ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')    
         ->where('requisiciones.usuario_id',$idEncargado)
         ->get();
@@ -432,7 +432,7 @@ class controladorDir extends Controller
             'rol' => session('rol'),
         ];
 
-        $compras = Orden_compras::select('orden_compras.id_orden','users.nombre','orden_compras.created_at','requisiciones.unidad_id','orden_compras.costo_total')
+        $compras = Orden_compras::select('orden_compras.id_orden','users.nombres','orden_compras.created_at','requisiciones.unidad_id','orden_compras.costo_total')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','orden_compras.admin_id','users.id')

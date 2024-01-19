@@ -2,9 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login;
-use App\Http\Controllers\controladorAdmin;
+use App\Http\Controllers\controladorGerenciaGen;
+use App\Http\Controllers\controladorCompras;
 use App\Http\Controllers\controladorSolic;
-use App\Http\Controllers\controladorDir;
+use App\Http\Controllers\controladorGtArea;
 use App\Http\Controllers\controladorAlm;
 
 /*
@@ -25,87 +26,108 @@ Route::middleware(['alreadyLoggedIn'])->group(function () {
     Route::get('/',[Login::class,'login'])->name('login');
 });
 Route::middleware(['authcheck'])->group(function () {
+
+    Route::middleware(['check.role:Gerencia General'])->group(function () {
+        //------------------------RUTAS DE LAS VISTAS------------------------//
+    
+        //RUTAS GERENCIA GENERAL
+        Route::get('inicio/GerenciaGeneral',[controladorGerenciaGen::class,'index'])->name('indexGerenciaGen');
+        Route::get('usuarios', [controladorGerenciaGen::class, 'tableEncargado'])->name('encargados');
+        Route::get('form-user',[controladorGerenciaGen::class,'createUser'])->name('createUser');
+        Route::get('edit-user/{id}', [controladorGerenciaGen::class, 'editUser'])->name('editUser');
+        Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
+        Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
+        Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
+
+        //------------------------RUTAS CON ACCIONES EN BD------------------------//
+
+        Route::post('insert-User',[controladorGerenciaGen::class,'insertUser'])->name('insertUser');
+        Route::put('update-user/{id}', [controladorGerenciaGen::class, 'updateUser'])->name('updateUser');
+        Route::put('delete-user/{id}',[controladorGerenciaGen::class,'deleteUser'])->name('deleteUser');
+        Route::delete('delete-solicitud/{id}',[controladorGerenciaGen::class,'deleteSolicitud'])->name('deleteSolicitudGG');
+    });
     
     Route::middleware(['check.role:Compras'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
     
         //RUTAS ADMIN-COMPRAS
-        Route::get('inicio/Compras', [controladorAdmin::class, 'index'])->name('index');
-        Route::get('graficas', [controladorAdmin::class, 'charts'])->name('charts');
-        Route::get('almacen/Compras', [controladorAdmin::class, 'tableRefaccion'])->name('refacciones');
-        Route::get('entradas/Compras',[controladorAdmin::class,'tableEntradas'])->name('entradas');
-        Route::get('salidas/Compras', [controladorAdmin::class, 'tableSalidas'])->name('salidas');
-        Route::get('ordenesC/Compras', [controladorAdmin::class, 'tableCompras'])->name('compras');
-        Route::get('solicitud/Compras', [controladorAdmin::class, 'tableSolicitud'])->name('solicitudes');
-        Route::get('proveedores/Compras',[controladorAdmin::class, 'tableProveedor'])->name('proveedores');
-        Route::get('unidades/Compras',[controladorAdmin::class,'tableUnidad'])->name('unidades');
-        Route::get('form-Unidad', [controladorAdmin::class, 'createUnidad'])->name('CreateUnidad');
-        Route::get('edit-Unidad/{id}', [controladorAdmin::class, 'editUnidad'])->name('editUnidad');
-        Route::get('activ-Unidad',[controladorAdmin::class,'activarUnidad'])->name('actUnui');
-        Route::get('form-proveedor',[controladorAdmin::class, 'createProveedor'])->name('createProveedor');
-        Route::get('edit-proveedor/{id}',[controladorAdmin::class,'editProveedor'])->name('editProveedor');
-        Route::get('form-compra',[controladorAdmin::class,'createCompra'])->name('createCompra');
-        Route::get('form/{id}/cotizar',[controladorAdmin::class,'createCotiza'])->name('createCotiza');
-        Route::get('ordenCompra/{id}',[controladorAdmin::class,'ordenCompra'])->name('ordenCompra');
-        Route::get('ordenesCompras',[controladorAdmin::class,'ordenesCompras'])->name('ordenesCompras');
-        Route::get('reportesAdm',[controladorAdmin::class,'reportes'])->name('reportesAdm');
+        Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index');
+        Route::get('graficas', [controladorCompras::class, 'charts'])->name('charts');
+        Route::get('almacen/Compras', [controladorCompras::class, 'tableRefaccion'])->name('refacciones');
+        Route::get('entradas/Compras',[controladorCompras::class,'tableEntradas'])->name('entradas');
+        Route::get('salidas/Compras', [controladorCompras::class, 'tableSalidas'])->name('salidas');
+        Route::get('ordenesC/Compras', [controladorCompras::class, 'tableCompras'])->name('compras');
+        Route::get('solicitud/Compras', [controladorCompras::class, 'tableSolicitud'])->name('solicitudes');
+        Route::get('proveedores/Compras',[controladorCompras::class, 'tableProveedor'])->name('proveedores');
+        Route::get('unidades/Compras',[controladorCompras::class,'tableUnidad'])->name('unidades');
+        Route::get('form-Unidad', [controladorCompras::class, 'createUnidad'])->name('CreateUnidad');
+        Route::get('edit-Unidad/{id}', [controladorCompras::class, 'editUnidad'])->name('editUnidad');
+        Route::get('activ-Unidad',[controladorCompras::class,'activarUnidad'])->name('actUnui');
+        Route::get('form-proveedor',[controladorCompras::class, 'createProveedor'])->name('createProveedor');
+        Route::get('edit-proveedor/{id}',[controladorCompras::class,'editProveedor'])->name('editProveedor');
+        Route::get('form-compra',[controladorCompras::class,'createCompra'])->name('createCompra');
+        Route::get('form/{id}/cotizar',[controladorCompras::class,'createCotiza'])->name('createCotiza');
+        Route::get('ordenCompra/{id}',[controladorCompras::class,'ordenCompra'])->name('ordenCompra');
+        Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
+        Route::get('reportesAdm',[controladorCompras::class,'reportes'])->name('reportesAdm');
         
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
-        //RUTAS COMPRAS
-        Route::post('insert-unidad',[controladorAdmin::class,'insertUnidad'])->name('insertUnidad');
-        Route::put('update-unidad/{id}',[controladorAdmin::class, 'updateUnidad'])->name('updateUnidad');
-        Route::put('delete-Unidad/{id}',[controladorAdmin::class,'deleteUnidad'])->name('deleteUnidad');
-        Route::put('baja-Unidad/{id}',[controladorAdmin::class,'bajaUnidad'])->name('bajaUnidad');
-        Route::put('activ-unidad/{id}',[controladorAdmin::class,'activateUnidad'])->name('activateUnidad');
-        Route::put('validar-soli/{id}',[controladorAdmin::class,'validarSoli'])->name('validSoli');
-        Route::post('insert-compra',[controladorAdmin::class,'insertCompra'])->name('insertCompra');
-        Route::post('insert-cotiza',[controladorAdmin::class,'insertCotiza'])->name('insertCotiza');
-        Route::delete('delete-cotiza/{id}',[controladorAdmin::class,'deleteCotiza'])->name('deleteCotiza');
-        Route::post('insert-proveedor',[controladorAdmin::class,'insertProveedor'])->name('insertProveedor');
-        Route::put('update-proveedor/{id}',[controladorAdmin::class,'updateProveedor'])->name('updateProveedor');
-        Route::put('delete-proveedor/{id}',[controladorAdmin::class,'deleteProveedor'])->name('deleteProveedor');
-        Route::put('deleteOrd/{id}/{sid}',[controladorAdmin::class,'deleteOrd'])->name('deleteOrd');
-        Route::post('array-ordenCom',[controladorAdmin::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
-        Route::delete('delete-arrayOrden/{index}',[controladorAdmin::class,'deleteArray'])->name('eliminarElemOrden');
-        Route::post('ordenCompra',[controladorAdmin::class,'insertOrdenCom'])->name('createOrdenCompra');
-        Route::post('reporteEncAdm',[controladorAdmin::class,'reporteEnc'])->name('reporteEncargadoAdm');
-        Route::post('reporteUniAdm',[controladorAdmin::class,'reporteUnid'])->name('reporteUnidadAdm');
-        Route::get('reporteGenAdm',[controladorAdmin::class,'reporteGen'])->name('reporteGeneralAdm');
+        //RUTAS ADMIN-COMPRAS
+        Route::post('insert-unidad',[controladorCompras::class,'insertUnidad'])->name('insertUnidad');
+        Route::put('update-unidad/{id}',[controladorCompras::class, 'updateUnidad'])->name('updateUnidad');
+        Route::put('delete-Unidad/{id}',[controladorCompras::class,'deleteUnidad'])->name('deleteUnidad');
+        Route::put('baja-Unidad/{id}',[controladorCompras::class,'bajaUnidad'])->name('bajaUnidad');
+        Route::put('activ-unidad/{id}',[controladorCompras::class,'activateUnidad'])->name('activateUnidad');
+        Route::put('validar-soli/{id}',[controladorCompras::class,'validarSoli'])->name('validSoli');
+        Route::post('insert-compra',[controladorCompras::class,'insertCompra'])->name('insertCompra');
+        Route::post('insert-cotiza',[controladorCompras::class,'insertCotiza'])->name('insertCotiza');
+        Route::delete('delete-cotiza/{id}',[controladorCompras::class,'deleteCotiza'])->name('deleteCotiza');
+        Route::post('insert-proveedor',[controladorCompras::class,'insertProveedor'])->name('insertProveedor');
+        Route::put('update-proveedor/{id}',[controladorCompras::class,'updateProveedor'])->name('updateProveedor');
+        Route::put('delete-proveedor/{id}',[controladorCompras::class,'deleteProveedor'])->name('deleteProveedor');
+        Route::put('deleteOrd/{id}/{sid}',[controladorCompras::class,'deleteOrd'])->name('deleteOrd');
+        Route::post('array-ordenCom',[controladorCompras::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
+        Route::delete('delete-arrayOrden/{index}',[controladorCompras::class,'deleteArray'])->name('eliminarElemOrden');
+        Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
+        Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
+        Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
+        Route::get('reporteGenAdm',[controladorCompras::class,'reporteGen'])->name('reporteGeneralAdm');
     });
     
-    Route::middleware(['check.role:Direccion'])->group(function () {
+    Route::middleware(['check.role:Gerente Area'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
     
-        //RUTAS DIRECCION   
-        Route::get('inicio/Direccion',[controladorDir::class,'index'])->name('indexDir');
-        Route::get('unidades/Direccion', [controladorDir::class, 'tableUnidad'])->name('unidadesDir');        
-        Route::get('entradas/Direccion',[controladorDir::class,'tableEntradas'])->name('entradasDir');
-        Route::get('salidas/Direccion', [controladorDir::class, 'tableSalidas'])->name('salidasDir');
-        Route::get('proveedores/Direccion',[controladorDir::class,'tableProveedores'])->name('proveedoresDir');
-        Route::get('edit-proveedorD/{id}',[controladorDir::class,'editProveedor'])->name('editProveedorDir');
-        Route::get('almacen/Direccion', [controladorDir::class, 'tableRefaccion'])->name('refaccionesDir');
-        Route::get('solicitudes/Direccion',[controladorDir::class,'tableSolicitud'])->name('solicitudesDir');
-        Route::get('usuarios/Direccion', [controladorDir::class, 'tableEncargado'])->name('encargados');
-        Route::get('form-user',[controladorDir::class,'createUser'])->name('createUser');
-        Route::get('edit-user/{id}', [controladorDir::class, 'editUser'])->name('editUser');
-        Route::get('cotizaciones/{id}',[controladorDir::class,'cotizaciones'])->name('verCotiza');
-        Route::get('reportes',[controladorDir::class,'reportes'])->name('reportes');
+        //RUTAS GERENTES DE AREA  
+        Route::get('inicio/GtArea',[controladorGtArea::class,'index'])->name('indexDir');
+        Route::get('unidades/GtArea', [controladorGtArea::class, 'tableUnidad'])->name('unidadesDir');        
+        Route::get('entradas/GtArea',[controladorGtArea::class,'tableEntradas'])->name('entradasDir');
+        Route::get('salidas/GtArea', [controladorGtArea::class, 'tableSalidas'])->name('salidasDir');
+        Route::get('proveedores/GtArea',[controladorGtArea::class,'tableProveedores'])->name('proveedoresDir');
+        Route::get('edit-proveedorD/{id}',[controladorGtArea::class,'editProveedor'])->name('editProveedorDir');
+        Route::get('almacen/GtArea', [controladorGtArea::class, 'tableRefaccion'])->name('refaccionesDir');
+        Route::get('solicitudes/GtArea',[controladorGtArea::class,'tableSolicitud'])->name('solicitudesDir');
+        Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
+        Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
+        Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
+        Route::get('reportes',[controladorGtArea::class,'reportes'])->name('reportes');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
-        //RUTAS DIRECCION
-        Route::put('update-proveedorD/{id}',[controladorDir::class,'updateProveedor'])->name('updateProveedorDir');
-        Route::put('delete-proveedorD/{id}',[controladorDir::class,'deleteProveedor'])->name('deleteProveedorDir');
-        Route::post('insert-User',[controladorDir::class,'insertUser'])->name('insertUser');
-        Route::put('update-user/{id}', [controladorDir::class, 'updateUser'])->name('updateUser');
-        Route::put('delete-user/{id}',[controladorDir::class,'deleteUser'])->name('deleteUser');
-        Route::put('deleteReq/{id}',[ControladorDir::class, 'deleteReq'])->name('deleteReq');
-        Route::put('validar/{id}',[controladorDir::class,'validarRequisicion'])->name('validar');
-        Route::put('select-cotiza/{id}/{sid}',[controladorDir::class,'selectCotiza'])->name('selectCotiza');    
-        Route::post('reporteEnc',[controladorDir::class,'reporteEnc'])->name('reporteEncargado');
-        Route::post('reporteUni',[controladorDir::class,'reporteUnid'])->name('reporteUnidad');
-        Route::get('reporteGen',[controladorDir::class,'reporteGen'])->name('reporteGeneral');
+        //RUTAS GERENTES DE AREA
+        Route::put('update-proveedorD/{id}',[controladorGtArea::class,'updateProveedor'])->name('updateProveedorDir');
+        Route::put('delete-proveedorD/{id}',[controladorGtArea::class,'deleteProveedor'])->name('deleteProveedorDir');        
+        Route::put('deleteReq/{id}',[controladorGtArea::class, 'deleteReq'])->name('deleteReq');
+        Route::put('validar/{id}',[controladorGtArea::class,'validarRequisicion'])->name('validar');
+        Route::put('select-cotiza/{id}/{sid}',[controladorGtArea::class,'selectCotiza'])->name('selectCotiza');    
+        Route::post('reporteEnc',[controladorGtArea::class,'reporteEnc'])->name('reporteEncargado');
+        Route::post('reporteUni',[controladorGtArea::class,'reporteUnid'])->name('reporteUnidad');
+        Route::get('reporteGen',[controladorGtArea::class,'reporteGen'])->name('reporteGeneral');
+        Route::put('editArticulo/{id}',[controladorGtArea::class,'editarArt'])->name('editarArt');
+        Route::delete('rechazarArticulo/{id}',[controladorGtArea::class,'rechazaArt'])->name('rechazaArt');
+        Route::put('aprobarArt/{rid}',[controladorGtArea::class,'aprobar'])->name('aprobar');
+        Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
+        Route::delete('delete-cotizacion/{id}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');
     });
     
     Route::middleware(['check.role:Almacen'])->group(function () {
@@ -154,6 +176,7 @@ Route::middleware(['authcheck'])->group(function () {
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
         Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
+        Route::post('edit-array/{index}',[controladorSolic::class,'editArray'])->name('editArray');
         Route::delete('delete-array/{index}',[controladorSolic::class,'deleteArray'])->name('eliminarElemento');
         Route::post('solicitud',[controladorSolic::class,'insertSolicitud'])->name('insertSolicitud');
         Route::delete('delete-solici/{id}',[controladorSolic::class,'deleteSolicitud'])->name('deleteSolicitud');

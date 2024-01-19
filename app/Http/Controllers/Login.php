@@ -14,22 +14,26 @@ class Login extends Controller
     }
 
     public function loginUser (Request $req){
-        $user = User::where('nombre', '=', $req->nombre)->first();
+        $user = User::where('nombres', '=', $req->nombre)->first();
         if ($user){
             if($user->password == $req->contrasena){
 
                 $req->session()->put('loginId',$user->id);
-                $req->session()->put('loginNombre',$user->nombre);
+                $req->session()->put('loginNombres',$user->nombres);
+                $req->session()->put('loginApepat',$user->apellidoP);
+                $req->session()->put('loginApemat',$user->apellidoM);
                 $req->session()->put('rol', $user->rol);
+                $req->session()->put('departamento', $user->departamento);
 
                 if($user->rol == "Compras"){
                     return redirect('inicio/Compras')->with('entra','entra');
-                } elseif ($user->rol == "Direccion") {
-                    return redirect('inicio/Direccion')->with('entra','entra');
+                }elseif ($user->rol == "Gerencia General"){
+                    return redirect('inicio/GerenciaGeneral')->with('entra','entra');            
+                }elseif ($user->rol == "Gerente Area") {
+                    return redirect('inicio/GtArea')->with('entra','entra');
                 } elseif ($user->rol == "Almacen"){
                     return redirect('inicio/Almacen')->with('entra','entra');
-                } else{
-                    $req->session()->put('dpto', $user->departamento);
+                } else{                    
                     return redirect('inicio')->with('entra','entra');
                 }
             } else{

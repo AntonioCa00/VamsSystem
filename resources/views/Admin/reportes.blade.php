@@ -45,7 +45,7 @@
                                     <select name="encargado" class="form-control" required>
                                         <option selected disabled value="">Selecciona el encargado:</option>
                                         @foreach ($encargados as $encargado)                            
-                                            <option value="{{$encargado->id}}">{{$encargado->nombre}}</option>
+                                            <option value="{{$encargado->id}}">{{$encargado->nombres}}</option>
                                         @endforeach
                                     </select>
                                 </div>

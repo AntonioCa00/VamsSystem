@@ -30,7 +30,7 @@ class controladorAlm extends Controller
     }
 
     public function requisiciones(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','users.nombre','requisiciones.unidad_id','requisiciones.estado','requisiciones.pdf as reqPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'requisiciones.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.estado','requisiciones.pdf as reqPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'requisiciones.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -266,7 +266,7 @@ class controladorAlm extends Controller
     }
 
     public function salidas(){
-        $salidas = Requisiciones::select('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
+        $salidas = Requisiciones::select('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->join('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
@@ -275,7 +275,7 @@ class controladorAlm extends Controller
         ->orWhere('requisiciones.estado','Entrada Pendiente')
         ->orWhere('requisiciones.estado','Salida Pendiente')
         ->orWhere('requisiciones.estado','Entrada/Salida Pendiente')
-        ->groupBy('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at')
+        ->groupBy('requisiciones.id_requisicion', 'orden_compras.id_orden', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at')
         ->get();
         return view('Almacen.salidas',compact('salidas'));
     }

@@ -11,8 +11,8 @@ class Salidas extends Model
     protected $fillable = [
         'id_salida',
         'requisicion_id',
-        'cantidad',
         'usuario_id',
+        'cantidad',        
         'refaccion_id',
         'created_at',
         'updated_at'

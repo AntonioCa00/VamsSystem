@@ -10,7 +10,9 @@ class User extends Model
 
     protected $fillable = [
         'id',
-        'nombre',
+        'nombres',
+        'apellidoP',
+        'apellidoM',
         'telefono',
         'correo',
         'password',

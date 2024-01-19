@@ -13,7 +13,6 @@ use App\Models\Proveedores;
 use App\Models\Requisiciones;   
 use App\Models\Cotizaciones;
 use App\Models\Orden_Compras;
-use App\Models\Logs;
 use DB;
 use Carbon\Carbon;
 
@@ -221,8 +220,8 @@ class controladorAdmin extends Controller
     }
 
     public function tableSalidas(){
-        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombre','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
-        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
+        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombres','almacen.nombre','almacen.marca','almacen.modelo','salidas.created_at')
+        ->join('almacen','salidas.refaccion_id','=','almacen.id_refaccion')
         ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->get();
@@ -235,7 +234,7 @@ class controladorAdmin extends Controller
     }
 
     public function tableSolicitud(){
-        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombre', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
+        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->where(function($query) {
             $query->where('requisiciones.estado', '=', 'Aprobado')
@@ -525,7 +524,7 @@ class controladorAdmin extends Controller
     }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombre','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -554,106 +553,6 @@ class controladorAdmin extends Controller
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
-    }
 
-    public function reportes() {
-        $encargados = User::where('rol','General')->where('estatus','1')
-        ->orderBy('nombre','asc')->get();
-        $unidades = Unidades::where('estatus','1')
-        ->orderBy('id_unidad','asc')->get();
-        return view('Admin.reportes',compact('encargados','unidades'));
-    }
-
-    public function reporteEnc(Request $req){
-
-        $idEncargado = $req->encargado;
-        
-        $encargado = User::where('id',$idEncargado)->first();
-        $solicitudes = Requisiciones::where('usuario_id',$idEncargado)->count();
-        $completas = Requisiciones::where('estado','Entregado')->where('usuario_id',$idEncargado)->count();
-        $Requisiciones = Requisiciones::where('usuario_id',$idEncargado)->get();
-        $salidas = Salidas::select('salidas.id_salida','salidas.created_at','salidas.cantidad','requisiciones.unidad_id','almacen.descripcion')
-        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
-        ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')    
-        ->where('requisiciones.usuario_id',$idEncargado)
-        ->get();
-
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombre' => session('loginNombre'),
-            'rol' => session('rol'),
-        ];
-
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
-
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
-        ob_start();
-        include(public_path('/pdf/TCPDF-main/examples/Reporte_encargado.php'));
-        $pdfContent = ob_get_clean();
-        header('Content-Type: application/pdf');
-        echo $pdfContent;
-    }
-
-    public function reporteUnid(Request $req){
-
-        $idUnidad = $req->unidad;
-
-        $unidad = Unidades::where('id_unidad',$idUnidad)->first();
-
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombre' => session('loginNombre'),
-            'rol' => session('rol'),
-        ];
-
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
-
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
-        ob_start();
-        include(public_path('/pdf/TCPDF-main/examples/Reporte_por_unidad.php'));
-        $pdfContent = ob_get_clean();
-        header('Content-Type: application/pdf');
-        echo $pdfContent;
-    }
-
-    public function reporteGen(){
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombre' => session('loginNombre'),
-            'rol' => session('rol'),
-        ];
-
-        $compras = Orden_compras::select('orden_compras.id_orden','users.nombre','orden_compras.created_at','requisiciones.unidad_id','orden_compras.costo_total')
-        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-        ->join('users','orden_compras.admin_id','users.id')
-        ->get();
-        $unidades = Unidades::where('estatus','1')->get();
-        $usuarios = User::where('estatus','1')->get();
-        $refacciones = Almacen::where('estatus','1')->get();
-
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombre' => session('loginNombre'),
-            'rol' => session('rol'),
-        ];
-
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
-
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
-        ob_start();
-        include(public_path('/pdf/TCPDF-main/examples/Reporte_General2.php'));
-        $pdfContent = ob_get_clean();
-        header('Content-Type: application/pdf');
-        echo $pdfContent;
     }
 }

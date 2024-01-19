@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-
+    <!-- PLANTILLA DE GERENTE DE AREA -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -38,11 +38,11 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('index')}}">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('indexDir')}}">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">VAMS <sup>DIRECCION</sup></div>
+                <div class="sidebar-brand-text mx-3">VAMS <sup>{{session('departamento')}}</sup></div>
             </a>
 
             <!-- Divider -->
@@ -76,11 +76,11 @@
                     <span>Unidades</span></a>
             </li>
 
-            <li class="nav-item active">
+            {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('refaccionesDir')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Almacen</span></a>
-            </li>
+            </li> --}}
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('proveedoresDir')}}">
@@ -88,7 +88,7 @@
                     <span>Proveedores</span></a>
             </li>
 
-            <li class="nav-item active">
+            {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('entradasDir')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Entradas</span></a>
@@ -98,13 +98,7 @@
                 <a class="nav-link" href="{{route('salidasDir')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('encargados')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Usuarios</span></a>
-            </li>         
+            </li> --}}                    
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -136,7 +130,7 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
-                        @include('shared.notifications')
+                        @include('shared.notificationsG')
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -144,7 +138,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{session('loginNombre')}}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Usuario:</b>{{session('loginNombres')}} {{session('loginApepat')}} {{session('loginApemat')}}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Departamento:</b>{{session('departamento')}}</span>
                                 <img class="img-profile rounded-circle"
                                 src="{{ asset('img/usuarioD.png')}}">
                             </a>
