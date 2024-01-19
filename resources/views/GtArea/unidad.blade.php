@@ -77,12 +77,12 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_unidad:</th>
+                            <th>Placas unidad:</th>
                             <th>Tipo:</th>
                             <th>Estado:</th>
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
-                            <th>Kilometraje:</th>
+                            <th>Modelo:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,7 +93,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->kilometraje}} kms</th>                        
+                            <th>{{$unidad->modelo}}</th>                        
                         </tr>
                         @endforeach
                     </tbody>

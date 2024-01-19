@@ -83,7 +83,7 @@
                             <th>Estado:</th>
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
-                            <th>Kilometraje:</th>
+                            <th>Modelo:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>

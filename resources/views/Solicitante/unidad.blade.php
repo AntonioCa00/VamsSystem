@@ -16,14 +16,14 @@
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
-                        <tr>
-                            <th>ID_unidad</th>
-                            <th>Tipo</th>
-                            <th>Estado</th>
-                            <th>Año Unidad</th>
-                            <th>Marca</th>
-                            <th>Opciones:</th>
-                        </tr>
+                    <tr>    
+                        <th>Placas unidad:</th>
+                        <th>Tipo:</th>
+                        <th>Estado:</th>
+                        <th>Año Unidad:</th>
+                        <th>Marca:</th>
+                        <th>Modelo:</th>
+                    </tr>
                     </thead>
                     <tbody>
                         @foreach ($unidades as $unidad)
@@ -33,6 +33,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
+                            <th>{{$unidad->modelo}}</th>
                             <th>
                                 <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
                                 <a href="" class="btn btn-primary">Eliminar</a>

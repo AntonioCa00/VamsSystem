@@ -104,7 +104,7 @@ $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(160, 5, 'Notas', 1, 1, 'C', 1);
 // notas que agrega el solicitante
 
-$pdf->Cell(160, 5, $req->comentarios, 1, 1 ,'C', 0 );
+$pdf->Cell(160, 5, $notas, 1, 1 ,'C', 0 );
 
 
 $pdf->SetY(260); // Ajusta la posición Y según tus necesidades
@@ -131,7 +131,7 @@ $pdf->Cell(0, 10, '              Solicita                                       
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
-$nombreArchivo = 'requisicion_' . $numeroUnico . '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+$nombreArchivo = 'requisicion_' .$datos['id_requisicion']. '.pdf';
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

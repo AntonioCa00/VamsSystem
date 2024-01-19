@@ -29,6 +29,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>No. cotizacion:</th>
                             <th>Encargado que cotizó:</th>
                             <th>Requisición:</th>                            
                             <th>Cotización:</th>
@@ -37,6 +38,7 @@
                     </thead>
                     <tbody>
                         <tr>
+                        <th class="text-center">{{ $loop->iteration }}</th>
                             <th>{{$validada->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($validada->reqPDF) }}" target="_blank">

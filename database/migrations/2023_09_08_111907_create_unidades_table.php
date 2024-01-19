@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('unidades', function (Blueprint $table) {
             $table->string('id_unidad')->primary();
+            $table->string('numero_serie');
             $table->string('tipo');
             $table->string('estado');
             $table->string('anio_unidad');

@@ -49,8 +49,8 @@
                     <input name="marca" value="{{$unidad->marca}}" type="text" class="form-control" placeholder="Marca de la unidad" required>
                 </div>
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Kilometraje:</label>
-                    <input name="kms" value="{{$unidad->kilometraje}}" type="text" class="form-control" placeholder="Marca de la unidad" required>
+                    <label for="exampleFormControlInput1">Modelo:</label>
+                    <input name="modelo" value="{{$unidad->modelo}}" type="text" class="form-control" placeholder="Modelo de la unidad" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Editar unidad</button>
             </form>

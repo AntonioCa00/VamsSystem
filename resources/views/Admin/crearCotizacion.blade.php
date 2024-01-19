@@ -41,6 +41,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr class="text-center">
+                            <th>No. cotizacion:</th>
                             <th>Requisicion:</th>
                             <th>Archivo:</th>
                             <th>Opciones:</th>
@@ -49,6 +50,7 @@
                     <tbody>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr class="text-center">
+                        <th class="text-center">{{ $loop->iteration }}</th>
                             <th>
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

@@ -2,24 +2,12 @@
 
 @section('contenido')
 
-@if(session()->has('cotizacion'))
+@if(session()->has('eliminado'))
     <script type="text/javascript">          
         Swal.fire({
         position: 'center',
         icon: 'success',
-        title: 'Cotizacion realizada',
-        showConfirmButton: false,
-        timer: 1000
-        })
-    </script> 
-@endif
-
-@if(session()->has('eliminada'))
-    <script type="text/javascript">          
-        Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'solicitud eliminada',
+        title: 'Solicitud eliminada',
         showConfirmButton: false,
         timer: 1000
         })
@@ -47,6 +35,7 @@
                             <th>Estado:</th>
                             <th>Unidad:</th>
                             <th>Requisicion:</th>
+                            <th>Cotizaciones:</th>
                             <th>Orden Compra:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -68,11 +57,20 @@
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
-                            <th>
+                            @if ($solicitudes->estado === "Cotizado")
+                                <th>
+                                    <a href="{{route('verCotizaciones',$solicitudes->id_requisicion)}}" class="btn btn-primary">Consultar</a>
+                                </th>
+                            @else 
+                                <th>Sin cotizar</th>
+                            @endif
+                            @if (empty($solicitudes->ordenCompra))
+                                <th>No generada aún</th>
+                            @else
                                 <a href="{{ asset($solicitudes->ordenCompra) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
-                            </th>
+                            @endif
                             <th>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
                                     Eliminar
@@ -91,7 +89,7 @@
                                             <div class="modal-body">Selecciona confirmar para eliminar esta requisición</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteSolicitud',$solicitudes->id_requisicion)}}" method="POST">
+                                                <form action="{{route('deleteSolicitudGG',$solicitudes->id_requisicion)}}" method="POST">
                                                     @csrf
                                                     {!!method_field('DELETE')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>

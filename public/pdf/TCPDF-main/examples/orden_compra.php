@@ -170,7 +170,7 @@ $pdf->Cell(0, 10, '              Gerente de area                                
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
-$nombreArchivo = 'ordenCompra_' . $numeroUnico . '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
+$nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

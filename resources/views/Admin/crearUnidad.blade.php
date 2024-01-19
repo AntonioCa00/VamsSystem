@@ -45,11 +45,11 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
-                    <input name="marca" type="text" class="form-control"     placeholder="Marca de la unidad">
+                    <input name="marca" type="text" class="form-control" placeholder="Marca de la unidad">
                 </div>
                 <div class="form-group">
-                    <label for="exampleFormControlInput1">Kilometraje:</label>
-                    <input name="kms" type="text" class="form-control"     placeholder="Kilometraje actual de la unidad">
+                    <label for="exampleFormControlInput1">Modelo:</label>
+                    <input name="modelo" type="text" class="form-control" placeholder="Modelo especifico de la unidad">
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar unidad</button>
             </form>

@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\Orden_compras;
 use App\Models\Requisiciones;
 use App\Models\Unidades;
+use App\Models\Cotizaciones;
 Use Carbon\Carbon;
 use DB;
 
@@ -106,10 +107,11 @@ class controladorGerenciaGen extends Controller
     public function tableSolicitud(){
         $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado','orden_compras.pdf as ordenCompra', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->join('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
-        ->join('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->leftJoin('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->leftJoin('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->orderBy('requisiciones.created_at','desc')
         ->get();
+
         return view('Gerencia General.solicitudes',compact('solicitudes'));
     }
 
@@ -202,9 +204,28 @@ class controladorGerenciaGen extends Controller
     }
     
     public function unidadesGerGen(){
-        $unidades = Unidades::where('estatus','1')->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+        $unidades = Unidades::where('estatus','1')
+        ->where('id_unidad','!=','1')
+        ->where('estado','Activo')
+        ->orderBy('id_unidad','asc')->get();
         
         return view('Gerencia General.unidad',compact('unidades'));
+    }
+
+    public function deleteSolicitud($id){
+        Requisiciones::where('id_requisicion',$id)->delete();
+
+        return back()->with('eliminado','eliminado');  
+    }
+
+    //Funcion para poder visualizar las cotizaciones por requisicion
+    public function cotizaciones($id){
+        $cotizaciones = Cotizaciones::select('requisiciones.id_requisicion','cotizaciones.id_cotizacion','requisiciones.PDF','cotizaciones.PDF as cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->where('requisicion_id',$id)
+        ->get();
+
+        return view('Gerencia General.cotizaciones',compact('cotizaciones'));
     }
 
     public function generateRandomPassword() {

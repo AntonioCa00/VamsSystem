@@ -4,7 +4,7 @@
     ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
     ->join('users','requisiciones.usuario_id','=','users.id')
     ->where('users.departamento',session('departamento'))
-    ->limit(6)->get();
+    ->limit(5)->get();
     $count= DB::table('logs')->select(DB::raw('COUNT(*) as total'))
     ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
     ->join('users','requisiciones.usuario_id','=','users.id')

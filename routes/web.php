@@ -37,12 +37,14 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('edit-user/{id}', [controladorGerenciaGen::class, 'editUser'])->name('editUser');
         Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
+        Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
         Route::post('insert-User',[controladorGerenciaGen::class,'insertUser'])->name('insertUser');
         Route::put('update-user/{id}', [controladorGerenciaGen::class, 'updateUser'])->name('updateUser');
         Route::put('delete-user/{id}',[controladorGerenciaGen::class,'deleteUser'])->name('deleteUser');
+        Route::delete('delete-solicitud/{id}',[controladorGerenciaGen::class,'deleteSolicitud'])->name('deleteSolicitudGG');
     });
     
     Route::middleware(['check.role:Compras'])->group(function () {

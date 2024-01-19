@@ -37,7 +37,9 @@ class controladorSolic extends Controller
 
     public function createSolicitud(){
         $datos = session()->get('datos', []);
-        $unidades = Unidades::where('estado','Activo')->where('estatus','1')->get();
+        $unidades = Unidades::where('estado','Activo')
+        ->where('estatus','1')
+        ->get();
         return view('Solicitante.crearSolicitud',compact('unidades','datos'));
     }
 
@@ -128,8 +130,7 @@ class controladorSolic extends Controller
             file_put_contents($rutaArchivo, $datosSerializados);
 
             // Se genera el nombre y ruta para guardar PDF
-            $numeroUnico = time(); // Genera un timestamp único
-            $nombreArchivo = 'requisicion_' . $numeroUnico . '.pdf';
+            $nombreArchivo = 'requisicion_' . $idcorresponde . '.pdf';
             $rutaDescargas = 'requisiciones/' . $nombreArchivo;
 
             // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
@@ -180,7 +181,7 @@ class controladorSolic extends Controller
     }
 
     public function deleteSolicitud($id){
-        requisiciones::where('id_requisicion',$id)->delete();
+        Requisiciones::where('id_requisicion',$id)->delete();
 
         return back()->with('eliminado','eliminado');  
     }
