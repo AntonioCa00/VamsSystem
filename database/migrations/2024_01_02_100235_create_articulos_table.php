@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('unidad');
             $table->string('descripcion');
             $table->float('precio_unitario',10,2)->nullable();
+            $table->string('unidad_id')->nullable();
+            $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
             $table->timestamps();
         });
     }
