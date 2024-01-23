@@ -29,7 +29,6 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>No. cotizacion:</th>
                             <th>Encargado que cotizó:</th>
                             <th>Requisición:</th>                            
                             <th>Cotización:</th>
@@ -37,8 +36,11 @@
                     </thead>
                     <tbody>
                         <tr>
+<<<<<<< Updated upstream
                             @foreach ($validadas as $validada)
                         <th class="text-center">{{ $loop->iteration }}</th>
+=======
+>>>>>>> Stashed changes
                             <th>{{$validada->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($validada->reqPDF) }}" target="_blank">
@@ -117,7 +119,11 @@
                         </tr>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr>
+<<<<<<< Updated upstream
                             <th class="text-center">{{ $loop->iteration }}</th>
+=======
+                        <th class="text-center">{{ $loop->iteration }}</th> 
+>>>>>>> Stashed changes
                             <th>{{$cotizacion->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">

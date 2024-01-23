@@ -57,7 +57,7 @@
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
-                            @if ($solicitudes->estado === "Cotizado")
+                            @if ($solicitudes->estado === "Cotizado" || $solicitudes->estado === "Pre Validado"|| $solicitudes->estado === "Validado" || $solicitudes->estado === "Pre Validado")
                                 <th>
                                     <a href="{{route('verCotizaciones',$solicitudes->id_requisicion)}}" class="btn btn-primary">Consultar</a>
                                 </th>
