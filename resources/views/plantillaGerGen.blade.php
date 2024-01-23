@@ -71,12 +71,6 @@
             </li>
 
             <li class="nav-item active">
-                <a class="nav-link" href="{{route('ordenesComprasGerGen')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Ordenes de compra</span></a>
-            </li>   
-
-            <li class="nav-item active">
                 <a class="nav-link" href="{{route('unidadesGerGen')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>

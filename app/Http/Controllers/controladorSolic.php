@@ -17,8 +17,8 @@ use Session;
 class controladorSolic extends Controller
 {
     public function index(){
-        $completas = Requisiciones::where('estado', 'Comprado')->where('usuario_id',session('loginId'))->count();
-        $pendiente = Requisiciones::where('estado','!=', 'Comprado')->where('usuario_id',session('loginId'))->count();
+        $completas = Requisiciones::where('estado', 'Entregado')->where('usuario_id',session('loginId'))->count();
+        $pendiente = Requisiciones::where('estado','!=', 'Entregado')->where('usuario_id',session('loginId'))->count();
         return view("Solicitante.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas]);
@@ -29,9 +29,8 @@ class controladorSolic extends Controller
         $solicitudes = Requisiciones::where('requisiciones.usuario_id',session('loginId'))
         ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
         ->leftJoin('users','users.id','=','comentarios.usuario_id')
-        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
+        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol','comentarios.created_at as fechaCom')
         ->orderBy('requisiciones.created_at','desc')
-        ->groupBY('requisiciones.id_requisicion')
         ->get();
         return view('Solicitante.requisiciones',compact('solicitudes'));
     }
@@ -47,36 +46,17 @@ class controladorSolic extends Controller
     public function ArraySolicitud(Request $req){
         $datos = session()->get('datos', []);
 
-        if(session('departamento')==="Mantenimiento"){
-            $cantidad = $req->input('Cantidad');
-            $unidadM = $req->input('UnidadM');
-            $descripcion = $req->input('Descripcion');
-            $unidad = $req->input('unidad');
+        $cantidad = $req->input('Cantidad');
+        $unidad = $req->input('Unidad');
+        $descripcion = $req->input('Descripcion');
 
-            $notas = $req->input('Notas');
+        $notas = $req->input('Notas');
 
-            $datosUnidad = Unidades::where('id_unidad',$unidad)->first();
-
-            $datos[] = [
-                'cantidad' => $cantidad,
-                'unidadM'=>$unidadM,
-                'descripcion' => $descripcion,
-                'unidad'=>$unidad,
-                'descUnidad'=>$datosUnidad->marca.' '.$datosUnidad->modelo. ' '.$datosUnidad->anio_unidad
-            ];
-        } else{
-            $cantidad = $req->input('Cantidad');
-            $unidad = $req->input('UnidadM');
-            $descripcion = $req->input('Descripcion');
-
-            $notas = $req->input('Notas');
-
-            $datos[] = [
-                'cantidad' => $cantidad,
-                'unidadM'=>$unidad,
-                'descripcion' => $descripcion,
-            ];
-        }
+        $datos[] = [
+            'cantidad' => $cantidad,
+            'unidad'=>$unidad,
+            'descripcion' => $descripcion,
+        ];
 
         session()->put('datos', $datos);
 
@@ -86,29 +66,15 @@ class controladorSolic extends Controller
     public function editArray(Request $req, $index){
         $datos = session()->get('datos', []);
     
-        if(session('departamento')==="Mantenimiento"){
-            $cantidadEditada = $req->input('editCantidad');
-            $unidadMEditada = $req->input('editUnidadM');
-            $descripcionEditada = $req->input('editDescripcion');
-            $unidadEditada = $req->input('editUnidad');
-        
-            if (isset($datos[$index])) {
-                $datos[$index]['cantidad'] = $cantidadEditada;
-                $datos[$index]['unidadM'] = $unidadMEditada;
-                $datos[$index]['descripcion'] = $descripcionEditada;
-                $datos[$index]['unidad'] = $unidadEditada;
-            }
-        }else{
-            $cantidadEditada = $req->input('editCantidad');
-            $unidadEditada = $req->input('editUnidadM');
-            $descripcionEditada = $req->input('editDescripcion');
-        
-            if (isset($datos[$index])) {
-                $datos[$index]['cantidad'] = $cantidadEditada;
-                $datos[$index]['unidadM'] = $unidadEditada;
-                $datos[$index]['descripcion'] = $descripcionEditada;
-            }
-        }   
+        $cantidadEditada = $req->input('editCantidad');
+        $unidadEditada = $req->input('editUnidad');
+        $descripcionEditada = $req->input('editDescripcion');
+    
+        if (isset($datos[$index])) {
+            $datos[$index]['cantidad'] = $cantidadEditada;
+            $datos[$index]['unidad'] = $unidadEditada;
+            $datos[$index]['descripcion'] = $descripcionEditada;
+        }
     
         session()->put('datos', $datos);
     
@@ -152,6 +118,12 @@ class controladorSolic extends Controller
                 $idcorresponde = $ultimarequisicion->id_requisicion + 1;
             }
 
+            if(session('departamento') === "Mantenimiento"){
+                $unidad = Unidades::where('id_unidad',$req->input('unidad'))->first();
+            }else{
+                $unidad = null;
+            }
+
             // Serializar los datos del empleado y almacenarlos en un archivo para pasarlos al PDF
             $datosSerializados = serialize($datosEmpleado);
             $rutaArchivo = storage_path('app/datos_empleado.txt');
@@ -166,43 +138,40 @@ class controladorSolic extends Controller
             include(public_path('/pdf/TCPDF-main/examples/Requisicion.php'));
             ob_end_clean();    
             
-            Requisiciones::create([
-                "usuario_id"=>session('loginId'),
-                "pdf" => $rutaDescargas,
-                "estado"=> "Solicitado",
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now(),
-            ]);    
+            if(session('departamento') === "Mantenimiento"){
+                DB::table('requisiciones')->insert([
+                    "usuario_id"=>session('loginId'),
+                    "unidad_id" => $req->input('unidad'),
+                    "pdf" => $rutaDescargas,                    
+                    "estado"=> "Solicitado",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now(),
+                ]);
+            } else{
+                Requisiciones::create([
+                    "usuario_id"=>session('loginId'),
+                    "pdf" => $rutaDescargas,
+                    "estado"=> "Solicitado",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now(),
+                ]);
+            }
 
             $ultimaReq = Requisiciones::where('usuario_id',session('loginId'))
             ->orderBy('created_at','desc')
             ->limit(1)
             ->first();
 
-            if (session('departamento') === 'Mantenimiento'){
-                foreach ($datosRequisicion as $dato) {
-                    DB::table('articulos')->insert([
-                        'requisicion_id' => $ultimaReq->id_requisicion,
-                        'cantidad' => $dato['cantidad'],
-                        'unidad' => $dato['unidadM'],
-                        'descripcion' => $dato['descripcion'],
-                        'unidad_id'=>$dato['unidad'],
-                        'created_at'=>Carbon::now(),
-                        'updated_at'=>Carbon::now(),
-                    ]);
-                }
-            } else {
-                //Una vez creada la requisicion, agregar los articulos a la tabla, estos ya serán los definitivos        
-                foreach ($datosRequisicion as $dato) {
-                    Articulos::create([
-                        'requisicion_id' => $ultimaReq->id_requisicion,
-                        'cantidad' => $dato['cantidad'],
-                        'unidad' => $dato['unidadM'],
-                        'descripcion' => $dato['descripcion'],
-                        'created_at'=>Carbon::now(),
-                        'updated_at'=>Carbon::now(),
-                    ]);
-                }
+            //Una vez creada la requisicion, agregar los articulos a la tabla, estos ya serán los definitivos        
+            foreach ($datosRequisicion as $dato) {
+                Articulos::create([
+                    'requisicion_id' => $ultimaReq->id_requisicion,
+                    'cantidad' => $dato['cantidad'],
+                    'unidad' => $dato['unidad'],
+                    'descripcion' => $dato['descripcion'],
+                    'created_at'=>Carbon::now(),
+                    'updated_at'=>Carbon::now(),
+                ]);
             }
 
             session()->forget('datos');

@@ -78,34 +78,30 @@ $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(15, 10, 'Cantidad', 1, 0, 'C', 1);
-$pdf->Cell(15, 10, 'Medida', 1, 0, 'C', 1);
-$pdf->Cell(75, 10, 'Descripción', 1, 0, 'C', 1);
-$pdf->Cell(25, 10, 'Precio_unitario', 1, 0, 'C', 1);
-$pdf->Cell(25, 10, 'Precio IVA', 1, 0, 'C', 1);
-$pdf->Cell(25, 10, 'Monto total', 1, 1, 'C', 1);
+$pdf->Cell(20, 10, 'cantidad', 1, 0, 'C', 1);
+$pdf->Cell(30, 10, 'Unidad medida', 1, 0, 'C', 1);
+$pdf->Cell(70, 10, 'Descripción', 1, 0, 'C', 1);
+$pdf->Cell(30, 10, 'Precio_unitario', 1, 0, 'C', 1);
+$pdf->Cell(30, 10, 'Monto_total', 1, 1, 'C', 1);
 
-// Iterar sobre los datos de gastos filtrados y agregar filas a la tabla
-foreach ($articulosFiltrados as &$articulo) {
-    $montoTotal = $articulo['cantidad'] * $articulo['precio_unitarioIVA'];
+// Iterar sobre los datos de gastos y agregar filas a la tabla
+foreach ($articulos as &$articulo) {
+    $montoTotal = $articulo['cantidad'] * $articulo['precio_unitario'];
     $articulo['monto_total'] = $montoTotal;
-    $pdf->Cell(15, 10, $articulo['cantidad'], 1);
-    $pdf->Cell(15, 10, $articulo['unidad'], 1);
-    $pdf->Cell(75, 10, $articulo['descripcion'], 1);
-    $pdf->Cell(25, 10, '$' . number_format($articulo['precio_unitario'], 2), 1);
-    $pdf->Cell(25, 10, '$' . number_format($articulo['precio_unitarioIVA'], 2), 1);
-    $pdf->Cell(25, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
+    $pdf->Cell(20, 10, $articulo['cantidad'], 1);
+    $pdf->Cell(30, 10, $articulo['unidad'], 1);
+    $pdf->Cell(70, 10, $articulo['descripcion'], 1);
+    $pdf->Cell(30, 10, '$' . number_format($articulo['precio_unitario']), 1);
+    $pdf->Cell(30, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
 }
 
 // Calcular el total de montos totales dentro del bucle
-$totalGastos = array_sum(array_column($articulosFiltrados, 'monto_total'));
+$totalGastos = array_sum(array_column($articulos, 'monto_total'));
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(155, 10, 'Total sin IVA:', 1);
-$pdf->Cell(25, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
-$pdf->Cell(155, 10, 'Total:', 1);
-$pdf->Cell(25, 10, '$' . number_format($totalGastos + ($totalGastos *.16 ), 2), 1, 1, 'R');
+$pdf->Cell(150, 10, 'Total sin IVA:', 1);
+$pdf->Cell(30, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
 
 
 if(!empty($unidad)){
@@ -135,15 +131,15 @@ $pdf->Cell(0, 10, "Proveedor seleccionado", 0, 1, 'C',0);
 
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(180, 7, 'Nombre', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $nombre, 1,1);
+$pdf->Cell(160, 7, 'Nombre', 1, 1, 'C', 1);
+$pdf->MultiCell(160, 7, $nombre, 1,1);
 $pdf->Cell(35, 7, 'Telefono', 1, 0, 'C', 1);
-$pdf->Cell(95, 7, 'Correo', 1, 0, 'C', 1);
+$pdf->Cell(75, 7, 'Correo', 1, 0, 'C', 1);
 $pdf->Cell(30, 7, 'ID_proveedor', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Estado', 1, 1, 'C', 1);
 
 $pdf->Cell(35, 7, $telefono, 1);
-$pdf->Cell(95, 7, $correo, 1);
+$pdf->Cell(75, 7, $correo, 1);
 $pdf->Cell(30, 7, $idProveedor , 1);
 $pdf->Cell(20, 7, $estatus , 1, 1); 
 
@@ -175,6 +171,6 @@ $pdf->Cell(0, 10, '              Gerente de area                                
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

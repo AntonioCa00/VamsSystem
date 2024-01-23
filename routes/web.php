@@ -38,7 +38,6 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
-        Route::get('ordenesCompra/GerenciaGen',[controladorGerenciaGen::class,'ordenesCompras'])->name('ordenesComprasGerGen');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -120,20 +119,20 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('delete-proveedorD/{id}',[controladorGtArea::class,'deleteProveedor'])->name('deleteProveedorDir');        
         Route::put('deleteReq/{id}',[controladorGtArea::class, 'deleteReq'])->name('deleteReq');
         Route::put('validar/{id}',[controladorGtArea::class,'validarRequisicion'])->name('validar');
-        Route::put('select-cotiza/{id}',[controladorGtArea::class,'selectCotiza'])->name('selectCotiza');    
+        Route::put('select-cotiza/{id}/{sid}',[controladorGtArea::class,'selectCotiza'])->name('selectCotiza');    
         Route::post('reporteEnc',[controladorGtArea::class,'reporteEnc'])->name('reporteEncargado');
         Route::post('reporteUni',[controladorGtArea::class,'reporteUnid'])->name('reporteUnidad');
         Route::get('reporteGen',[controladorGtArea::class,'reporteGen'])->name('reporteGeneral');
         Route::put('editArticulo/{id}',[controladorGtArea::class,'editarArt'])->name('editarArt');
         Route::delete('rechazarArticulo/{id}',[controladorGtArea::class,'rechazaArt'])->name('rechazaArt');
         Route::put('aprobarArt/{rid}',[controladorGtArea::class,'aprobar'])->name('aprobar');
-        Route::put('rechazaFinanzas/{id}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
+        Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
         Route::delete('delete-cotizacion/{id}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');
     });
     
     Route::middleware(['check.role:Almacen'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-
+    
         //RUTAS ALMACEN
         Route::get('inicio/Almacen',[controladorAlm::class,'index'])->name('indexAlm');
         Route::get('solicitudes/Almacen',[controladorAlm::class,'requisiciones'])->name('requisicionesAlm');

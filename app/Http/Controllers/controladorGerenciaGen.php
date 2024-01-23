@@ -115,18 +115,6 @@ class controladorGerenciaGen extends Controller
         return view('Gerencia General.solicitudes',compact('solicitudes'));
     }
 
-    public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
-        ->join('users','orden_compras.admin_id','=','users.id')
-        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-        ->where('requisiciones.estado','!=','Rechazado')
-        ->orderBy('orden_compras.created_at','desc')
-        ->get();
-        return view ('Gerencia General.ordenesCompras',compact('ordenes'));
-    }
-
     public function tableEncargado(){
         $encargados = User::where('estatus','1')->orderBy('nombres')->get()
         ->where("estatus",1);
