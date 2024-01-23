@@ -256,7 +256,7 @@ class controladorCompras extends Controller
     public function createCotiza($id){
         $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-        ->where('cotizaciones.requisicion_id', $id)->where('cotizaciones.estatus','1')->get();
+        ->where('cotizaciones.requisicion_id', $id)->where('cotizaciones.estatus','0')->get();
         return view('Admin.crearCotizacion',compact('cotizaciones','id'));
     }
 
@@ -272,7 +272,7 @@ class controladorCompras extends Controller
                 "requisicion_id"=>$req->input('requisicion'),
                 "usuario_id"=>session('loginId'),
                 "pdf"=>$archivo_pdf,
-                "estatus"=>"1",
+                "estatus"=>"0",
                 "created_at"=>Carbon::now(),        
                 "updated_at"=>Carbon::now()
             ]);
@@ -383,18 +383,18 @@ class controladorCompras extends Controller
     }
 
     public function ordenCompra($id){
-        $cotizacion = Cotizaciones::select('cotizaciones.id_cotizacion','cotizaciones.pdf as cotPDF','requisiciones.pdf as reqPDF')
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','cotizaciones.pdf as cotPDF','requisiciones.pdf as reqPDF')
         ->join('requisiciones','cotizaciones.requisicion_id','=', 'requisiciones.id_requisicion')
         ->where('cotizaciones.estatus',1)
         ->where('requisiciones.id_requisicion',$id)
-        ->first();
+        ->get();
 
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         $proveedores = Proveedores::select('id_proveedor','nombre')
         ->where('estatus',1)->orderBy('nombre','asc')->get();
 
-        return view('Admin.ordenCompra',compact('cotizacion','proveedores','id','articulos'));
+        return view('Admin.ordenCompra',compact('cotizaciones','proveedores','id','articulos'));
     }
 
     public function insertOrdenCom(Request $req, $cid,$rid){
@@ -424,6 +424,13 @@ class controladorCompras extends Controller
             if(!empty($datos->unidad_id)){
                 $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
             }
+
+            $articulosSeleccionados = $req->input('articulos_seleccionados');
+
+            // Filtrar solo los artículos seleccionados
+            $articulosFiltrados = array_filter($articulos, function ($articulo) use ($articulosSeleccionados) {
+                return in_array($articulo['id'], $articulosSeleccionados);
+            });
 
             // Serializar los datos del empleado y almacenarlos en un archivo
             $datosSerializados = serialize($datosEmpleado);

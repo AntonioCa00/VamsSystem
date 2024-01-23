@@ -44,8 +44,7 @@
                             <th>ID requisicion</th>            
                             <th>Encargado:</th>
                             <th>Fecha solicitud:</th>
-                            <th>Estado:</th>
-                            <th>Unidad:</th>
+                            <th>Estado:</th>                        
                             <th>Requisicion:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -57,7 +56,6 @@
                             <th>{{$solicitudes->nombres}}</th>
                             <th>{{$solicitudes->fecha_creacion}}</th>
                             <th>{{$solicitudes->estado}}</th>
-                            <th>{{$solicitudes->unidad_id}}</th>
                             <th>
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

@@ -18,22 +18,24 @@
                     <thead>
                         <tr>
                             <th>Requisicion:</th>
-                            <th>Cotizacion Validada:</th>
+                            <th colspan="10">Cotizaciones Validada:</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr> 
+                    <tbody>                        
+                        <tr>
                             <th class="text-center">
-                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
+                                <a href="{{ asset($cotizaciones[0]->reqPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>    
                             </th>                            
+                        @foreach ($cotizaciones as $cotizacion)
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
-                            </th>               
-                        </tr>
+                            </th>                         
+                        @endforeach                                                                  
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -43,10 +45,12 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>Seleccionar:</th>
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
-                            <th>Precio unitario:</th>
+                            <th>Precio unitario sin IVA:</th>
+                            <th>Precio unitario con IVA:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,11 +58,23 @@
                             @csrf
                         @foreach($articulos as $index => $articulo)
                         <tr>
+                            <th class="text-center">
+                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{ $articulo->id }}">
+                            </th>
                             <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
-                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" required></th>
+                            <th>
+                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" 
+                                       id="precioSinIVA{{ $articulo->id }}" value="{{ $articulo->precio }}"
+                                       oninput="calcularPrecioConIVA({{ $articulo->id }})">
+                            </th>
+                            <th>
+                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitarioIVA]" 
+                                       id="precioConIVA{{ $articulo->id }}" value="{{ $articulo->precioIVA }}"
+                                       oninput="calcularPrecioSinIVA({{ $articulo->id }})">
+                            </th>
                         </tr>
                         @endforeach
                     </tbody>
@@ -78,10 +94,24 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
+                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de Compra</h6></button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+<script>
+    function calcularPrecioConIVA(id) {
+    var precioSinIVA = document.getElementById('precioSinIVA' + id).value;
+    var precioConIVA = precioSinIVA * (1 + 0.16); // Asumiendo un IVA del 16%
+    document.getElementById('precioConIVA' + id).value = precioConIVA.toFixed(2);
+}
+
+function calcularPrecioSinIVA(id) {
+    var precioConIVA = document.getElementById('precioConIVA' + id).value;
+    var precioSinIVA = precioConIVA / (1 + 0.16); // Asumiendo un IVA del 16%
+    document.getElementById('precioSinIVA' + id).value = precioSinIVA.toFixed(2);
+}
+</script>
