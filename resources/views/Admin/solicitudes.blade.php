@@ -68,7 +68,7 @@
                                     <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
                                         Cotizar
                                     </a>                                    
-                                @elseif ($solicitudes->estado === "Validado")
+                                @elseif ($solicitudes->estado === "Validado" ||$solicitudes->estado ==="Comprado")
                                     <a class="btn btn-primary" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">
                                         Orden de compra
                                     </a>

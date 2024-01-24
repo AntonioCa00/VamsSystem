@@ -43,6 +43,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>Seleccionar:</th>
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
@@ -55,6 +56,9 @@
                             @csrf
                         @foreach($articulos as $index => $articulo)
                         <tr>
+                            <th>
+                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{$articulo->id}}">
+                            </th>
                             <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>

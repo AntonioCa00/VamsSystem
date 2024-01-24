@@ -227,7 +227,8 @@ class controladorCompras extends Controller
         ->where(function($query) {
             $query->where('requisiciones.estado', '=', 'Aprobado')
                   ->orWhere('requisiciones.estado', '=', 'Cotizado')
-                  ->orWhere('requisiciones.estado', '=', 'Validado');
+                  ->orWhere('requisiciones.estado', '=', 'Validado')
+                  ->orWhere('requisiciones.estado', '=', 'Comprado');
         })
         ->orderBy('requisiciones.created_at','desc')
         ->get();
@@ -424,6 +425,13 @@ class controladorCompras extends Controller
             if(!empty($datos->unidad_id)){
                 $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
             }
+
+            $articulosSeleccionados = $req->input('articulos_seleccionados');
+
+            //Filtrar solo los articulos seleccionados
+            $articulosFiltrados = array_filter($articulos, function($articulo) use ($articulosSeleccionados){
+                return in_array($articulo['id'],$articulosSeleccionados);
+            });
 
             // Serializar los datos del empleado y almacenarlos en un archivo
             $datosSerializados = serialize($datosEmpleado);
