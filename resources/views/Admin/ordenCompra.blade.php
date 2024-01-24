@@ -49,8 +49,7 @@
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
-                            <th>Precio unitario sin IVA:</th>
-                            <th>Precio unitario con IVA:</th>
+                            <th>Precio unitario SIN IVA:</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,16 +64,7 @@
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
-                            <th>
-                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" 
-                                       id="precioSinIVA{{ $articulo->id }}" value="{{ $articulo->precio }}"
-                                       oninput="calcularPrecioConIVA({{ $articulo->id }})">
-                            </th>
-                            <th>
-                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitarioIVA]" 
-                                       id="precioConIVA{{ $articulo->id }}" value="{{ $articulo->precioIVA }}"
-                                       oninput="calcularPrecioSinIVA({{ $articulo->id }})">
-                            </th>
+                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}"></th>                            
                         </tr>
                         @endforeach
                     </tbody>
@@ -101,17 +91,3 @@
     </div>
 </div>
 @endsection
-
-<script>
-    function calcularPrecioConIVA(id) {
-    var precioSinIVA = document.getElementById('precioSinIVA' + id).value;
-    var precioConIVA = precioSinIVA * (1 + 0.16); // Asumiendo un IVA del 16%
-    document.getElementById('precioConIVA' + id).value = precioConIVA.toFixed(2);
-}
-
-function calcularPrecioSinIVA(id) {
-    var precioConIVA = document.getElementById('precioConIVA' + id).value;
-    var precioSinIVA = precioConIVA / (1 + 0.16); // Asumiendo un IVA del 16%
-    document.getElementById('precioSinIVA' + id).value = precioSinIVA.toFixed(2);
-}
-</script>
