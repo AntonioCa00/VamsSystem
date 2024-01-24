@@ -196,34 +196,18 @@ class controladorGtArea extends Controller
 
     //Regresa la vista con la lista de articulos de la requisicion inicial
     public function aprobarArt($id){
-        $articulos = Articulos::where('requisicion_id',$id)
-        ->leftJoin('unidades','articulos.unidad_id','=','unidades.id_unidad')
-        ->get();
-        $unidades = Unidades::where('estado','Activo')
-        ->where('estatus','1')
-        ->get();
-        return view('GtArea.aprobarSolicitud',compact('articulos','unidades'));
+        $articulos = Articulos::where('requisicion_id',$id)->get();
+        return view('GtArea.aprobarSolicitud',compact('articulos'));
     }
 
     //Edita los datos de los articulos pedidos
     public function editarArt(Request $req, $id){
-
-        if(session('departamento')==="Mantenimiento"){
-            DB::table('articulos')->where('id',$id)->update([
-                "cantidad"=>$req->editCantidad,
-                "unidad"=>$req->editUnidadM,
-                "descripcion"=>$req->editDescripcion,
-                "unidad_id"=>$req->editUnidad,
-                "updated_at"=>Carbon::now()
-            ]);            
-        } else{
-            Articulos::where('id',$id)->update([
-                "cantidad"=>$req->editCantidad,
-                "unidad"=>$req->editUnidad,
-                "descripcion"=>$req->editDescripcion,
-                "updated_at"=>Carbon::now()
-            ]);
-        }        
+        Articulos::where('id',$id)->update([
+            "cantidad"=>$req->editCantidad,
+            "unidad"=>$req->editUnidad,
+            "descripcion"=>$req->editDescripcion,
+            "updated_at"=>Carbon::now()
+        ]);
 
         return back();
     }
@@ -259,9 +243,11 @@ class controladorGtArea extends Controller
             unlink($fileToDelete);
         }
 
-        $articulos = Articulos::where('requisicion_id',$rid)
-        ->leftJoin('unidades','articulos.unidad_id','=','unidades.id_unidad')
-        ->get();
+        $articulos = Articulos::where('requisicion_id',$rid)->get();
+
+        if(!empty($datos->unidad_id)){
+            $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+        }
 
         // Nombre y ruta del archivo en laravel
         $nombreArchivo = 'requisicion_' . $datos->id_requisicion . '.pdf';
@@ -294,7 +280,7 @@ class controladorGtArea extends Controller
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
-        ->where('cotizaciones.estatus','0')->get();
+        ->where('cotizaciones.estatus','1')->get();
         return view('GtArea.cotizaciones',compact('cotizaciones','id'));
     }
 
@@ -342,10 +328,10 @@ class controladorGtArea extends Controller
         return back()->with('validado','validado');
     }
 
-    public function selectCotiza(Request $request,$id){
-        $req = Requisiciones::where('id_requisicion',$id)->first();
+    public function selectCotiza($id,$sid){
+        $req = Requisiciones::where('id_requisicion',$sid)->first();
         if ($req->estado === "Pre Validado"){
-            Requisiciones::where('id_requisicion',$id)->update([
+            Requisiciones::where('id_requisicion',$sid)->update([
                 "estado" => "Validado",
                 "updated_at" => Carbon::now()
             ]);
@@ -353,31 +339,31 @@ class controladorGtArea extends Controller
             Logs::create([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Solicitudes",
-                "requisicion_id"=>$id,
-                "action"=>"Se ha pre validado una cotizacion de la solicitud: ".$id,
+                "requisicion_id"=>$sid,
+                "action"=>"Se ha pre validado una cotizacion de la solicitud: ".$sid,
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
-        } else{
-            $cotizaciones = $request->input('cotizaciones_seleccionadas');
-            foreach ($cotizaciones as $cotizacionId) {
-                // Actualiza el estado de la cotización
-                Cotizaciones::where('id_cotizacion',$cotizacionId)->update([
-                    "estatus"=>1,
-                    "updated_at"=>Carbon::now(),
-                ]);
-            }
 
-            Requisiciones::where('id_requisicion',$id)->update([
-                "estado" => "Pre Validado", 
+        } else{
+            
+            Cotizaciones::where('id_cotizacion', '!=', $id)
+                ->where('requisicion_id', $sid)
+                ->update([
+                "estatus" => "0",
+                "updated_at" => Carbon::now()
+            ]);
+
+            Requisiciones::where('id_requisicion',$sid)->update([
+                "estado" => "Pre Validado",
                 "updated_at" => Carbon::now()
             ]);
 
             Logs::create([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Solicitudes",
-                "requisicion_id"=>$id,
-                "action"=>"Se ha pre validado una cotizacion de la solicitud: ".$id,
+                "requisicion_id"=>$sid,
+                "action"=>"Se ha pre validado una cotizacion de la solicitud: ".$sid,
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
@@ -386,36 +372,36 @@ class controladorGtArea extends Controller
     }
 
     public function aprobCotiza($id){
-        $validadas = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        $validada = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
-        ->where('cotizaciones.estatus','1')->get();
+        ->where('cotizaciones.estatus','1')->first();
 
         $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
         ->where('cotizaciones.estatus','0')->get();
-        return view('GtArea.aprobCotizaciones',compact('cotizaciones','id','validadas'));
+        return view('GtArea.aprobCotizaciones',compact('cotizaciones','id','validada'));
     }
 
-    public function rechazarFin(Request $req, $id){
+    public function rechazarFin(Request $req, $id,$sid){
         Comentarios::create([
-            "requisicion_id"=>$id,
+            "requisicion_id"=>$sid,
             "usuario_id"=>session('loginId'),
             "detalles"=>$req->input('comentario'),
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
         ]);
 
-        Cotizaciones::where('requisicion_id', $id)
+        Cotizaciones::where('requisicion_id', $sid)
             ->update([
-            "estatus" => "0",
+            "estatus" => "1",
             "updated_at" => Carbon::now()
         ]);
 
-        Requisiciones::where('id_requisicion',$id)->update([
+        Requisiciones::where('id_requisicion',$sid)->update([
             "estado"=>"Cotizado",
             "updated_at"=>Carbon::now()
         ]);

@@ -73,49 +73,36 @@ $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
 $pdf->Ln(10); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 12);
 
+// Imprimir el subtutitulo 
+$pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
+// Crear la tabla de gastos
+$pdf->SetFont('helvetica', '', 10);
+$pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
+$pdf->Cell(20, 10, 'cantidad', 1, 0, 'C', 1);
+$pdf->Cell(40, 10, 'Unidad de medida', 1, 0, 'C', 1);
+$pdf->Cell(100, 10, 'Descripción', 1, 1, 'C', 1);
 
-if (session('departamento') === 'Mantenimiento'){
-    // Imprimir el subtutitulo 
-    $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
-    // Crear la tabla de gastos
-    $pdf->SetFont('helvetica', '', 10);
-    $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(15, 10, 'Cantidad', 1, 0, 'C', 1);
-    $pdf->Cell(15, 10, 'Medida', 1, 0, 'C', 1);
-    $pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', 1);
-    $pdf->Cell(40,10, 'Unidad/vehiculo',1,1,'C',1);
-
-    // Iterar sobre los datos de gastos y agregar filas a la tabla
-    foreach ($datosRequisicion as $requisicion) {
-        $montoTotal = $requisicion['cantidad'] * 0; // Calcular el monto total (en este caso, se multiplica por 0, ajusta esto según tus necesidades)
-        $pdf->Cell(15, 10, $requisicion['cantidad'], 1);
-        $pdf->Cell(15, 10, $requisicion['unidadM'], 1);
-        $pdf->Cell(90, 10, $requisicion['descripcion'], 1);
-        $pdf->Cell(40, 10, $requisicion['descUnidad'], 1);
-        $pdf->Ln(10); // Salto de línea antes de la tabla   
-    }
-} else {
-    // Imprimir el subtutitulo 
-    $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
-    // Crear la tabla de gastos
-    $pdf->SetFont('helvetica', '', 10);
-    $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(20, 10, 'Cantidad', 1, 0, 'C', 1);
-    $pdf->Cell(40, 10, 'Medida', 1, 0, 'C', 1);
-    $pdf->Cell(100, 10, 'Descripción', 1, 1, 'C', 1);
-
-    // Iterar sobre los datos de gastos y agregar filas a la tabla
-    foreach ($datosRequisicion as $requisicion) {
-        $montoTotal = $requisicion['cantidad'] * 0; // Calcular el monto total (en este caso, se multiplica por 0, ajusta esto según tus necesidades)
-        $pdf->Cell(20, 10, $requisicion['cantidad'], 1);
-        $pdf->Cell(40, 10, $requisicion['unidadM'], 1);
-        $pdf->Cell(100, 10, $requisicion['descripcion'], 1);
-        $pdf->Ln(10); // Salto de línea antes de la tabla   
-    }
+// Iterar sobre los datos de gastos y agregar filas a la tabla
+foreach ($datosRequisicion as $requisicion) {
+    $montoTotal = $requisicion['cantidad'] * 0; // Calcular el monto total (en este caso, se multiplica por 0, ajusta esto según tus necesidades)
+    $pdf->Cell(20, 10, $requisicion['cantidad'], 1);
+    $pdf->Cell(40, 10, $requisicion['unidad'], 1);
+    $pdf->  Cell(100, 10, $requisicion['descripcion'], 1);
+    $pdf->Ln(10); // Salto de línea antes de la tabla   
 }
 
 // Calcular el total de montos totales
 $totalGastos = array_sum(array_column($datosRequisicion, 4));
+
+if(!empty($unidad)){
+    // Definir la fuente y el tamaño de la fuente
+    $pdf->SetFont('helvetica', 'A', 11);
+    // Encabezados de la tabla
+    $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
+    $pdf->Cell(160, 7, 'Unidad', 1, 1, 'C', 1);
+    // notas que agrega el solicitante
+    $pdf->MultiCell(160, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+}
 
 $pdf->Ln(10); // Salto de línea antes de la tabla   
 // Definir la fuente y el tamaño de la fuente
@@ -152,6 +139,6 @@ $pdf->Cell(0, 10, '              Solicita                                       
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'requisicion_' . $idcorresponde . '.pdf';
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

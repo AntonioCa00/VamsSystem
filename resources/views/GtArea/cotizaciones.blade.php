@@ -26,24 +26,18 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <form action="{{route('selectCotiza',$id)}}" method="POST">
-                @csrf
-                @method('PUT')
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Seleccionar:</th>
                             <th>Encargado que cotizó:</th>
                             <th>Requisición:</th>                            
                             <th>Cotización:</th>
+                            <th>Opciones:</th>
                         </tr>
                     </thead>
-                    <tbody>                
+                    <tbody>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr>
-                            <th class="text-center">
-                                <input type="checkbox" name="cotizaciones_seleccionadas[]" value="{{ $cotizacion->id_cotizacion }}">
-                            </th>
                             <th>{{$cotizacion->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
@@ -56,10 +50,36 @@
                                 </a>
                             </th>
                             <th>
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#validarCotiza{{$cotizacion->id_cotizacion}}">
+                                    Validar
+                                </a>
+                                <!-- Validate Modal-->
+                                <div class="modal fade" id="validarCotiza{{$cotizacion->id_cotizacion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">X</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">Selecciona confirmar para validar unicamente esta cotización</div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                <form action="{{route('selectCotiza',['id' => $cotizacion->id_cotizacion, 'sid' => $cotizacion->requisicion_id])}}" method="POST">                                                
+                                                    @csrf
+                                                    {!!method_field('PUT')!!}    
+                                                    <button type="submit" class="btn btn-primary">confirmar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#EliminarCotiza{{$cotizacion->id_cotizacion}}">
                                     Eliminar
                                 </a>
-                                <!-- Validate Modal
+                                <!-- Validate Modal-->
                                 <div class="modal fade" id="EliminarCotiza{{$cotizacion->id_cotizacion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -75,27 +95,18 @@
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                 <form action="{{route('deleteCotiza', $cotizacion->id_cotizacion)}}" method="POST">                                                
                                                     @csrf
-                                                    @method('DELETE')   
+                                                    {!!method_field('DELETE')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div> 
-                                -->
                             </th>
                         </tr>
                         @endforeach
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="6" class="text-right">
-                                <button type="submit" class="btn btn-primary">Validar Seleccionadas</button>
-                            </td>
-                        </tr>                                        
-                    </tfoot>                    
                 </table>
-            </form>
             </div>        
         </div>
     </div>

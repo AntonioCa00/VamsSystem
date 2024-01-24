@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('unidades', function (Blueprint $table) {
             $table->string('id_unidad')->primary();
+            $table->string('numero_serie');
             $table->string('tipo');
             $table->string('estado');
             $table->string('anio_unidad');
             $table->string('marca');
             $table->string('modelo');
-            $table->string('caracteristicas');
-            $table->string('n_de_serie');
-            $table->string('n_de_permiso');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });

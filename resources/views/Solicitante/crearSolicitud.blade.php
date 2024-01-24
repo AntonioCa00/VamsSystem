@@ -32,9 +32,6 @@
                             <th>Cantidad:</th>
                             <th>Unidad:</th>
                             <th>Descripcion:</th>
-                            @if(session('departamento')=== "Mantenimiento")
-                                <th>Unidad:</th>
-                            @endif
                             <th>Editar:</th>
                             <th>Eliminar:</th>
                         </tr>
@@ -43,11 +40,8 @@
                         @foreach($datos as $index => $dato)
                         <tr>
                             <th>{{ $dato['cantidad'] }}</th>
-                            <th>{{ $dato['unidadM'] }}</th>
-                            <th>{{ $dato['descripcion'] }}</th>  
-                            @if(session('departamento')=== "Mantenimiento")
-                                <th>{{ $dato['descUnidad'] }}</th>
-                            @endif              
+                            <th>{{ $dato['unidad'] }}</th>
+                            <th>{{ $dato['descripcion'] }}</th>                            
                             <th>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $index }}">
                                     Editar
@@ -81,24 +75,12 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="editCantidad{{ $index }}">Unidad de medida:</label>
-                                                <input type="text" class="form-control" name="editUnidadM" id="editCantidad{{ $index }}" value="{{ $dato['unidadM'] }}">
+                                                <input type="text" class="form-control" name="editUnidad" id="editCantidad{{ $index }}" value="{{ $dato['unidad'] }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="editCantidad{{ $index }}">Descripcion:</label>
                                                 <input type="text" class="form-control" name="editDescripcion" id="editCantidad{{ $index }}" value="{{ $dato['descripcion'] }}">
                                             </div>
-
-                                            @if (session('departamento')=== "Mantenimiento")
-                                            <div class="form-group">
-                                                <label for="editCantidad{{ $index }}">Unidad que requiere el articulo:</label>
-                                                <select name="editUnidad" class="form-control" required>
-                                                    <option value="{{ $dato['unidad'] }}" selected>{{ $dato['unidad'] }} {{ $dato['descUnidad'] }}</option>
-                                                    @foreach ($unidades as $unidad)                            
-                                                        <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}} {{$unidad->anio_unidad}}</option>
-                                                    @endforeach
-                                                </select>                                        
-                                            </div>
-                                            @endif                                    
 
                                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                                         </form>
@@ -118,23 +100,12 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Unidad de medidad:</label>
-                    <input name="UnidadM" type="text" class="form-control" placeholder="Unidad de medida de articulo" required>
+                    <input name="Unidad" type="text" class="form-control" placeholder="Unidad de medida de articulo" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
                     <input name="Descripcion" type="text" class="form-control" placeholder="Describe el articulo" required>
                 </div>
-                @if(session('departamento')=== "Mantenimiento")
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Unidad que requiere el articulo:</label>
-                        <select name="unidad" class="form-control" required>
-                            <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
-                            @foreach ($unidades as $unidad)                            
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}} {{$unidad->anio_unidad}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
         </div>
@@ -144,7 +115,18 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Notas:</label>
                     <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
-                </div>                            
+                </div>
+                @if(session('departamento')=== "Mantenimiento")
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
+                        <select name="unidad" class="form-control" required>
+                            <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
+                            @foreach ($unidades as $unidad)                            
+                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
                 <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
             </form>
         </div>

@@ -18,24 +18,22 @@
                     <thead>
                         <tr>
                             <th>Requisicion:</th>
-                            <th colspan="10">Cotizaciones Validada:</th>
+                            <th>Cotizacion Validada:</th>
                         </tr>
                     </thead>
-                    <tbody>                        
-                        <tr>
+                    <tbody>
+                        <tr> 
                             <th class="text-center">
-                                <a href="{{ asset($cotizaciones[0]->reqPDF) }}" target="_blank">
+                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>    
                             </th>                            
-                        @foreach ($cotizaciones as $cotizacion)
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
-                            </th>                         
-                        @endforeach                                                                  
-                    </tr>
+                            </th>               
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -45,11 +43,11 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Seleccionar:</th>
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
                             <th>Precio unitario SIN IVA:</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -57,14 +55,12 @@
                             @csrf
                         @foreach($articulos as $index => $articulo)
                         <tr>
-                            <th class="text-center">
-                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{ $articulo->id }}">
-                            </th>
                             <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
-                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}"></th>                            
+
+                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" required></th>
                         </tr>
                         @endforeach
                     </tbody>
@@ -84,7 +80,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de Compra</h6></button>
+                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
                 </form>
             </div>
         </div>

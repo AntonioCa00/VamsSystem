@@ -32,9 +32,6 @@
                             <th>Cantidad:</th>
                             <th>Unidad:</th>
                             <th>Descripcion:</th>
-                            @if (session('departamento')==="Mantenimiento")
-                                <th>Unidad:</th>
-                            @endif
                             <th>Editar:</th>
                             <th>Rechazar:</th>
                         </tr>
@@ -45,9 +42,6 @@
                             <th>{{ $articulo->cantidad }}</th>
                             <th>{{ $articulo->unidad}}</th>
                             <th>{{ $articulo->descripcion}}</th>
-                            @if (session('departamento')==="Mantenimiento")
-                                <th>{{ $articulo->marca.' '.$articulo->modelo.' '.$articulo->anio_unidad}}</th>
-                            @endif
                             <th>                                
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $articulo->id }}">
                                     Editar
@@ -82,23 +76,12 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Unidad de medida:</label>
-                                                <input type="text" class="form-control" name="editUnidadM" value="{{ $articulo->unidad}}">
+                                                <input type="text" class="form-control" name="editUnidad" value="{{ $articulo->unidad}}">
                                             </div>
                                             <div class="form-group">
                                                 <label>Descripcion:</label>
                                                 <input type="text" class="form-control" name="editDescripcion" value="{{ $articulo->descripcion}}">
                                             </div>
-                                            @if (session('departamento')=== "Mantenimiento")
-                                                <div class="form-group">
-                                                    <label>Unidad que requiere el articulo:</label>
-                                                    <select name="editUnidad" class="form-control" required>
-                                                        <option value="{{ $articulo->unidad_id}}" selected>{{ $articulo->unidad_id}} {{ $articulo->marca }} {{$articulo->modelo}} {{$articulo->anio_unidad}}</option>
-                                                        @foreach ($unidades as $unidad)                            
-                                                            <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}} {{$unidad->anio_unidad}}</option>
-                                                        @endforeach
-                                                    </select>                                        
-                                                </div>
-                                            @endif                                             
 
                                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                                         </form>
