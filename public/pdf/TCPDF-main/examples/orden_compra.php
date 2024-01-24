@@ -33,7 +33,7 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Orden de compra n° ". $idnuevaorden, 0, 1, 'L'); // Print the number "123" at the top left of the page
+$pdf->Cell(0, 10, "Orden de compra n° ". $idnuevaorden, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
@@ -78,21 +78,22 @@ $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(20, 10, 'cantidad', 1, 0, 'C', 1);
-$pdf->Cell(30, 10, 'Unidad medida', 1, 0, 'C', 1);
-$pdf->Cell(70, 10, 'Descripción', 1, 0, 'C', 1);
-$pdf->Cell(30, 10, 'Precio_unitario', 1, 0, 'C', 1);
-$pdf->Cell(30, 10, 'Monto_total', 1, 1, 'C', 1);
 
-// Iterar sobre los datos de gastos y agregar filas a la tabla
-foreach ($articulos as &$articulo) {
+$pdf->Cell(20, 10, 'Cantidad', 1, 0, 'C', 1);
+$pdf->Cell(20, 10, 'Medida', 1, 0, 'C', 1);
+$pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', 1);
+$pdf->Cell(25, 10, 'Precio_unitario', 1, 0, 'C', 1);
+$pdf->Cell(25, 10, 'Monto total', 1, 1, 'C', 1);
+
+// Iterar sobre los datos de gastos filtrados y agregar filas a la tabla
+foreach ($articulosFiltrados as &$articulo) {
     $montoTotal = $articulo['cantidad'] * $articulo['precio_unitario'];
     $articulo['monto_total'] = $montoTotal;
     $pdf->Cell(20, 10, $articulo['cantidad'], 1);
-    $pdf->Cell(30, 10, $articulo['unidad'], 1);
-    $pdf->Cell(70, 10, $articulo['descripcion'], 1);
-    $pdf->Cell(30, 10, '$' . number_format($articulo['precio_unitario']), 1);
-    $pdf->Cell(30, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
+    $pdf->Cell(20, 10, $articulo['unidad'], 1);
+    $pdf->Cell(90, 10, $articulo['descripcion'], 1);
+    $pdf->Cell(25, 10, '$' . number_format($articulo['precio_unitario'], 2), 1);
+    $pdf->Cell(25, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
 }
 
 // Calcular el total de montos totales dentro del bucle
@@ -100,9 +101,8 @@ $totalGastos = array_sum(array_column($articulos, 'monto_total'));
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(150, 10, 'Total sin IVA:', 1);
-$pdf->Cell(30, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
-
+$pdf->Cell(155, 10, 'Subtotal (IVA no incluido):', 1);
+$pdf->Cell(25, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
 
 if(!empty($unidad)){
     // Definir la fuente y el tamaño de la fuente

@@ -46,7 +46,8 @@
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
-                            <th>Precio unitario:</th>
+                            <th>Precio unitario SIN IVA:</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -58,6 +59,7 @@
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
+
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" required></th>
                         </tr>
                         @endforeach
