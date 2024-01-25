@@ -463,7 +463,7 @@ class controladorCompras extends Controller
             $totalGastos = 0;
 
             // Itera sobre el array y suma los valores de la columna 'precio'
-            foreach ($articulos as $subarray) {
+            foreach ($articulosFiltrados as $subarray) {
                 // Verifica si la clave 'precio' existe en el subarray antes de sumar
                 if (isset($subarray['precio_unitario'])) {
                     $totalGastos += $subarray['precio_unitario']*$subarray['cantidad'];

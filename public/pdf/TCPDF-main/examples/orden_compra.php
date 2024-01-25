@@ -97,7 +97,7 @@ foreach ($articulosFiltrados as &$articulo) {
 }
 
 // Calcular el total de montos totales dentro del bucle
-$totalGastos = array_sum(array_column($articulos, 'monto_total'));
+$totalGastos = array_sum(array_column($articulosFiltrados, 'monto_total'));
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
