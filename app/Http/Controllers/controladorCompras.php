@@ -371,7 +371,7 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now(),
         ]);
 
-        return redirect('proveedores')->with('update','update');
+        return redirect('proveedores/Compras')->with('update','update');
     }
 
     public function deleteProveedor($id){
@@ -481,6 +481,7 @@ class controladorCompras extends Controller
             }
             
             Orden_compras::create([
+                "id_orden"=>$idnuevaorden,
                 "admin_id"=>session('loginId'),
                 "cotizacion_id" => $cid,
                 "proveedor_id"=>$req->input('Proveedor'),
