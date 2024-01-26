@@ -48,10 +48,12 @@
                             <th>{{$solicitudes->fecha_creacion}}</th>
                             <th>{{$solicitudes->estado}}</th>
                             @if (empty($solicitudes->unidad_id))
-                                <th>No aplica</th>
-                            @else
+                                <th>Sin unidad</th>
+                            @elseif ($solicitudes->unidad_id == "1")
+                                <th>No asignada</th>
+                            @else 
                                 <th>{{$solicitudes->unidad_id}}</th>
-                            @endif                            
+                            @endif                         
                             <th>
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

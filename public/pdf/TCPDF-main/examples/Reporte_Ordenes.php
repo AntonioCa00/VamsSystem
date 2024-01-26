@@ -139,10 +139,12 @@ foreach ($datosRequisicion as $req) {
     $pdf->Cell(45, 7, $req['nombres'].' '.$req['apellidoP'], 1, 0, 'C',0); 
 	$pdf->Cell(35, 7, $req['created_at'], 1, 0, 'C',0);
 	$pdf->Cell(25, 7, $req['estado'], 1, 0, 'C',0);
-	if(empty($req['unidad'])){
+	if(empty($req['unidad_id'])){
         $pdf->Cell(25, 7, 'Sin unidad', 1, 1, 'C',0);    
-    }else{
-        $pdf->Cell(25, 7, $req['unidad'], 1, 1, 'C',0);
+    } elseif ($req['unidad_id'] == 1){
+        $pdf->Cell(25, 7, 'No asignada', 1, 1, 'C',0);
+    } else{
+        $pdf->Cell(25, 7, $req['unidad_id'], 1, 1, 'C',0);
     }       
 }
 
@@ -154,19 +156,19 @@ $pdf->Cell(0, 10, "Registro de ordenes de compra", 0, 1, 'A');
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(18, 7, 'Id Compra', 1, 0, 'C', 1);
-$pdf->Cell(35, 7, 'Solicitante', 1, 0, 'C', 1);
+$pdf->Cell(20, 7, 'Solicitante', 1, 0, 'C', 1);
 $pdf->Cell(35, 7, 'Fecha', 1, 0, 'C', 1);
-$pdf->Cell(25, 7, 'N° Requisicion', 1, 0, 'C', 1);
-$pdf->Cell(35, 7, 'Proveedor', 1, 0, 'C', 1);
+$pdf->Cell(20, 7, 'Requisicion', 1, 0, 'C', 1);
+$pdf->Cell(55, 7, 'Proveedor', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Costo ', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($datosGastos as $gasto) {
     $pdf->Cell(18, 7, $gasto['id_orden'], 1, 0, 'C',0);
-    $pdf->Cell(35, 7, $gasto['nombres'].' '.$gasto['apellidoP'], 1, 0, 'C',0); 
+    $pdf->Cell(20, 7, $gasto['nombres'].' '.$gasto['apellidoP'], 1, 0, 'C',0); 
 	$pdf->Cell(35, 7, $gasto['created_at'], 1, 0, 'C',0);
-	$pdf->Cell(25, 7, $gasto['id_requisicion'], 1, 0, 'C',0);
-	$pdf->Cell(35, 7, $gasto['nombre'], 1, 0, 'C',0);     
+	$pdf->Cell(20, 7, $gasto['id_requisicion'], 1, 0, 'C',0);
+	$pdf->Cell(55, 7, $gasto['nombre'], 1, 0, 'C',0);     
     $pdf->Cell(20, 7, '$' . number_format($gasto['costo_total'], 2), 1, 1, 'R');
 }
 
