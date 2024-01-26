@@ -228,6 +228,108 @@ class controladorGerenciaGen extends Controller
         return view('Gerencia General.cotizaciones',compact('cotizaciones'));
     }
 
+    public function reportes() {
+        $encargados = User::where('rol','General')->where('estatus','1')
+        ->orderBy('nombres','asc')->get();
+        $unidades = Unidades::where('estatus','1')
+        ->orderBy('id_unidad','asc')->get();
+        return view('Gerencia General.reportes',compact('encargados','unidades'));
+    }
+
+    public function reporteGen(Request $req){
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombres' => session('loginNombres'),
+            'apellidoP' => session('loginApepat'),
+            'apellidoM' => session('loginApemat'),
+            'rol' => session('rol'),
+            'dpto' =>session('departamento')
+        ];
+
+        $tipoReporte = $req->input('tipoReport');
+
+        switch ($tipoReporte){
+            case "semanal":
+                $unaSemanaAtras = Carbon::now()->subWeek();
+
+                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
+                ->get();    
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
+                ->get();    
+                
+                break;
+            case "mensual":
+                $inicioDelMes = Carbon::now()->startOfMonth();
+
+                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.created_at', '>=', $inicioDelMes)
+                ->get();
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $inicioDelMes)
+                ->get();    
+
+                break;
+            case "anual":
+                $inicioDelAnio = Carbon::now()->startOfYear();
+
+                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
+                ->get();    
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $inicioDelAnio)
+                ->get();  
+
+                break;
+            case "todas":
+                $inicioDelAnio = Carbon::now()->startOfYear();
+
+                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->get();    
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->get();  
+
+                break;
+        }
+
+        // Serializar los datos del empleado y almacenarlos en un archivo
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleados.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_Ordenes.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
+    }
+
     public function generateRandomPassword() {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
         $password = '';

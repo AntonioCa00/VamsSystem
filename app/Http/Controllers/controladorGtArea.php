@@ -415,14 +415,6 @@ class controladorGtArea extends Controller
         return back()->with('eliminado','eliminado');    
     }
 
-    public function reportes() {
-        $encargados = User::where('rol','General')->where('estatus','1')
-        ->orderBy('nombre','asc')->get();
-        $unidades = Unidades::where('estatus','1')
-        ->orderBy('id_unidad','asc')->get();
-        return view('GtArea.reportes',compact('encargados','unidades'));
-    }
-
     public function reporteEnc(Request $req){
 
         $idEncargado = $req->encargado;

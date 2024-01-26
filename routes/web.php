@@ -38,6 +38,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
+        Route::get('reportes',[controladorGerenciaGen::class,'reportes'])->name('reportes');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -45,6 +46,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('update-user/{id}', [controladorGerenciaGen::class, 'updateUser'])->name('updateUser');
         Route::put('delete-user/{id}',[controladorGerenciaGen::class,'deleteUser'])->name('deleteUser');
         Route::delete('delete-solicitud/{id}',[controladorGerenciaGen::class,'deleteSolicitud'])->name('deleteSolicitudGG');
+        Route::post('reporteGenGer',[controladorCompras::class,'reporteGen'])->name('reporteGeneralGer');
     });
     
     Route::middleware(['check.role:Compras'])->group(function () {
@@ -110,7 +112,6 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
-        Route::get('reportes',[controladorGtArea::class,'reportes'])->name('reportes');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     

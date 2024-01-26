@@ -53,8 +53,11 @@ if ($tipoReporte == "anual") {
 
 // $fechaReporte = "Enero - Diciembre 2023";
 
-// Obtener el mes actual
-$currentMonth = date('F');
+// Establecer la configuración regional a Español
+setlocale(LC_TIME, 'es_ES', 'Spanish_Spain', 'Spanish');
+
+// Obtener el mes actual en español
+$currentMonth = ucfirst(strftime('%B'));
 
 // Obtener el año actual
 $currentYear = date('Y');
