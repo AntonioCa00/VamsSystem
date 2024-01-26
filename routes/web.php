@@ -92,7 +92,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
         Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
-        Route::get('reporteGenAdm',[controladorCompras::class,'reporteGen'])->name('reporteGeneralAdm');
+        Route::post('reporteGenAdm',[controladorCompras::class,'reporteGen'])->name('reporteGeneralAdm');
     });
     
     Route::middleware(['check.role:Gerente Area'])->group(function () {
