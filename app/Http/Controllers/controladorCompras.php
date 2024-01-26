@@ -589,7 +589,70 @@ class controladorCompras extends Controller
         echo $pdfContent;
     }
 
-    public function reporteGen(Request $req){
+    public function reporteReq(Request $req){
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombres' => session('loginNombres'),
+            'apellidoP' => session('loginApepat'),
+            'apellidoM' => session('loginApemat'),
+            'rol' => session('rol'),
+            'dpto' =>session('departamento')
+        ];
+
+        $tipoReporte = $req->input('tipoReport');
+
+        switch ($tipoReporte){
+            case "semanal":
+                $unaSemanaAtras = Carbon::now()->subWeek();
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
+                ->get();    
+                
+                break;
+            case "mensual":
+                $inicioDelMes = Carbon::now()->startOfMonth();
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $inicioDelMes)
+                ->get();    
+
+                break;
+            case "anual":
+                $inicioDelAnio = Carbon::now()->startOfYear();
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->where('requisiciones.created_at', '>=', $inicioDelAnio)
+                ->get();  
+
+                break;
+            case "todas":
+                $inicioDelAnio = Carbon::now()->startOfYear(); 
+                
+                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
+                ->join('users','requisiciones.usuario_id','=','users.id')
+                ->get();  
+
+                break;
+        }
+
+        // Serializar los datos del empleado y almacenarlos en un archivo
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleados.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_Requisiciones.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
+    }
+
+    public function reporteOrd(Request $req){
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),
             'nombres' => session('loginNombres'),
@@ -611,12 +674,7 @@ class controladorCompras extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();    
-                
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
-                ->get();    
+                ->get();      
                 
                 break;
             case "mensual":
@@ -629,11 +687,6 @@ class controladorCompras extends Controller
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();    
-                
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelMes)
-                ->get();    
 
                 break;
             case "anual":
@@ -645,12 +698,7 @@ class controladorCompras extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.created_at', '>=', $inicioDelAnio)
-                ->get();    
-                
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelAnio)
-                ->get();  
+                ->get();
 
                 break;
             case "todas":
@@ -661,10 +709,6 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->get();    
-                
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
                 ->get();  
 
                 break;

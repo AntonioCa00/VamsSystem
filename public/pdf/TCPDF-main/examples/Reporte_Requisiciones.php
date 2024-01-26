@@ -72,7 +72,7 @@ if ($tipoReporte == "anual") {
 } elseif ($tipoReporte == "semanal") {
     $lapsoTiempo = "Semana actual";
 } else {
-    $lapsoTiempo = "Todas las ordenes de compra";
+    $lapsoTiempo = "Todas las requisiciones";
 }
 
 $fechaReporte = $lapsoTiempo;
@@ -123,38 +123,33 @@ $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 
 $pdf->Ln(4); // Salto de línea antes de la tabla
-
-$pdf->SetFont('helvetica', 'B', 12);
 // Imprimir el subtutitulo 
-$pdf->Cell(0, 10, "Registro de ordenes de compra", 0, 1, 'A');
+$pdf->Cell(0, 10, "Registro de solicitudes creadas ", 0, 1, 'A');
+//  ID requisicion	Encargado:	Fecha solicitud:	Estado:	Unidad:	Requisicion	Orden Compra:
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(18, 7, 'Id Compra', 1, 0, 'C', 1);
-$pdf->Cell(20, 7, 'Solicitante', 1, 0, 'C', 1);
-$pdf->Cell(35, 7, 'Fecha', 1, 0, 'C', 1);
-$pdf->Cell(20, 7, 'Requisicion', 1, 0, 'C', 1);
-$pdf->Cell(55, 7, 'Proveedor', 1, 0, 'C', 1);
-$pdf->Cell(20, 7, 'Costo ', 1, 1, 'C', 1);
+$pdf->Cell(25, 7, 'Id Requsicion', 1, 0, 'C', 1);
+$pdf->Cell(50, 7, 'Solicitante', 1, 0, 'C', 1);
+$pdf->Cell(35, 7, 'Fecha solicitud', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Estado', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Unidad', 1, 1, 'C', 1);
+
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
-foreach ($datosGastos as $gasto) {
-    $pdf->Cell(18, 7, $gasto['id_orden'], 1, 0, 'C',0);
-    $pdf->Cell(20, 7, $gasto['nombres'], 1, 0, 'C',0); 
-	$pdf->Cell(35, 7, $gasto['created_at'], 1, 0, 'C',0);
-	$pdf->Cell(20, 7, $gasto['id_requisicion'], 1, 0, 'C',0);
-	$pdf->Cell(55, 7, $gasto['nombre'], 1, 0, 'C',0);     
-    $pdf->Cell(20, 7, '$' . number_format($gasto['costo_total'], 2), 1, 1, 'R');
+foreach ($datosRequisicion as $req) {
+    $pdf->Cell(25, 7, $req['id_requisicion'], 1, 0, 'C',0);
+    $pdf->Cell(50, 7, $req['nombres'].' '.$req['apellidoP'], 1, 0, 'C',0); 
+	$pdf->Cell(35, 7, $req['created_at'], 1, 0, 'C',0);
+	$pdf->Cell(25, 7, $req['estado'], 1, 0, 'C',0);
+	if(empty($req['unidad_id'])){
+        $pdf->Cell(25, 7, 'Sin unidad', 1, 1, 'C',0);    
+    } elseif ($req['unidad_id'] == 1){
+        $pdf->Cell(25, 7, 'No asignada', 1, 1, 'C',0);
+    } else{
+        $pdf->Cell(25, 7, $req['unidad_id'], 1, 1, 'C',0);
+    }       
 }
-
-// Calcular el total de gastos
-$datosGastosArray = $datosGastos->toArray();
-$totalGastos = array_sum(array_column($datosGastosArray, 'costo_total')); 
-
-// Imprimir el total de gastos
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(143, 7, 'Total de Gastos:', 1);
-$pdf->Cell(25, 7, '$' . number_format($totalGastos, 2), 1, 1, 'R');
 // Generar el PDF
 
 $pdf->Output('reporte_mensual.pdf', 'I');

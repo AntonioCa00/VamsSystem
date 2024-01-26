@@ -38,7 +38,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
-        Route::get('reportes',[controladorGerenciaGen::class,'reportes'])->name('reportes');
+        Route::get('reportesGerencia',[controladorGerenciaGen::class,'reportes'])->name('reportes');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -46,7 +46,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('update-user/{id}', [controladorGerenciaGen::class, 'updateUser'])->name('updateUser');
         Route::put('delete-user/{id}',[controladorGerenciaGen::class,'deleteUser'])->name('deleteUser');
         Route::delete('delete-solicitud/{id}',[controladorGerenciaGen::class,'deleteSolicitud'])->name('deleteSolicitudGG');
-        Route::post('reporteGenGer',[controladorCompras::class,'reporteGen'])->name('reporteGeneralGer');
+        Route::post('reportesGerencia/Requisiciones',[controladorGerenciaGen::class,'reporteReq'])->name('reportesReqGer');
+        Route::post('reportesGerencia/OrdenesCompra',[controladorGerenciaGen::class,'reporteOrd'])->name('reportesOrdGer');
     });
     
     Route::middleware(['check.role:Compras'])->group(function () {
@@ -71,7 +72,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('form/{id}/cotizar',[controladorCompras::class,'createCotiza'])->name('createCotiza');
         Route::get('ordenCompra/{id}',[controladorCompras::class,'ordenCompra'])->name('ordenCompra');
         Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
-        Route::get('reportesAdm',[controladorCompras::class,'reportes'])->name('reportesAdm');
+        Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
         
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
@@ -94,7 +95,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
         Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
-        Route::post('reporteGenAdm',[controladorCompras::class,'reporteGen'])->name('reporteGeneralAdm');
+        Route::post('reportesCompras/Requisiciones',[controladorGerenciaGen::class,'reporteReq'])->name('reportesReqCom');
+        Route::post('reportesCompras/OrdenesCompra',[controladorGerenciaGen::class,'reporteOrd'])->name('reportesOrdCom');
     });
     
     Route::middleware(['check.role:Gerente Area'])->group(function () {
