@@ -69,9 +69,11 @@
                             @if (empty($solicitudes->ordenCompra))
                                 <th>No generada aún</th>
                             @else
+                            <th>
                                 <a href="{{ asset($solicitudes->ordenCompra) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
+                            </th>
                             @endif
                             <th>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
