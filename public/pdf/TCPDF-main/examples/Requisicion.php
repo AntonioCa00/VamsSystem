@@ -111,7 +111,7 @@ $pdf->SetFont('helvetica', 'A', 11);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(160, 5, 'Notas', 1, 1, 'C', 1);
 // notas que agrega el solicitante
-$pdf->Cell(160, 5, $Nota, 1, 1 ,'C', 0 );
+$pdf->MultiCell(160, 5, $Nota, 1, 1 ,'C', 0 );
 
 
 $pdf->SetY(260); // Ajusta la posición Y según tus necesidades
