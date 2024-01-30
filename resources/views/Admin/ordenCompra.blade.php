@@ -84,7 +84,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
+                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de orden de compra</h6></button>
                 </form>
             </div>
         </div>

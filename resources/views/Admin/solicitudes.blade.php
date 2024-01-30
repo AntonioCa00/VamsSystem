@@ -72,7 +72,7 @@
                             <th>
                                 @if ($solicitudes->estado === "Aprobado" || $solicitudes->estado === "Cotizado")
                                     <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
-                                        Cotizar
+                                        Cargar cotizaciones
                                     </a>                                    
                                 @elseif ($solicitudes->estado === "Validado" ||$solicitudes->estado ==="Comprado")
                                     <a class="btn btn-primary" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">

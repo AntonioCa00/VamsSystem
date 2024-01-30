@@ -37,14 +37,6 @@
                     </thead>
                     <tbody>
                         <tr>
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-                            @foreach ($validadas as $validada)
-=======
->>>>>>> parent of 1d7ca16 (Merge pull request #17 from AntonioCa00/Diego)
-                        <th class="text-center">{{ $loop->iteration }}</th>
-=======
->>>>>>> Stashed changes
                             <th>{{$validada->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($validada->reqPDF) }}" target="_blank">
@@ -119,14 +111,6 @@
                         </tr>
                         @foreach ($cotizaciones as $cotizacion)
                         <tr>
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-                            <th class="text-center">{{ $loop->iteration }}</th>
-=======
-                        <th class="text-center">{{ $loop->iteration }}</th> 
->>>>>>> Stashed changes
-=======
->>>>>>> parent of 1d7ca16 (Merge pull request #17 from AntonioCa00/Diego)
                             <th>{{$cotizacion->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
