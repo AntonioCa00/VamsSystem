@@ -47,11 +47,7 @@ class Login extends Controller
     public function logout(){
         if(Session::has('loginId')){
             Session::pull('loginId');
-            session()->forget('datos');
-            session()->forget('ordenCom');
-            session()->forget('entrada');
-            session()->forget('salida');
-            session()->forget('datosAlm');
+            session()->flush();
             return redirect('/');
         }
     }
