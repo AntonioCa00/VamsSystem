@@ -15,6 +15,9 @@ class Unidades extends Model
         'anio_unidad',
         'marca',
         'modelo',
+        'caracteristicas',
+        'n_de_serie',
+        'n_de_permiso',
         'estatus',
         'created_at',
         'updated_at'

@@ -18,22 +18,20 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Codigo de la unidad:</label>
-                    <input name="id_unidad" type="text" class="form-control" placeholder="Placas de la unidad">
+                    <input name="id_unidad" type="text" class="form-control" placeholder="Placas de la unidad" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Tipo de vehiculo</label>
-                    <select name="tipo" class="form-control">
+                    <select name="tipo" class="form-control" required>
                         <option selected disabled value="">Selecciona el tipo de vehiculo</option>
-                        <option>Camión</option>
-                        <option>Autobús</option>
+                        <option>Camión</option>                
                         <option>Camioneta</option>
-                        <option>Trailer</option>
                         <option>Automovil</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Estado:</label>
-                    <select name="estado" class="form-control" >
+                    <select name="estado" class="form-control" required>
                         <option selected disabled value="">Selecciona el estado en el que se encuentra el vehiculo</option>
                         <option>Activo</option>
                         <option>Inactivo</option>
@@ -41,15 +39,27 @@
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Año:</label>
-                    <input name="anio_unidad" type="number" class="form-control" placeholder="Año de la unidad">
+                    <input name="anio_unidad" type="number" class="form-control" placeholder="Año de la unidad" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Marca:</label>
-                    <input name="marca" type="text" class="form-control" placeholder="Marca de la unidad">
+                    <input name="marca" type="text" class="form-control" placeholder="Marca de la unidad" required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Modelo:</label>
-                    <input name="modelo" type="text" class="form-control" placeholder="Modelo especifico de la unidad">
+                    <input name="modelo" type="text" class="form-control" placeholder="Modelo especifico de la unidad" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Caracteristicas:</label>
+                    <input name="caracteristicas" type="text" class="form-control" placeholder="Color particular del vehiculo"required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Numero de serie:</label>
+                    <input name="serie" type="text" class="form-control" placeholder="Numero de serie del vehiculo"required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Numero de permiso:</label>
+                    <input name="permiso" type="text" class="form-control" placeholder="Numero de permiso del vehiculo"required>
                 </div>
                 <button type="submit" class="btn btn-primary">Registrar unidad</button>
             </form>

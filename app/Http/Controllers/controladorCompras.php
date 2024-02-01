@@ -148,6 +148,9 @@ class controladorCompras extends Controller
         "anio_unidad"=>$req->input('anio_unidad'),
         "marca"=>$req->input('marca'),
         "modelo"=>$req->input('modelo'),
+        "caracteristicas"=>$req->input('caracteristicas'),
+        "n_de_serie"=>$req->input('serie'),
+        "n_de_permiso"=>$req->input('permiso'),
         "estatus"=>"1",
         "created_at"=>Carbon::now(),
         "updated_at"=>Carbon::now()
@@ -169,8 +172,10 @@ class controladorCompras extends Controller
             "anio_unidad"=>$req->input('anio_unidad'),
             "marca"=>$req->input('marca'),
             "modelo"=>$req->input('modelo'),
-            "estatus"=>"1",
-            "created_at"=>Carbon::now(),
+            "caracteristicas"=>$req->input('caracteristicas'),
+            "n_de_serie"=>$req->input('serie'),
+            "n_de_permiso"=>$req->input('permiso'),
+            "estatus"=>"1",        
             "updated_at"=>Carbon::now()
         ]);
 

@@ -52,6 +52,18 @@
                     <label for="exampleFormControlInput1">Modelo:</label>
                     <input name="modelo" value="{{$unidad->modelo}}" type="text" class="form-control" placeholder="Modelo de la unidad" required>
                 </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Caracteristicas:</label>
+                    <input name="caracteristicas" value="{{$unidad->caracteristicas}}" type="text" class="form-control" placeholder="Color particular del vehiculo"required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Numero de serie:</label>
+                    <input name="serie" type="text" value="{{$unidad->n_de_serie}}" class="form-control" placeholder="Numero de serie del vehiculo"required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Numero de permiso:</label>
+                    <input name="permiso" type="text" value="{{$unidad->n_de_permiso}}" class="form-control" placeholder="Numero de permiso del vehiculo"required>
+                </div>
                 <button type="submit" class="btn btn-primary">Editar unidad</button>
             </form>
         </div>
