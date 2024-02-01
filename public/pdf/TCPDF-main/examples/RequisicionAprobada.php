@@ -106,7 +106,7 @@ $pdf->Cell(160, 5, 'Notas', 1, 1, 'C', 1);
 
 $pdf->MultiCell(160, 5, 'Notas requisicion: '.$datos->notas, 1 ,'C', 0 );
 if (!empty($notas)){
-    $pdf->MultiCell(160, 5, 'comentarios encargado: '.$notas, 1 ,'C', 0 );
+    $pdf->MultiCell(160, 5, 'Comentarios encargado: '.$notas, 1 ,'C', 0 );
 }
 
 $pdf->SetY(260); // Ajusta la posición Y según tus necesidades

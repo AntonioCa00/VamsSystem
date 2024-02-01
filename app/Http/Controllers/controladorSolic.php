@@ -144,7 +144,7 @@ class controladorSolic extends Controller
                     "usuario_id"=>session('loginId'),
                     "unidad_id" => $req->input('unidad'),
                     "pdf" => $rutaDescargas,
-                    "notas" => $notas,                    
+                    "notas" => $Nota,                    
                     "estado"=> "Solicitado",
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
@@ -155,7 +155,7 @@ class controladorSolic extends Controller
                     "usuario_id"=>session('loginId'),
                     "pdf" => $rutaDescargas,
                     "estado"=> "Solicitado",
-                    "notas"=> $notas,
+                    "notas"=> $Nota,
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
                 ]);
