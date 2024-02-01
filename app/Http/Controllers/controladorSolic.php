@@ -140,18 +140,22 @@ class controladorSolic extends Controller
             
             if(session('departamento') === "Mantenimiento"){
                 DB::table('requisiciones')->insert([
+                    "id_requisicion"=>$idcorresponde,
                     "usuario_id"=>session('loginId'),
                     "unidad_id" => $req->input('unidad'),
-                    "pdf" => $rutaDescargas,                    
+                    "pdf" => $rutaDescargas,
+                    "notas" => $notas,                    
                     "estado"=> "Solicitado",
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
                 ]);
             } else{
                 Requisiciones::create([
+                    "id_requisicion"=>$idcorresponde,
                     "usuario_id"=>session('loginId'),
                     "pdf" => $rutaDescargas,
                     "estado"=> "Solicitado",
+                    "notas"=> $notas,
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
                 ]);

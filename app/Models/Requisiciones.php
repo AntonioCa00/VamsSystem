@@ -12,6 +12,7 @@ class Requisiciones extends Model
     'id_requisicion',
         'usuario_id',        
         'pdf',
+        'notas',
         'estado',
         'created_at',
         'updated_at'
