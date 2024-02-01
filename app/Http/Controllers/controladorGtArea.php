@@ -232,7 +232,7 @@ class controladorGtArea extends Controller
         }
 
         $notas = $req->Comentarios;
-        $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
+        $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->where('requisiciones.id_requisicion',$rid)
         ->first();
