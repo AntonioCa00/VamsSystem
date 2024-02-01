@@ -22,7 +22,7 @@
                             <th>Estado:</th>
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
-                            <th>Kilometraje:</th>
+                            <th>Modelo:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -34,7 +34,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->kilometraje}} kms</th>
+                            <th>{{$unidad->modelo}}</th>
                             <th>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
                                     Activar

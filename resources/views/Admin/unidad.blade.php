@@ -84,6 +84,9 @@
                             <th>Año Unidad:</th>
                             <th>Marca:</th>
                             <th>Modelo:</th>
+                            <th>Caracteristicas:</th>
+                            <th>N° serie</th>
+                            <th>N° permiso</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -95,7 +98,10 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->modelo}}</th>
+                            <th>{{$unidad->modelo}}</th>                            
+                            <th>{{$unidad->caracteristicas  }}</th>
+                            <th>{{$unidad->n_de_serie}}</th>
+                            <th>{{$unidad->n_de_permiso}}</th>
                             <th>
                                 <a href="{{route('editUnidad',$unidad->id_unidad)}}" class="btn btn-primary">Editar</a>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
