@@ -27,10 +27,11 @@ class controladorSolic extends Controller
     
     public function tableRequisicion(){
         $solicitudes = Requisiciones::where('requisiciones.usuario_id',session('loginId'))
+        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
-        ->leftJoin('users','users.id','=','comentarios.usuario_id')
-        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol','comentarios.created_at as fechaCom')
+        ->leftJoin('users','users.id','=','comentarios.usuario_id')        
         ->orderBy('requisiciones.created_at','desc')
+        ->groupBY('requisiciones.id_requisicion')
         ->get();
         return view('Solicitante.requisiciones',compact('solicitudes'));
     }

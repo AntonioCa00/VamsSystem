@@ -63,12 +63,12 @@
                                 </a>
                             </th>
                             <th>
-                                <a href="#" data-toggle="modal" data-target="#Comentarios">
+                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitud->id_requisicion}}">
                                     <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
                                 </a>
                                 
                                 @if (empty($solicitud->detalles))
-                                    <div class="modal fade" id="Comentarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    <div class="modal fade" id="Comentarios{{$solicitud->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -86,7 +86,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <div class="modal fade" id="Comentarios" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    <div class="modal fade" id="Comentarios{{$solicitud->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
