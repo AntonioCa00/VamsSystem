@@ -133,7 +133,7 @@
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div> --}} <!-- Fin de la clase col-xl-4 col-md-6 mb-4 -->
     </div>
 </div>
 @endsection

@@ -54,7 +54,7 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
     
         //RUTAS ADMIN-COMPRAS
-        Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index');
+        Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index'); 
         Route::get('graficas', [controladorCompras::class, 'charts'])->name('charts');
         Route::get('almacen/Compras', [controladorCompras::class, 'tableRefaccion'])->name('refacciones');
         Route::get('entradas/Compras',[controladorCompras::class,'tableEntradas'])->name('entradas');

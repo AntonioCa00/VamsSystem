@@ -148,6 +148,9 @@ class controladorCompras extends Controller
         "anio_unidad"=>$req->input('anio_unidad'),
         "marca"=>$req->input('marca'),
         "modelo"=>$req->input('modelo'),
+        "caracteristicas"=>$req->input('caracteristicas'),
+        "n_de_serie"=>$req->input('serie'),
+        "n_de_permiso"=>$req->input('permiso'),
         "estatus"=>"1",
         "created_at"=>Carbon::now(),
         "updated_at"=>Carbon::now()
@@ -169,8 +172,10 @@ class controladorCompras extends Controller
             "anio_unidad"=>$req->input('anio_unidad'),
             "marca"=>$req->input('marca'),
             "modelo"=>$req->input('modelo'),
-            "estatus"=>"1",
-            "created_at"=>Carbon::now(),
+            "caracteristicas"=>$req->input('caracteristicas'),
+            "n_de_serie"=>$req->input('serie'),
+            "n_de_permiso"=>$req->input('permiso'),
+            "estatus"=>"1",        
             "updated_at"=>Carbon::now()
         ]);
 
@@ -346,14 +351,57 @@ class controladorCompras extends Controller
     }
 
     public function insertProveedor(Request $req){
-        Proveedores::create([
-            "nombre"=>$req->input('nombre'),
-            "telefono"=>$req->input('telefono'),
-            "correo"=>$req->input('correo'),
-            "estatus"=>"1",
-            "created_at"=>Carbon::now(),
-            "updated_at"=>Carbon::now()
+        $req->validate([
+            'archivo_CIF' =>'required|file|mimes:pdf',
         ]);
+
+        $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+        $archivo = $req->file('archivo_CIF');
+        $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+    
+        $archivo->storeAs('CIF', $nombreArchivo, 'public');
+        $CIF_pdf = 'CIF/' . $nombreArchivo;        
+
+        if(!empty($req->banco) || !empty($req->n_cuenta) || !empty($req->n_cuenta_clabe)) {
+            // Solo validar 'archivo_estadoCuenta' si se cumplen las condiciones
+            $req->validate([
+                'archivo_estadoCuenta' => 'required|file|mimes:pdf',
+            ]);
+
+            $archivo = $req->file('archivo_estadoCuenta');
+            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+            Proveedores::create([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>$estadoCuenta_pdf,
+                "estatus"=>"1",
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+        }else{
+            Proveedores::create([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+            ]);
+        }
 
         return redirect('proveedores/Compras')->with('insert','insert');
     }
@@ -364,13 +412,119 @@ class controladorCompras extends Controller
     }
 
     public function updateProveedor(Request $req,$id){
+        $proveedor = Proveedores::where('id_proveedor',$id)->first();
+        if(($req->banco != $proveedor->banco || $req->n_cuenta != $proveedor->n_cuenta || $req->n_cuenta_banco != $proveedor->n_cuenta_banco) || $req->hasFile('archivo_estadoCuenta') && $req->file('archivo_estadoCuenta')->isValid()){
+            $req->validate([
+                'archivo_estadoCuenta' => 'required|file|mimes:pdf',
+            ]);
+
+            if (!empty($proveedor->estado_cuenta)) {
+                $fileToDelete = public_path($proveedor->estado_cuenta);
+                // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
+                if (file_exists($fileToDelete)) {
+                    unlink($fileToDelete);
+                }
+            }
+        
+            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_estadoCuenta');
+            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+            if(empty($req->archivo_CIF)){
+                Proveedores::where('id_proveedor',$id)->update([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),  
+                    "banco"=>$req->input('banco'),
+                    "n_cuenta"=>$req->input('n_cuenta'),
+                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                    "estado_cuenta"=>$estadoCuenta_pdf
+                ]);                
+            }else{
+                if (!empty($proveedor->CIF)) {
+                    $fileToDelete = public_path($proveedor->CIF);
+                    // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
+                    if (file_exists($fileToDelete)) {
+                        unlink($fileToDelete);
+                    }
+                }
+
+                $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+                $archivo = $req->file('archivo_CIF');
+                $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            
+                $archivo->storeAs('CIF', $nombreArchivo, 'public');
+                $CIF_pdf = 'CIF/' . $nombreArchivo;                        
+
+                Proveedores::where('id_proveedor',$id)->update([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),                    
+                    "CIF"=>$CIF_pdf,
+                    "banco"=>$req->input('banco'),
+                    "n_cuenta"=>$req->input('n_cuenta'),
+                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                    "estado_cuenta"=>$estadoCuenta_pdf
+                ]);                
+            }      
+        } else{
+            if(empty($req->archivo_CIF)){
+                Proveedores::where('id_proveedor',$id)->update([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),                    
+                ]);                
+            }else{
+                // Primero, verifica que $proveedor->CIF contenga un valor.
+                if (!empty($proveedor->CIF)) {
+                    $fileToDelete = public_path($proveedor->CIF);
+                    // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
+                    if (file_exists($fileToDelete)) {
+                        unlink($fileToDelete);
+                    }
+                }
+
+                $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+                $archivo = $req->file('archivo_CIF');
+                $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            
+                $archivo->storeAs('CIF', $nombreArchivo, 'public');
+                $CIF_pdf = 'CIF/' . $nombreArchivo;                        
+
+                Proveedores::where('id_proveedor',$id)->update([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),                    
+                    "CIF"=>$CIF_pdf
+                ]);                
+            }      
+        }
+
         Proveedores::where('id_proveedor',$id)->update([
             "nombre"=>$req->input('nombre'),
             "telefono"=>$req->input('telefono'),
             "correo"=>$req->input('correo'),
             "updated_at"=>Carbon::now(),
         ]);
-
+        
         return redirect('proveedores/Compras')->with('update','update');
     }
 
@@ -392,10 +546,21 @@ class controladorCompras extends Controller
 
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
-        $proveedores = Proveedores::select('id_proveedor','nombre')
-        ->where('estatus',1)->orderBy('nombre','asc')->get();
+        $proveedores = Proveedores::
+        where('estatus',1)->orderBy('nombre','asc')->get();
 
         return view('Admin.ordenCompra',compact('cotizacion','proveedores','id','articulos'));
+    }
+
+    public function obtenerDatosBancarios($id){
+        // Suponiendo que tienes un modelo Proveedor con una relación a una entidad de datos bancarios
+        $proveedor = Proveedores::with('datosBancarios')->find($id);
+
+        if (!$proveedor) {
+            return response()->json(['mensaje' => 'Proveedor no encontrado'], 404);
+        }
+        // Suponiendo que la relación se llama datosBancarios y quieres retornar esos datos
+        return response()->json($proveedor->datosBancarios);
     }
 
     public function insertOrdenCom(Request $req, $cid,$rid){
