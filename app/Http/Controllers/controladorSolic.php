@@ -54,6 +54,7 @@ class controladorSolic extends Controller
     public function tableRequisicion(){
         // Realiza la consulta a la base de datos para obtener las requisiciones del usuario y la información relacionada de las tablas 'comentarios' y 'users'
         $solicitudes = Requisiciones::where('requisiciones.usuario_id',session('loginId'))
+        ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
         ->leftJoin('users','users.id','=','comentarios.usuario_id')
         ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol','comentarios.created_at as fechaCom')
