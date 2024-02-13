@@ -111,7 +111,7 @@ if(!empty($unidad)){
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
     $pdf->Cell(180, 7, 'Unidad', 1, 1, 'C', 1);
     // notas que agrega el solicitante
-    $pdf->MultiCell(180, 6,'Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+    $pdf->MultiCell(180, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 1 ,'C', 0 );
 }
 
 $pdf->Ln(10); // Salto de línea antes de la tabla   
@@ -125,23 +125,39 @@ $pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
 $pdf->MultiCell(180, 5, $Nota, 1, 1 ,'C', 0 );
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(0, 10, "Proveedor seleccionado", 0, 1, 'C',0);
 
 // Crear la tabla de gastos
 
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(160, 7, 'Nombre', 1, 1, 'C', 1);
-$pdf->MultiCell(160, 7, $nombre, 1,1);
+$pdf->Cell(180, 7, 'Nombre', 1, 1, 'C', 1);
+$pdf->MultiCell(180, 7, $datosProveedor->nombre, 1,1);
 $pdf->Cell(35, 7, 'Telefono', 1, 0, 'C', 1);
-$pdf->Cell(75, 7, 'Correo', 1, 0, 'C', 1);
-$pdf->Cell(30, 7, 'ID_proveedor', 1, 0, 'C', 1);
-$pdf->Cell(20, 7, 'Estado', 1, 1, 'C', 1);
+$pdf->Cell(55, 7, 'Nombre del contacto', 1, 0, 'C', 1);
+$pdf->Cell(60, 7, 'Correo de empresa', 1, 0, 'C', 1);
+$pdf->Cell(30, 7, 'RFC', 1, 1, 'C', 1);
+$pdf->Cell(35, 7, $datosProveedor->telefono, 1);
+$pdf->Cell(55, 7, $datosProveedor->contacto, 1);
+$pdf->Cell(60, 7, $datosProveedor->correo, 1);
+$pdf->Cell(30, 7, $datosProveedor->id_proveedor , 1,1);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
+$pdf->SetFont('helvetica', '', 10);
+if ((!empty($datosProveedor->banco) && !empty($datosProveedor->n_cuenta) && !empty($datosProveedor->n_cuenta_clabe))){
+    $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
+    $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
+    $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
+    $pdf->Cell(60, 7, $datosProveedor->banco, 1);
+    $pdf->Cell(60, 7, $datosProveedor->n_cuenta, 1);
+    $pdf->Cell(60, 7, $datosProveedor->n_cuenta_clabe, 1,1);
+    $pdf->Cell(50, 7, 'Condicion de pago: '.$condiciones, 1, 0, 'C', 1);
+    $pdf->Cell(130, 7, 'Días de credito acordados: '. $dias, 1, 1, 'C', 1);
+}else{
+    $pdf->Cell(180, 7, 'No se han cargado los datos bancarios de este proveedor', 1, 1, 'C', 1);
+}
 
-$pdf->Cell(35, 7, $telefono, 1);
-$pdf->Cell(75, 7, $correo, 1);
-$pdf->Cell(30, 7, $idProveedor , 1);
-$pdf->Cell(20, 7, $estatus , 1, 1); 
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
@@ -165,12 +181,13 @@ $pdf->Line(75, $y, 130, $y);
 $pdf->Line(140, $y, 190, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '              Gerente de area                                  Aprueba compras                         Gerente general ', 0, 1, 'A', 0);
+$pdf->Cell(0, 10, '     Gerente de area                                 Aprueba compras                                   Gerente general ', 0, 1, 'A', 0);
 
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
-$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
+// $rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
+$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

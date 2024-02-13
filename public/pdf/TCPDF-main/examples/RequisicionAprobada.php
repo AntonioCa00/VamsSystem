@@ -134,6 +134,6 @@ $pdf->Cell(0, 10, '              Solicita                                       
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'requisicion_' .$datos['id_requisicion']. '.pdf';
-$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+$rutaDescarga = 'D:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

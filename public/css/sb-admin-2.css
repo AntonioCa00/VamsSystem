@@ -53,6 +53,11 @@
   box-sizing: border-box;
 }
 
+.modal-body-scrollable {
+  max-height: 10px; 
+  overflow-y: auto;
+}
+
 html {
   font-family: sans-serif;
   line-height: 1.15;

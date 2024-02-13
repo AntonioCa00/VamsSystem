@@ -13,11 +13,17 @@ class Login extends Controller
         return view("login");
     }
 
-    public function loginUser (Request $req){
-        $user = User::where('nombres', '=', $req->nombre)->first();
-        if ($user){
-            if($user->password == $req->contrasena){
+    /* 
+        TODO: Función que valida la existencia del usuario en la base de datos y permitir o rechazar el acceso
 
+        @returns redireccion a la vista permitida
+    */
+    public function loginUser (Request $req){
+        $user = User::where('nombres', '=', $req->nombre)->first(); //Hace la consulta basada en el nombre de usuario
+        if ($user){ //valida que exista un usuario llamdado así
+            if($user->password == $req->contrasena){  //Compara las contraseñas para iniciar sesion
+
+                //Agrega todos los datos del usuario a la session activa
                 $req->session()->put('loginId',$user->id);
                 $req->session()->put('loginNombres',$user->nombres);
                 $req->session()->put('loginApepat',$user->apellidoP);
@@ -25,6 +31,7 @@ class Login extends Controller
                 $req->session()->put('rol', $user->rol);
                 $req->session()->put('departamento', $user->departamento);
 
+                //Asigna una redireccion a la vista correspondiente segun su rol
                 if($user->rol == "Compras"){
                     return redirect('inicio/Compras')->with('entra','entra');
                 }elseif ($user->rol == "Gerencia General"){
@@ -37,17 +44,24 @@ class Login extends Controller
                     return redirect('inicio')->with('entra','entra');
                 }
             } else{
+                //en caso de no coincidir las contraseñas regresa un mensaje de revisar contraseñas
                 return back()->with('contras','contras');    
             }
-        } else {
+        } else { 
+            //en caso de no encontrar el nombre de usuario regresa un mensaje de revisar información
             return back()->with('error','error');
         }
     }
 
+    /*
+    TODO: Función que cierra la sesion iniciada
+    
+    @return redireccion a la vista del login
+    */
     public function logout(){
-        if(Session::has('loginId')){
-            Session::pull('loginId');
-            session()->flush();
+        if(Session::has('loginId')){ //valida si existe una session creada
+            Session::pull('loginId'); //Termina la session
+            session()->flush(); //Elimina la informacion almacenada en la session del usuario
             return redirect('/');
         }
     }

@@ -108,7 +108,8 @@
                                 @endif
                             </th>
                             <th>                                
-                                @if($solicitud->estado === "Solicitado")
+                                @if($solicitud->estado === "Solicitado" || $solicitud->estado === "Rechazado")
+                                <a href="{{route('editReq',$solicitud->id_requisicion)}}" class="btn btn-primary">Editar requisición</a>
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitud->id_requisicion}}">
                                     Eliminar
                                 </a>

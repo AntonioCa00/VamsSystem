@@ -175,6 +175,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('salidas', [controladorSolic::class, 'tableSalidas'])->name('salidasSoli');
         Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
+        Route::get('solicitud/edit/{id}',[controladorSolic::class,'editReq'])->name('editReq');
         Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
@@ -183,6 +184,10 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-array/{index}',[controladorSolic::class,'deleteArray'])->name('eliminarElemento');
         Route::post('solicitud',[controladorSolic::class,'insertSolicitud'])->name('insertSolicitud');
         Route::delete('delete-solici/{id}',[controladorSolic::class,'deleteSolicitud'])->name('deleteSolicitud');
+        Route::put('update-solici/{id}',[controladorSolic::class,'updateSolicitud'])->name('updateSolicitud');
+        Route::post('create-articulo/{id}',[controladorSolic::class,'createArt'])->name('createArt');
+        Route::put('update-articulo/{id}',[controladorSolic::class,'updateArt'])->name('updateArt');
+        Route::delete('delete-Articulo/{id}',[controladorSolic::class,'deleteArt'])->name('deleteArt');
         Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
