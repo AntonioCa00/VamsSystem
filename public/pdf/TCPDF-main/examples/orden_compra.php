@@ -187,7 +187,8 @@ $pdf->Cell(0, 10, '     Gerente de area                                 Aprueba 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
-// $rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
+
+//$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');
