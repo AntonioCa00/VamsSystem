@@ -48,7 +48,6 @@
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
                             <th>Precio unitario SIN IVA:</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -70,19 +69,31 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer py-3 text-center">
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Notas:</label>
-                        <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
-                    </div>
+            <div class="card-footer py-3">                    
                     <div class="form-group">
                         <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA</label>
-                        <select name="Proveedor" class="form-control" required>
+                        <select name="Proveedor" id="proveedor" class="form-control" required>
                             <option value="" selected disabled>Selecciona el proveedor de este articulo:</option>
                             @foreach ($proveedores as $proveedor)                            
                                 <option value="{{$proveedor->id_proveedor}}">{{$proveedor->nombre}}</option>
                             @endforeach
                         </select>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Condiciones de pago:</label>
+                        <select name="condiciones" id="condicionPago" class="form-control" required>
+                            <option value="" selected disabled>Selecciona la condicion de pago acordada:</option>
+                            <option value="Contado">Contado</option>
+                            <option value="Credito">Crédito</option>
+                        </select>
+                    </div>
+                    <div id="datosBancarios" style="display: none;">
+                        <label for="banco">Días de credito acordado:</label>
+                        <input type="text" class="form-control" style="width: 60%" id="banco" name="dias"><br>                      
+                    </div>             
+                    <div class="form-group mt-4">
+                        <label for="exampleFormControlInput1">Notas:</label>
+                        <input name="Notas" type="text" class="form-control" value="" placeholder="Agrega notas si necesario">
                     </div>
                     <button type="submit" class="btn btn-primary"><h6 >Crear formato de orden de compra</h6></button>
                 </form>
@@ -90,4 +101,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('condicionPago').addEventListener('change', function() {
+    var valor = this.value;
+    var datosBancarios = document.getElementById('datosBancarios');
+    
+    if (valor == 'Credito') {
+        datosBancarios.style.display = 'block';
+    } else {
+        datosBancarios.style.display = 'none';
+    }
+});
+</script>
 @endsection

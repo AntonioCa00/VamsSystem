@@ -37,18 +37,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($datos as $index => $dato)
+                        @foreach($articulos as $articulo)
                         <tr>
-                            <th>{{ $dato['cantidad'] }}</th>
-                            <th>{{ $dato['unidad'] }}</th>
-                            <th>{{ $dato['descripcion'] }}</th>                            
-                            <th>
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $index }}">
+                            <th>{{ $articulo->cantidad }}</th>
+                            <th>{{ $articulo->unidad}}</th>
+                            <th>{{ $articulo->descripcion}}</th>
+                            <th>                                
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $articulo->id }}">
                                     Editar
-                                </button>                                
+                                </button>
                             </th>
                             <th>
-                                <form action="{{ route('eliminarElemento', ['index' => $index]) }}" method="post">
+                                <form action="{{ route('deleteArt', $articulo->id) }}" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-primary">Eliminar</button>
@@ -57,29 +57,30 @@
                         </tr>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="editarModal{{ $index }}" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel{{ $index }}" aria-hidden="true">
+                        <div class="modal fade" id="editarModal{{ $articulo->id }}" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel{{ $articulo->id }}" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="editarModalLabel{{ $index }}">Editar Elemento</h5>
+                                        <h5 class="modal-title" id="editarModalLabel{{ $articulo->id }}">Editar Elemento</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('editArray', ['index' => $index]) }}" method="post">
+                                        <form action="{{ route('updateArt', $articulo->id) }}" method="post">
+                                            {!!method_field('PUT')!!}   
                                             @csrf
                                             <div class="form-group">
-                                                <label for="editCantidad{{ $index }}">Cantidad:</label>
-                                                <input type="text" class="form-control" name="editCantidad" id="editCantidad{{ $index }}" value="{{ $dato['cantidad'] }}">
+                                                <label>Cantidad:</label>
+                                                <input type="text" class="form-control" name="editCantidad" value="{{ $articulo->cantidad}}">
                                             </div>
                                             <div class="form-group">
-                                                <label for="editCantidad{{ $index }}">Unidad de medida:</label>
-                                                <input type="text" class="form-control" name="editUnidad" id="editCantidad{{ $index }}" value="{{ $dato['unidad'] }}">
+                                                <label>Unidad de medida:</label>
+                                                <input type="text" class="form-control" name="editUnidad" value="{{ $articulo->unidad}}">
                                             </div>
                                             <div class="form-group">
-                                                <label for="editCantidad{{ $index }}">Descripcion:</label>
-                                                <input type="text" class="form-control" name="editDescripcion" id="editCantidad{{ $index }}" value="{{ $dato['descripcion'] }}">
+                                                <label>Descripcion:</label>
+                                                <input type="text" class="form-control" name="editDescripcion" value="{{ $articulo->descripcion}}">
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -92,7 +93,7 @@
                     </tbody>
                 </table>
             </div>
-            <form action="{{route('arraySoli')}}" method="post">
+            <form action="{{route('createArt',$id)}}" method="post">
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
@@ -131,17 +132,19 @@
             </form>
         </div>
         <div class="card-footer py-3 text-center">
-            <form action="{{route('requisicion')}}" method="post">
+            <form action="{{route('updateSolicitud',$id)}}" method="post">
                 @csrf
+                {!!method_field('PUT')!!}
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Notas:</label>
-                    <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
+                    <input name="Notas" type="text" class="form-control" value="{{$unidad->notas}}" placeholder="Agrega notas si necesario">
                 </div>
                 @if(session('departamento')=== "Mantenimiento")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         <select name="unidad" class="form-control" required>
-                            <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
+                            <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                            <option disabled>Selecciona una unidad en caso de cambiar de unidad la requisicion</option>
                             @foreach ($unidades as $unidad)                            
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             @endforeach

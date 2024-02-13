@@ -20,9 +20,23 @@ use DB;
 
 class controladorGtArea extends Controller
 {
+
+    /*
+      TODO: Recopila datos para la visualización de informes de gestión en el área correspondiente.
+     
+      Este método se encarga de compilar datos detallados de operaciones de compra por mes y totales anuales,
+      así como el conteo de requisiciones completas y pendientes. Utiliza la clase Orden_compras para sumar los costos totales
+      de las compras realizadas en cada mes del año actual y calcula los totales de compras para el mes y año en curso.
+      Además, cuenta las requisiciones en estado 'Comprado' y las requisiciones pendientes que no están 'Compradas' ni 'Rechazadas'
+      para el departamento del usuario actual.
+     
+      Retorna la vista 'GtArea.index' con los datos compilados para informes de gestión.
+    */
     public function index(){
-        //Datos para graficas
+        // Datos actuales y preparación de sumas de costos de orden de compra por mes y totales anuales
         $anio_actual = date('Y');
+
+        // Consultas para sumar los costos totales por cada mes del año actual
         $Enero = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
@@ -83,29 +97,33 @@ class controladorGtArea extends Controller
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
             ->first();
 
-        //Suma por mes
+        // Suma total de costos para el mes actual
         $mesActual = now()->format('m'); 
         $TotalMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
 
-        //Suma por año 
+        // Suma total de costos para el año en curso
         $anioActual = now()->year;
         $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
 
+        // Conteo de requisiciones completas
         $completas = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
         ->where('requisiciones.estado', 'Comprado')
         ->count();
 
+        // Conteo de requisiciones pendientes
         $pendiente = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
         ->where('users.departamento',session('departamento'))
         ->where('requisiciones.estado','!=', 'Comprado')
         ->where('requisiciones.estado','!=','Rechazado')
         ->count();
 
+        // Pasar los datos a la vista
         return view("GtArea.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
             'TotalMes'=>$TotalMes,
             'TotalAnio'=>$TotalAnio,
+            // Datos de costos por mes
             'enero'      => $Enero,
             'febrero'    => $Febrero,
             'marzo'      => $Marzo,
@@ -120,19 +138,44 @@ class controladorGtArea extends Controller
             'diciembre'  => $Diciembre,]);
     }
 
+    /*
+      TODO: Obtiene todas las refacciones activas del almacén y las muestra en una vista específica.
+     
+      Este método consulta la tabla 'Almacen' para recuperar todas las entradas de refacciones
+      que tienen un estatus activo (estatus = 1). Se asume que el estatus '1' indica que las refacciones
+      están disponibles o activas para uso o asignación. 
+     
+      Retorna la vista 'GtArea.refaccion', pasando los datos de las refacciones activas.
+    */
     public function tableRefaccion(){
+        // Obtiene todas las refacciones del almacén que están activas (estatus = 1)
         $refacciones = Almacen::get()->where("estatus",1);
+
+        // Retorna la vista 'GtArea.refaccion', pasando la lista de refacciones activas
         return view('GtArea.refaccion',compact('refacciones'));
     }
 
+    /*
+      TODO: Recupera y muestra las unidades activas con ciertos criterios de filtrado.
+     
+      Este método realiza una consulta a la tabla 'Unidades' para obtener las unidades que cumplen con
+      los siguientes criterios: tener un estatus '1' (que indica unidades activas), no ser la unidad con 'id_unidad' igual a 1,
+      y tener un estado 'Activo'. Las unidades recuperadas son ordenadas en orden ascendente por su 'id_unidad'.
+     
+      Retorna la vista 'GtArea.unidad', pasando los datos de las unidades filtradas.
+    */
     public function tableUnidad()
     {   
+        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
         $unidades = Unidades::where('estatus','1')
         ->where('id_unidad','!=','1')
         ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+
+        // Retorna la vista 'GtArea.unidad', pasando la lista de unidades filtradas
         return view('GtArea.unidad',compact('unidades'));
     }
 
+    //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function tableEntradas(){
         $entradas = Entradas::select('entradas.id_entrada','requisiciones.pdf as reqPDF','orden_compras.pdf as ordPDF','entradas.factura','entradas.created_at')
         ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
@@ -142,6 +185,7 @@ class controladorGtArea extends Controller
         return view('GtArea.entradas',compact('entradas'));
     }
 
+    //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function tableSalidas(){
         $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombres','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
         ->join('almacen','salidas.refaccion_id','=','almacen.clave')
@@ -151,17 +195,55 @@ class controladorGtArea extends Controller
         return view('GtArea.salidas',compact('salidas'));
     }
 
+    /*
+      TODO: Recupera y muestra todos los proveedores activos.
+     
+      Este método consulta la tabla 'Proveedores' para obtener todos los registros de proveedores que tienen un estatus '1',
+      indicando que están activos. La selección de proveedores activos es crucial para operaciones de negocio,
+      ya que solo se deberían realizar transacciones con proveedores que están actualmente activos y disponibles.      
+     
+      Retorna la vista 'GtArea.proveedores', pasando la lista de proveedores activos.
+    */    
     public function tableProveedores(){
+        // Obtiene todos los proveedores activos (estatus = 1) de la base de datos
         $proveedores = Proveedores::where('estatus','1')->get();
+
+        // Retorna la vista 'GtArea.proveedores', pasando la lista de proveedores activos
         return view('GtArea.proveedores',compact('proveedores'));
     }
 
+    /*
+      TODO: Recupera los detalles de un proveedor específico para su edición.
+     
+      Este método busca en la tabla 'Proveedores' un registro específico utilizando el ID del proveedor proporcionado como parámetro.
+      La búsqueda tiene como objetivo encontrar los detalles del proveedor que luego serán mostrados en la vista de edición,
+      permitiendo así que los usuarios actualicen la información del proveedor según sea necesario.
+     
+      @param  int  $id  El ID del proveedor que se desea editar.
+      Retorna la vista 'GtArea.editarProveedor', pasando los detalles del proveedor específico para su edición.
+    */
     public function editProveedor($id){
+        // Busca el proveedor específico por su ID
         $proveedor = Proveedores::where('id_proveedor',$id)->first();
+
+        // Retorna la vista de edición del proveedor, pasando los detalles del proveedor encontrado
         return view('GtArea.editarProveedor',compact('proveedor'));
     }
 
+    /*
+      Actualiza la información de un proveedor específico en la base de datos.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
+      la información de un proveedor específico identificado por su ID. Los campos actualizables incluyen el nombre,
+      teléfono y correo electrónico del proveedor. Además, se actualiza el campo 'updated_at' para reflejar
+      el momento de la actualización.
+     
+      @param  \Illuminate\Http\Request  $req  La petición HTTP que contiene los datos del formulario.
+      @param  int  $id  El ID del proveedor a actualizar.
+      Redirige al usuario a la lista de proveedores con una sesión flash que indica que la actualización fue exitosa.
+    */
     public function updateProveedor(Request $req,$id){
+        // Actualiza el registro del proveedor específico con los datos proporcionados
         Proveedores::where('id_proveedor',$id)->update([
             "nombre"=>$req->input('nombre'),
             "telefono"=>$req->input('telefono'),
@@ -169,19 +251,46 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Redirige al usuario a la lista de proveedores con un mensaje de éxito
         return redirect('proveedores/GtArea')->with('update','update');
     }
 
+    /*
+      TODO: Desactiva un proveedor específico marcándolo como inactivo en la base de datos.
+     
+      En lugar de eliminar el registro del proveedor, este método actualiza el campo 'estatus' a 0,
+      indicando que el proveedor está inactivo. Esto es útil para mantener la integridad de los datos y permitir
+      la recuperación del registro en el futuro si es necesario. Además, se actualiza el campo 'updated_at'
+      para reflejar el momento de la desactivación.
+     
+      @param  int  $id  El ID del proveedor a desactivar.
+      Redirige al usuario a la página anterior con una sesión flash que indica que el proveedor ha sido desactivado exitosamente.
+    */
     public function deleteProveedor($id){
+        // Actualiza el registro del proveedor específico para marcarlo como inactivo
         Proveedores::where('id_proveedor',$id)->update([
             "estatus"=>0,
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('delete','delete');
     }
 
+    /*
+      TODO: Recupera y muestra un listado de solicitudes, excluyendo las rechazadas, con información adicional.
+     
+      Este método consulta la base de datos para obtener un listado de todas las solicitudes que no han sido rechazadas.
+      Para cada solicitud, se recopila información detallada incluyendo el ID de la requisición, fecha de creación,
+      unidad asociada, estado de la solicitud, departamento y nombres del usuario solicitante, el archivo PDF asociado
+      a la requisición, los detalles del último comentario realizado, y el rol del usuario que hizo el último comentario.      
+      Las solicitudes se ordenan de manera descendente por su fecha de creación y se agrupan por el ID de la requisición
+      para evitar duplicados en los resultados. Los datos recopilados se pasan a la vista 'GtArea.solicitudes' para su visualización.
+     
+      Retorna la vista 'GtArea.solicitudes', pasando el listado de solicitudes recopiladas.
+    */
     public function tableSolicitud(){
+        // Recupera las solicitudes de la base de datos
         $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')
         ->select('requisiciones.id_requisicion','requisiciones.created_at','requisiciones.unidad_id','requisiciones.estado','us.departamento','us.nombres','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->join('users as us','requisiciones.usuario_id','us.id')
@@ -191,17 +300,44 @@ class controladorGtArea extends Controller
         ->groupBY('requisiciones.id_requisicion')
         ->get();
 
+        //Redirige al usuario a la página para visualizar la consulta
         return view('GtArea.solicitudes',compact('solicitudes'));
     }
 
-    //Regresa la vista con la lista de articulos de la requisicion inicial
+    /*
+      TODO: Recupera los artículos asociados a una solicitud específica para su aprobación.
+     
+      Este método busca en la base de datos todos los artículos vinculados a una requisición específica,
+      identificada por su ID. La intención es obtener una lista de artículos que necesitan ser revisados
+      y posiblemente aprobados. Esta funcionalidad permie a los usuarios con los permisos adecuados revisar 
+      los detalles de los artículos solicitados antes de proceder con la aprobación o el rechazo de la solicitud.
+     
+      @param  int  $id  El ID de la requisición cuyos artículos se van a recuperar para aprobación.    
+
+      Retorna la vista 'GtArea.aprobarSolicitud', pasando la lista de artículos asociados a la solicitud.
+    */
     public function aprobarArt($id){
+        // Busca todos los artículos vinculados a la ID de la requisición proporcionada
         $articulos = Articulos::where('requisicion_id',$id)->get();
+
+        // Retorna la vista para la aprobación de la solicitud, pasando los artículos recuperados
         return view('GtArea.aprobarSolicitud',compact('articulos'));
     }
 
-    //Edita los datos de los articulos pedidos
+    /*
+      TODO: Actualiza la información de un artículo específico basado en los datos proporcionados por el usuario.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
+      los detalles de un artículo específico en la base de datos. Los campos actualizables incluyen la cantidad,
+      unidad y descripción del artículo. Además, se actualiza el campo 'updated_at' para reflejar el momento
+      de la actualización.
+     
+      @param  int  $id  El ID del artículo que se va a actualizar.
+
+      Redirige al usuario a la página anterior tras la actualización exitosa del artículo.
+    */
     public function editarArt(Request $req, $id){
+        // Actualiza el registro del artículo específico con los datos proporcionados
         Articulos::where('id',$id)->update([
             "cantidad"=>$req->editCantidad,
             "unidad"=>$req->editUnidad,
@@ -209,42 +345,65 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la página anterior tras la actualización
         return back();
     }
 
-    //Elimina de la lista el articulo que no se aprueba
+    /*
+     TODO:Elimina un artículo específico de la base de datos.
+     
+      Este método se encarga de eliminar de forma permanente un registro de artículo específico,
+      identificado por su ID, de la base de datos. Es útil en situaciones donde un artículo ha sido rechazado
+      o ya no es necesario en una solicitud o requisición, permitiendo así mantener la base de datos limpia
+      y actualizada. 
+
+      @param  int  $id  El ID del artículo que se va a eliminar.
+
+      Redirige al usuario a la página anterior tras la eliminación exitosa del artículo.
+    */
     public function rechazaArt($id){
+        // Elimina el artículo específico por su ID
         Articulos::where('id',$id)->delete();
+
+        // Redirige al usuario a la página anterior tras la eliminación
         return back();
     }
 
-    //regresa los articulos definitivos que fueron aprobados    
+    /*
+      TODO: Aprueba una solicitud o requisición específica y actualiza su estado en la base de datos.
+
+      1. Recopila información detallada de la requisición y del usuario solicitante para su uso en la generación
+        del PDF de la solicitud aprobada.
+      2. Elimina el archivo PDF anterior asociado a la requisición, si existe.
+      3. Genera un nuevo PDF para la requisición aprobada utilizando una plantilla específica.
+      4. Actualiza el estado de la requisición a 'Aprobado' y guarda la ruta del nuevo PDF en la base de datos.
+      5. Crea un registro de comentario, si se proporcionan comentarios.
+     
+      @param  int  $rid El ID de la requisición que se va a aprobar.
+     
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la aprobación fue exitosa.
+    */
     public function aprobar(Request $req,$rid){
 
-        if(!empty($req->Comentarios)){
-            Comentarios::create([
-                "requisicion_id"=>$rid,
-                "usuario_id"=>session('loginId'),
-                "detalles"=>$req->Comentarios,
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]); 
-        }
-
+        // Recopilación de información de la requisición y generación del nuevo PDF
         $notas = $req->Comentarios;
         $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->where('requisiciones.id_requisicion',$rid)
         ->first();
 
+        //Guarda la ruta del archivo PDF de la requisicion
         $fileToDelete = public_path($datos->pdf);
 
+        //Si existe el archivo lo elimina 
         if (file_exists($fileToDelete)) {
             unlink($fileToDelete);
         }
 
+        //Recupera los articulos por requisicion
         $articulos = Articulos::where('requisicion_id',$rid)->get();
 
+        //Valida si la requisicion tiene una unidad asignada y recupera su información
         if(!empty($datos->unidad_id)){
             $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
         }
@@ -258,11 +417,14 @@ class controladorGtArea extends Controller
         include(public_path('/pdf/TCPDF-main/examples/RequisicionAprobada.php'));
         ob_end_clean();    
 
+        // Actualización del estado de la requisición a 'Aprobado'
         Requisiciones::where('id_requisicion',$rid)->update([
             "estado"=>'Aprobado',
             "pdf"=>$rutaDescargas,
             "updated_at"=>Carbon::now(),
         ]);
+
+        // Creación de comentario si se proporciona
         if (!empty($req->input('Comentarios'))){
             Comentarios::create([
                 "requisicion_id"=>$rid,
@@ -272,19 +434,52 @@ class controladorGtArea extends Controller
                 "updated_at"=>Carbon::now()
             ]);       
         }
+
+        // Redirección al usuario con mensaje de éxito
         return redirect('solicitudes/GtArea')->with('aprobado','aprobado');
     }
     
+    /*
+      TODO: Recupera y muestra todas las cotizaciones activas asociadas a una requisición específica.
+     
+      Este método consulta la base de datos para obtener un listado de cotizaciones activas (estatus '1')
+      que están asociadas a una requisición específica, identificada por su ID. Para cada cotización, se recopilan
+      detalles como el ID de la cotización, el ID de la requisición asociada, el nombre del usuario que realizó
+      la cotización, y las rutas a los archivos PDF de la requisición y de la cotización.
+     
+      @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
+
+      Retorna la vista 'GtArea.cotizaciones', pasando el listado de cotizaciones y el ID de la requisición.
+    */
     public function cotizaciones($id){
+        //Recupera las cotizaciones basandose en el estatus 1 y segun la requisicion
         $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
         ->where('cotizaciones.estatus','1')->get();
+
+        // Redirige al usuario a la página para visualizar las cotizaciones
         return view('GtArea.cotizaciones',compact('cotizaciones','id'));
     }
 
+    /*
+      TODO: Registra el rechazo de una requisición específica, actualizando su estado y guardando un comentario y un log del evento.
+      
+      1. Crea un nuevo registro de comentario asociado a la requisición, utilizando el comentario proporcionado
+        por el usuario a través del formulario. Esto permite mantener un registro de la razón detrás del rechazo.
+      2. Actualiza el estado de la requisición a "Rechazado" y actualiza la fecha de última modificación. Esto marca la
+        requisición específicamente como rechazada sin eliminarla de la base de datos, preservando así el registro histórico.
+      3. Crea un registro en el log para documentar la acción de rechazo, incluyendo el ID del usuario que realizó la acción
+        y el ID de la requisición afectada, lo que facilita el seguimiento de cambios y decisiones importantes sobre las solicitudes.
+     
+      @param  \Illuminate\Http\Request  $req La petición HTTP que contiene el comentario del formulario.
+      @param  int  $id El ID de la requisición que se va a rechazar.
+
+      Redirige al usuario a la página anterior con una sesión flash indicando que la requisición ha sido rechazada.
+    */
     public function deleteReq(Request $req, $id){
+        // Creación de comentario asociado a la requisición rechazada
         Comentarios::create([
             "requisicion_id"=>$id,
             "usuario_id"=>session('loginId'),
@@ -293,11 +488,13 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now()
         ]); 
 
+        // Actualización del estado de la requisición a "Rechazado"
         Requisiciones::where('id_requisicion',$id)->update([
             "estado"=>"Rechazado",
             "updated_at"=>Carbon::now(),
         ]);    
         
+        // Creación de registro en el log para documentar la acción de rechazo
         Logs::create([
             "user_id"=>session('loginId'),
             "requisicion_id"=>$id,
@@ -307,15 +504,32 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la página anterior tras el rechazo
         return back()->with('eliminada','eliminada');
     }
 
+    /*
+      TODO: Actualiza el estado de una requisición específica a "Aprobado" y registra la acción en el log.
+     
+      1. Actualiza el estado de la requisición indicada por el ID proporcionado a "Aprobado", marcando así la requisición
+        como validada y lista para proceder a las siguientes etapas del proceso de gestión de solicitudes.
+        La fecha de actualización también se registra para mantener un seguimiento preciso de cuándo se aprobó la requisición.
+      2. Crea un nuevo registro en el log de acciones para documentar la aprobación de la requisición. Este log incluye
+        el ID del usuario que realizó la acción, el ID de la requisición afectada, el nombre de la tabla afectada, y la acción
+        específica realizada, proporcionando así un registro auditado de las operaciones importantes realizadas en el sistema.      
+     
+      @param  int  $id El ID de la requisición que se va a validar.
+    
+      Redirige al usuario a la página anterior con una sesión flash indicando que la requisición ha sido validada exitosamente.
+    */
     public function validarRequisicion($id){
+        // Actualización del estado de la requisición a "Aprobado"
         Requisiciones::where('id_requisicion',$id)->update([
             "estado"=>"Aprobado",
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Creación de registro en el log para documentar la aprobación de la requisición
         Logs::create([
             "user_id"=>session('loginId'),
             "requisicion_id"=>$id,
@@ -325,17 +539,34 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la página anterior tras la aprobación
         return back()->with('validado','validado');
     }
 
+    /*
+      TODO: Selecciona y pre-valida una cotización específica para una solicitud, actualizando el estado de la solicitud y las cotizaciones relacionadas.
+     
+      Este método primero verifica el estado actual de la solicitud: si ya está "Pre Validado", actualiza su estado a "Validado".
+      Si no, actualiza todas las cotizaciones relacionadas con la solicitud, excepto la seleccionada, marcándolas como inactivas (estatus "0"),
+      y cambia el estado de la solicitud a "Pre Validado". Este proceso es crucial para gestionar adecuadamente las etapas de validación
+      de las cotizaciones y asegurar que solo una cotización sea seleccionada y avanzada en el proceso de aprobación de la solicitud.
+     
+      @param int $id  El ID de la cotización que se selecciona y pre-valida.
+      @param int $sid El ID de la solicitud asociada a la cotización.
+
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada.
+    */
     public function selectCotiza($id,$sid){
+        // Verificar el estado actual de la solicitud y actualizarlo según corresponda
         $req = Requisiciones::where('id_requisicion',$sid)->first();
         if ($req->estado === "Pre Validado"){
+            // Actualizar el estado de la solicitud a "Validado" si ya estaba pre-validada
             Requisiciones::where('id_requisicion',$sid)->update([
                 "estado" => "Validado",
                 "updated_at" => Carbon::now()
             ]);
 
+            // Registrar la acción en el log
             Logs::create([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Solicitudes",
@@ -346,7 +577,7 @@ class controladorGtArea extends Controller
             ]);
 
         } else{
-            
+            // Marcar todas las cotizaciones relacionadas, excepto la seleccionada, como inactivas
             Cotizaciones::where('id_cotizacion', '!=', $id)
                 ->where('requisicion_id', $sid)
                 ->update([
@@ -354,11 +585,13 @@ class controladorGtArea extends Controller
                 "updated_at" => Carbon::now()
             ]);
 
+            // Actualizar el estado de la solicitud a "Pre Validado"
             Requisiciones::where('id_requisicion',$sid)->update([
                 "estado" => "Pre Validado",
                 "updated_at" => Carbon::now()
             ]);
 
+            // Registrar la acción en el log
             Logs::create([
                 "user_id"=>session('loginId'),
                 "table_name"=>"Solicitudes",
@@ -368,25 +601,60 @@ class controladorGtArea extends Controller
                 "updated_at"=>Carbon::now()
             ]);
         }
+        // Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada o validada.
         return redirect('solicitudes/GtArea')->with('validacion','validacion');
     }
 
+    /*
+      TODO: Recupera la cotización validada y todas las cotizaciones no validadas asociadas a una requisición específica.
+     
+      1. Obtiene la cotización validada (estatus '1') para la requisición especificada, junto con información adicional
+        como el ID de la cotización, el ID de la requisición, el nombre del usuario que realizó la cotización,
+        y las rutas a los archivos PDF tanto de la requisición como de la cotización.
+      2. Recupera todas las demás cotizaciones (estatus '0') para la misma requisición, recopilando la misma información
+        que en la consulta anterior.
+      Estos datos son esenciales para facilitar el proceso de revisión y aprobación de cotizaciones por parte de los usuarios,
+      permitiéndoles comparar la cotización validada con otras opciones disponibles. 
+     
+      @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
+
+      Retorna la vista 'GtArea.aprobCotizaciones', pasando las cotizaciones recuperadas, el ID de la requisición, y la cotización validada.
+    */
     public function aprobCotiza($id){
+        // Recuperar la cotización validada (estatus '1') para la requisición especificada
         $validada = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
         ->where('cotizaciones.estatus','1')->first();
 
+        // Recuperar todas las cotizaciones no validadas (estatus '0') para la misma requisición
         $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
         ->where('cotizaciones.estatus','0')->get();
+
+        //Redirecciona a la vista para visualizar las cotizaciones recopiladas
         return view('GtArea.aprobCotizaciones',compact('cotizaciones','id','validada'));
     }
 
+    /*
+      Procesa el rechazo final de una cotización para una solicitud específica y actualiza el estado correspondiente.
+     
+      1. Crea un nuevo registro de comentario con los detalles proporcionados por el usuario, asociado a la solicitud específica,
+        para documentar la razón del rechazo.
+      2. Actualiza el estatus de todas las cotizaciones asociadas a la solicitud indicada a "1", indicando que se pueden consultar
+        nuevamente.
+      3. Cambia el estado de la solicitud a "Cotizado", indicando que se deberá pre validar cotizaciones del conjunto cargado.
+     
+      @param int $id El ID de la cotización específica que se rechaza (no usado directamente en la actualización).
+      @param int $sid El ID de la solicitud asociada a la cotización rechazada.
+
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido rechazada.
+    */
     public function rechazarFin(Request $req, $id,$sid){
+        // Registro del comentario proporcionado por el usuario
         Comentarios::create([
             "requisicion_id"=>$sid,
             "usuario_id"=>session('loginId'),
@@ -395,26 +663,43 @@ class controladorGtArea extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Actualización del estatus de todas las cotizaciones asociadas a la solicitud
         Cotizaciones::where('requisicion_id', $sid)
             ->update([
             "estatus" => "1",
             "updated_at" => Carbon::now()
         ]);
 
+        // Cambio del estado de la solicitud a "Cotizado"
         Requisiciones::where('id_requisicion',$sid)->update([
             "estado"=>"Cotizado",
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la lista de solicitudes con un mensaje de confirmación del rechazo.
         return redirect('solicitudes/GtArea')->with('rechazaC','rechazaC');
     }
 
+    /*
+      Elimina una cotización específica de la base de datos.
+     
+      Este método permite a los usuarios con los permisos adecuados eliminar una cotización específica,
+      identificada por su ID, de la base de datos. La eliminación de una cotización puede ser necesaria
+      en varias circunstancias, como cuando una cotización ha sido ingresada por error, ya no es relevante,
+      o ha sido reemplazada por otra más actualizada.
+     
+      @param int $id El ID de la cotización que se va a eliminar.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la cotización ha sido eliminada exitosamente.
+    */
     public function deleteCotiza($id){
+        // Elimina la cotización específica por su ID
         Cotizaciones::where('id_cotizacion', $id)->delete();
 
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');    
     }
-
+    //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function reporteEnc(Request $req){
 
         $idEncargado = $req->encargado;
@@ -448,6 +733,7 @@ class controladorGtArea extends Controller
         echo $pdfContent;
     }
 
+    //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function reporteUnid(Request $req){
 
         $idUnidad = $req->unidad;
@@ -473,6 +759,7 @@ class controladorGtArea extends Controller
         echo $pdfContent;
     }
 
+    //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function reporteGen(){
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),

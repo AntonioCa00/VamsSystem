@@ -71,7 +71,7 @@
                             <th>{{$orden->created_at}}</th>
                             <th>
 
-                                @if($orden->estado === "Comprado")
+                                @if($orden->estado === "Comprado" || $orden->estado === "Validado")
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
                                         Eliminar
                                     </a>
