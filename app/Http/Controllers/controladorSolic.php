@@ -311,29 +311,59 @@ class controladorSolic extends Controller
         }
     }
 
+    /*
+      TODO: Carga la vista de edición para una requisición específica, incluyendo datos relevantes para su modificación.
+     
+      Este método realiza varias consultas a la base de datos para obtener todos los artículos asociados a la requisición
+      identificada por el ID proporcionado. Luego, recupera los detalles de la unidad asociada a la requisición, incluyendo
+      su ID, marca, modelo, y notas, si la requisición está vinculada a una unidad específica. Adicionalmente, recopila un 
+      listado de todas las unidades que están actualmente activas (estado 'Activo' y estatus '1') para ofrecer opciones 
+      de selección en el formulario de edición.
+     
+      @param  int  $id  El ID de la requisición que se va a editar.
+
+      Retorna la vista 'Solicitante.editRequisicion', pasando los artículos, las unidades disponibles, los detalles de la
+      unidad asociada, y el ID de la requisición para su visualización y edición.
+    */
     public function editReq($id){
-        //Consulta los articulos que pertenecen a la requisicion a editar
+        // Recuperación de artículos asociados a la requisición
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
+        // Recuperación de detalles de la unidad asociada a la requisición
         $unidad = Requisiciones::select('id_unidad','marca','modelo','notas')
         ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
         ->where('requisiciones.id_requisicion',$id)
         ->first();
 
-        // Consulta y recupera todas las unidades con estado 'Activo' y estatus '1'
+        // Recuperación de todas las unidades activas  
         $unidades = Unidades::where('estado','Activo')->where('estatus','1')->get();
 
+        // Carga de la vista de edición con los datos recopilados
         return view('Solicitante.editRequisicion',compact('articulos','unidades','unidad','id'));
     }
 
+    /*
+      TODO: Añade un nuevo artículo a una requisición específica.
+     
+      Este método maneja la inserción de un nuevo artículo en la base de datos, asociado a una requisición específica.
+      Los datos del artículo, incluyendo la cantidad, la unidad (con la opción de especificar una unidad diferente en
+      un campo 'otro'), y la descripción, son recogidos de un formulario enviado por el usuario. Dependiendo de si el usuario
+      ha seleccionado 'Otro' como unidad y ha especificado un valor diferente, este valor es utilizado; de lo contrario,
+      se utiliza el valor de la unidad seleccionada en el formulario.
+     
+      @param int $id El ID de la requisición a la cual se añadirá el nuevo artículo.
+     
+      Redirige al usuario a la página anterior tras la inserción exitosa del artículo.
+    */
     public function createArt(Request $req, $id){
-
+        // Determina la unidad basada en la entrada del usuario
         if ($req->input('Unidad') === "Otro"){
             $unidad = $req->input('otro');
         } else {
             $unidad = $req->input('Unidad');
         }        
 
+        // Crea el nuevo artículo con los datos proporcionados
         Articulos::create([
             "requisicion_id"=>$id,
             "cantidad"=>$req->Cantidad,
@@ -343,6 +373,7 @@ class controladorSolic extends Controller
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Redirige al usuario a la página anterior
         return back();
     }
 
