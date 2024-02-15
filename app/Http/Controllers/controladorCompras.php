@@ -20,10 +20,21 @@ use Carbon\Carbon;
 
 class controladorCompras extends Controller
 {
-    
+    /*
+      TODO: Recopila datos para la visualización de informes de gestión en el área correspondiente.
+     
+      Este método se encarga de compilar datos detallados de operaciones de compra por mes y totales anuales,
+      así como el conteo de requisiciones completas y pendientes. Utiliza la clase Orden_compras para sumar los costos totales
+      de las compras realizadas en cada mes del año actual y calcula los totales de compras para el mes y año en curso.
+      Además, cuenta las requisiciones en estado 'Comprado' y las requisiciones pendientes que no están 'Compradas' ni 'Rechazadas'.
+     
+      Retorna la vista 'Admin.index' con los datos compilados para informes de gestión.
+    */
     public function index(){
-        //Datos para graficas
+        // Datos actuales y preparación de sumas de costos de orden de compra por mes y totales anuales
         $anio_actual = date('Y');
+
+        // Consultas para sumar los costos totales por cada mes del año actual
         $Enero = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
@@ -84,20 +95,27 @@ class controladorCompras extends Controller
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
             ->first();
 
-        //Suma por mes
+        // Suma total de costos para el mes actual
         $mesActual = now()->format('m'); 
         $TotalMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
 
-        //Suma por año 
+        // Suma total de costos para el año en curso
         $anioActual = now()->year;
         $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
+
+        // Conteo de requisiciones completas
         $completas = Requisiciones::where('estado', 'Comprado')->count();
+
+        // Conteo de requisiciones pendientes
         $pendiente = Requisiciones::where('estado','!=', 'Entregado')->where('estado','!=','Rechazado')->count();
+
+        // Pasar los datos a la vista
         return view("Admin.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
             'TotalMes'=>$TotalMes,
             'TotalAnio'=>$TotalAnio,
+            // Datos de costos por mes
             'enero'      => $Enero,
             'febrero'    => $Febrero,
             'marzo'      => $Marzo,
@@ -113,12 +131,24 @@ class controladorCompras extends Controller
     }  
 
     //VISTAS DE LAS TABLAS
-
+    /*
+      TODO: Recupera y muestra todas las refacciones activas en el almacen.
+     
+      Este método consulta la base de datos para obtener un listado de todas las refacciones que tienen un estatus '1',
+      indicando que están activas. La intención es proporcionar una visión general de las refacciones disponibles en el
+      almacen para su gestión o asignación a tareas específicas.
+     
+      Retorna la vista 'Admin.refaccion', pasando el listado de refacciones activas para su visualización.
+    */
     public function tableRefaccion(){
+        // Recupera todas las refacciones del almacen que están activas (estatus = 1)
         $refacciones = Almacen::get()->where("estatus",1);
+
+        // Carga y muestra la vista con el listado de refacciones activas
         return view('Admin.refaccion',compact('refacciones'));
     }
 
+    //! ESTA FUNCION NO ESTA SIRVIENDO ACTUALMENTE
     public function tableEntradas(){
         $entradas = Entradas::select('entradas.id_entrada','requisiciones.pdf as reqPDF','orden_compras.pdf as ordPDF','entradas.factura','entradas.created_at')
         ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
@@ -128,19 +158,53 @@ class controladorCompras extends Controller
         return view('Admin.entradas',compact('entradas'));
     }
 
+    /*
+      TODO: Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
+     
+      Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
+      (estatus '1'), excluyendo la unidad con ID '1' por razones específicas de negocio o de la aplicación. Además, las unidades
+      activas se ordenan en orden ascendente por su ID para facilitar su visualización y gestión.
+     
+      Retorna la vista 'Admin.unidad', pasando el listado de unidades activas para su visualización.
+    */
     public function tableUnidad(){
+        // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
         $unidades = Unidades::where('estatus','1')
         ->where('id_unidad','!=','1')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+        ->where('estado','Activo')->orderBy('id_unidad','asc')
+        ->get();
+
+        // Carga y muestra la vista con el listado de unidades activas
         return view('Admin.unidad',compact('unidades'));
     }
 
+    /*
+      TODO: Muestra la vista para la creación de una nueva unidad.
+     
+      Este método se encarga de cargar y presentar la vista que contiene el formulario utilizado para la creación
+      de nuevas unidades dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
+      esencial de la nueva unidad.
+          
+      Retorna la vista 'Admin.crearUnidad', que contiene el formulario para la creación de una nueva unidad.
+    */
     public function CreateUnidad(){
+        // Cargar y mostrar la vista con el formulario de creación de unidad
         return view('Admin.crearUnidad');
     }
 
-    public function insertUnidad(Request $req){
+    /*
+      TODO: Inserta una nueva unidad en la base de datos con la información proporcionada a través de un formulario.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
+      año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
+      crear una nueva entrada en la base de datos para la unidad, asignándole un estatus '1' para marcarla como activa.      
+     
+      @param  \Illuminate\Http\Request  $req La petición HTTP que contiene los datos del formulario.
 
+      Redirige al usuario a la lista de unidades con una sesión flash que indica que la nueva unidad ha sido registrada exitosamente.
+    */    
+    public function insertUnidad(Request $req){
+        // Crea la nueva unidad con los datos proporcionados
         Unidades::create([
         "id_unidad"=>$req->input('id_unidad'),
         "tipo"=>$req->input('tipo'),
@@ -156,15 +220,43 @@ class controladorCompras extends Controller
         "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la vista de unidades
         return redirect()->route('unidades')->with('regis','regis');
     }
 
+    /*
+      TODO: Muestra la vista para editar los detalles de una unidad específica.
+     
+      Este método se encarga de recuperar los detalles de una unidad específica, identificada por su ID, de la base de datos.
+      La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
+      de la unidad, permitiendo así que los administradores o los usuarios con los permisos adecuados realicen cambios en la información
+      de la unidad como tipo, estado, año, marca, modelo, características, número de serie, y número de permiso. 
+     
+      @param  int  $id  El ID de la unidad cuyos detalles se van a editar.
+      
+      Retorna la vista 'Admin.editarUnidad', pasando los detalles de la unidad específica para su edición.
+    */
     public function editUnidad($id){
+        // Recupera los detalles de la unidad específica por su ID
         $unidad= Unidades::where('id_unidad',$id)->first();
+
+        // Carga y muestra la vista con el formulario de edición de unidad, pasando los detalles de la unidad
         return view('Admin.editarUnidad',compact('unidad'));
     }
 
+    /*
+      TODO: Actualiza los detalles de una unidad específica en la base de datos con la información proporcionada por el formulario.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
+      año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
+      actualizar el registro de la unidad específica en la base de datos, identificado por el ID proporcionado. 
+     
+      @param  int  $id  El ID de la unidad que se va a actualizar.
+
+      Redirige al usuario a la lista de unidades con una sesión flash que indica que la unidad ha sido actualizada exitosamente.
+    */
     public function updateUnidad(Request $req, $id){
+        // Actualiza el registro de la unidad específico con los datos proporcionados
         Unidades::where('id_unidad',$id)->update([
             "id_unidad"=>$req->input('id_unidad'),
             "tipo"=>$req->input('tipo'),
@@ -179,27 +271,68 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la lista de unidades con un mensaje de éxito
         return redirect()->route('unidades')->with('update','update');
     }
 
-    public function deleteUnidad($id){        
+    /*
+      TODO: Desactiva una unidad específica marcándola como inactiva en la base de datos.
+     
+      En lugar de eliminar el registro de la unidad, este método actualiza el campo 'estatus' a 0,
+      indicando que la unidad está inactiva. Esta operación es crucial para mantener la integridad de los datos
+      y permite la recuperación del registro en el futuro si es necesario. Además, se actualiza el campo 'updated_at'
+      para reflejar el momento de la desactivación.
+     
+      @param  int  $id  El ID de la unidad que se va a desactivar.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido desactivada exitosamente.
+    */
+    public function deleteUnidad($id){ 
+        // Actualiza el registro de la unidad específica para marcarla como inactiva       
         Unidades::where('id_unidad',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now()
         ]);
+
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');
     }
 
+    /*
+      TODO: Marca una unidad específica como inactiva en la base de datos.
+     
+      Este método actualiza el estado de una unidad específica, identificada por su ID, a "Inactivo", lo que indica
+      que la unidad ya no está en uso activo dentro del sistema. La fecha de la última actualización también se registra mediante el campo
+      'updated_at'. 
+     
+      @param  int  $id  El ID de la unidad que se va a marcar como inactiva.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido marcada como inactiva exitosamente.
+    */
     public function bajaUnidad($id){        
+        // Actualiza el registro de la unidad específica para marcarla como inactiva
         Unidades::where('id_unidad',$id)->update([            
             "estado"=>"Inactivo",
             "updated_at"=>Carbon::now()
         ]);
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('baja','baja');
     }
 
+    /*
+      TODO: Recupera y muestra todas las unidades inactivas para su potencial activación.
+     
+      Este método consulta la base de datos para obtener un listado de todas las unidades que actualmente están marcadas
+      como "Inactivo". La intención es proporcionar a los administradores una visión general de las unidades que no están
+      en uso activo pero que pueden ser reactivadas según sea necesario.
+     
+      Retorna la vista 'Admin.activaUnidad', pasando el listado de unidades inactivas para su visualización y potencial activación.
+    */
     public function activarUnidad(){
+        // Recupera las unidades marcadas como inactivas
         $unidades = Unidades::where("estado",'Inactivo')->get();
+
+        // Carga y muestra la vista con el listado de unidades inactivas
         return view('Admin.activaUnidad',compact('unidades'));
     }
 
