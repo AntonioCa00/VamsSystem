@@ -5,18 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Articulos extends Model
+class servicios extends Model
 {
-    protected $fillable = [ 
-        'requisicion_id',
-        'cantidad',        
-        'unidad', 
+    protected $fillable = [
+        'id_servicio',
+        'nombre_servicio',
         'descripcion',
-        'estatus',
-        'orden_id',
         'created_at',
         'updated_at'
-        ];
-
+    ];
     use HasFactory;
 }

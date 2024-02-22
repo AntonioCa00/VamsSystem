@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('unidad');
             $table->string('descripcion');
             $table->float('precio_unitario',10,2)->nullable();
+            $table->integer('ult_compra')->nullable();
+            $table->integer('estatus')->default(0);
+            $table->bigInteger('orden_id')->unsigned();
+            $table->foreign('orden_id')->references('id_orden')->on('orden_compras');
             $table->timestamps();
         });
     }

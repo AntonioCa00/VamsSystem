@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if(session()->has('finalizada'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Se ha finalizado el proceso de la requisicion',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 @if(session()->has('eliminada'))
     <script type="text/javascript">          
         Swal.fire({
@@ -73,11 +85,37 @@
                                 @if ($solicitudes->estado === "Aprobado" || $solicitudes->estado === "Cotizado")
                                     <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
                                         Cargar cotizaciones
-                                    </a>                                    
+                                    </a>                                   
                                 @elseif ($solicitudes->estado === "Validado" ||$solicitudes->estado ==="Comprado")
-                                    <a class="btn btn-primary" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">
+                                    <a class="btn btn-info" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">
                                         Orden de compra
+                                    </a>   
+                                    <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$solicitudes->id_requisicion}}">
+                                        Finalizar
                                     </a>
+                                    <!-- Logout Modal-->
+                                    <div class="modal fade" id="Finalizar{{$solicitudes->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">¿Se ha completado la requisicion?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Selecciona confirmar para finalizar proceso</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <form action="{{route('FinalizarReq',$solicitudes->id_requisicion)}}" method="POST">
+                                                        @csrf
+                                                        {!!method_field('PUT')!!}    
+                                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                         
                                 @else 
                                     <a class="btn btn-primary" href="" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                         Eliminar

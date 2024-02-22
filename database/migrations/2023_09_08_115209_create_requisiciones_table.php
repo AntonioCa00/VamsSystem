@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('unidad_id')->nullable();
             $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
+            $table->string('servicio_id')->nullable();
+            $table->foreign('servicio_id')->references('id_servicio')->on('servicios')->onDelete('cascade');
             $table->string('pdf');
             $table->string('notas');
             $table->string('estado');           

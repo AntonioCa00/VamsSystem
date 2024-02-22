@@ -51,7 +51,7 @@
                                 <form action="{{ route('deleteArt', $articulo->id) }}" method="post">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-primary">Eliminar</button>
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
                                 </form>
                             </th>
                         </tr>
@@ -97,7 +97,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
-                    <input name="Descripcion" type="text" class="form-control" placeholder="Describe el articulo" required>
+                    <input name="Descripcion" type="text" maxlength="47" class="form-control" placeholder="Describe el articulo" required>
                 </div>                
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Unidad de medidad:</label>

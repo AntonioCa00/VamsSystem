@@ -43,7 +43,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Seleccionar:</th>
+                            <th><input checked type="checkbox" id="checkTodos"/> Seleccionar:</th>
                             <th>Cantidad:</th>
                             <th>Unidad de medida:</th>
                             <th>Descripcion:</th>
@@ -112,6 +112,17 @@
     } else {
         datosBancarios.style.display = 'none';
     }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('checkTodos').addEventListener('change', function (e) {
+        var estado = this.checked; // true o false
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = estado;
+        });
+    });
 });
 </script>
 @endsection
