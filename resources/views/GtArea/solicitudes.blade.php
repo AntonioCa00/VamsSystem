@@ -142,15 +142,15 @@
                                                 Revisar cotizaciones
                                             </a>
                                         @elseif ($solicitudes->estado === "Pre Validado" && session('rol')==="Gerente Area" && session('departamento')==="Finanzas")
-                                            <a class="btn btn-primary" href="{{route('aprobCotiza', $solicitudes->id_requisicion)}}">
+                                            <a class="btn btn-info" href="{{route('aprobCotiza', $solicitudes->id_requisicion)}}">
                                                 Confirmar validación
                                             </a>                                    
                                         <!-- Validar o Rechazar -->
                                         @elseif ($solicitudes->estado === "Solicitado") 
-                                        <a class="btn btn-primary" href="{{route('aprobarArt',$solicitudes->id_requisicion)}}">
+                                        <a class="btn btn-success" href="{{route('aprobarArt',$solicitudes->id_requisicion)}}">
                                             Aprobar
                                         </a>                                
-                                        <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
+                                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
                                             Rechazar
                                         </a>
                                         <!-- Rechazar Modal-->
@@ -253,15 +253,15 @@
                                                 Revisar cotizaciones
                                             </a>
                                         @elseif ($solicitudes->estado === "Pre Validado" && session('rol')==="Gerente Area" && session('departamento')==="Finanzas")
-                                            <a class="btn btn-primary" href="">
+                                            <a class="btn btn-info" href="">
                                                 Confirmar validación
                                             </a>                                    
                                         <!-- Validar o Rechazar -->
                                         @elseif ($solicitudes->estado === "Solicitado") 
-                                        <a class="btn btn-primary" href="{{route('aprobarArt',$solicitudes->id_requisicion)}}">
+                                        <a class="btn btn-success" href="{{route('aprobarArt',$solicitudes->id_requisicion)}}">
                                             Aprobar
                                         </a>                                
-                                        <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
+                                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
                                             Rechazar
                                         </a>
                                         <!-- Rechazar Modal-->

@@ -16,6 +16,7 @@ class Orden_Compras extends Model
         'proveedor_id',
         'costo_total',
         'pdf',
+        'estado',
         'created_at',        
         'updated_at'
     ];

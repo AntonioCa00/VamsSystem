@@ -42,7 +42,7 @@
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Nombre y/o razón social de la empresa:<span
                                 style="color: red;">*</span></label>
-                        <input name="nombre" type="text" class="form-control"
+                        <input name="nombre" type="text" class="form-control" maxlength="26"
                             placeholder="Nombre y/o razón social de la empresa proveedor"value="{{ old('nombre') }}"
                             required>
                     </div>

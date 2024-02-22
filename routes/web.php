@@ -93,10 +93,12 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('array-ordenCom',[controladorCompras::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
         Route::delete('delete-arrayOrden/{index}',[controladorCompras::class,'deleteArray'])->name('eliminarElemOrden');
         Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
+        Route::put('finalizarCompra/{id}',[controladorCompras::class,'finalizarC'])->name('FinalizarC');
+        Route::put('finalizarRequisicion/{id}',[controladorCompras::class,'FinalizarReq'])->name('FinalizarReq');
         Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
-        Route::post('reportesCompras/Requisiciones',[controladorGerenciaGen::class,'reporteReq'])->name('reportesReqCom');
-        Route::post('reportesCompras/OrdenesCompra',[controladorGerenciaGen::class,'reporteOrd'])->name('reportesOrdCom');
+        Route::post('reportesCompras/Requisiciones',[controladorCompras::class,'reporteReq'])->name('reportesReqCom');
+        Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
     });
     
     Route::middleware(['check.role:Gerente Area'])->group(function () {
@@ -114,6 +116,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
+        Route::get('mantenimiento/GtArea',[controladorGtArea::class,'mantenimiento'])->name('manteni');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     

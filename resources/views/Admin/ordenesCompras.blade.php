@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if(session()->has('finalizada'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Se ha finalizado el proceso de la requisicion',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 @if(session()->has('orden'))
     <script type="text/javascript">          
         Swal.fire({
@@ -43,7 +55,7 @@
                         <tr>
                             <th>ID orden:</th>
                             <th>Comprador:</th>
-                            <th>Cotizacion:</th>
+                            <th>Requisicion:</th>
                             <th>Proveedor:</th>
                             <th>Costo total:</th>
                             <th>Orden de compra</th>
@@ -56,11 +68,7 @@
                         <tr>
                             <th>{{$orden->id_orden}}</th>
                             <th>{{$orden->nombres}}</th>
-                            <th class="text-center">
-                                <a href="{{ asset($orden->cotPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                </a>
-                            </th>
+                            <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->proveedor}}</th>
                             <th>${{$orden->costo_total}}</th>
                             <th class="text-center">
@@ -69,9 +77,34 @@
                                 </a>
                             </th>
                             <th>{{$orden->created_at}}</th>
-                            <th>
-
-                                @if($orden->estado === "Comprado" || $orden->estado === "Validado")
+                            <th>                        
+                                @if($orden->estadoComp === null)
+                                    <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
+                                        Registrar pago
+                                    </a>
+                                    <!-- Logout Modal-->
+                                    <div class="modal fade" id="Finalizar{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Selecciona confirmar para finalizar proceso</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <form action="{{route('FinalizarC',$orden->id_orden)}}" method="POST">
+                                                        @csrf
+                                                        {!!method_field('PUT')!!}    
+                                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
                                         Eliminar
                                     </a>
@@ -99,7 +132,8 @@
                                         </div>
                                     </div>
                                 @else
-                                <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
+                                <a href="#" class="btn btn-success" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Registrar pago</a>                                
+                                <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                                                
                                 @endif
                             </th>
                         </tr>

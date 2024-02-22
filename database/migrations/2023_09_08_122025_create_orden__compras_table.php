@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreign('proveedor_id')->references('id_proveedor')->on('proveedores')->onDelete('cascade');
             $table->float('costo_total',10,2);
             $table->string('pdf');
+            $table->string('estado')->nullable();
             $table->timestamps();
         });
     }

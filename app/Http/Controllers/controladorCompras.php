@@ -360,7 +360,7 @@ class controladorCompras extends Controller
     }
 
     public function tableSolicitud(){
-        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado', 'requisiciones.created_at as fecha_creacion')
+        $solicitudes = Requisiciones::select(['requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.pdf','requisiciones.estado','requisiciones.created_at as fecha_creacion',DB::raw('(SELECT COUNT(*) FROM articulos WHERE articulos.requisicion_id = requisiciones.id_requisicion AND articulos.estatus = 0) as cantidad_articulos')])    
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->where(function($query) {
             $query->where('requisiciones.estado', '=', 'Aprobado')
@@ -369,7 +369,7 @@ class controladorCompras extends Controller
                   ->orWhere('requisiciones.estado', '=', 'Comprado');
         })
         ->orderBy('requisiciones.created_at','desc')
-        ->get();
+        ->get();    
         return view('Admin.solicitudes',compact('solicitudes'));
     }
 
@@ -676,7 +676,9 @@ class controladorCompras extends Controller
         ->where('requisiciones.id_requisicion',$id)
         ->first();
 
-        $articulos = Articulos::where('requisicion_id',$id)->get();
+        $articulos = Articulos::where('requisicion_id',$id)
+        ->where('estatus',0)
+        ->get();
 
         $proveedores = Proveedores::
         where('estatus',1)->orderBy('nombre','asc')->get();
@@ -752,16 +754,6 @@ class controladorCompras extends Controller
                 }
             }
 
-            foreach ($articulos as $id => $articulo) {
-                // Aquí puedes acceder a cada elemento del array $articulo
-                Articulos::where('id', $id)->update([
-                    'cantidad' => $articulo['cantidad'],
-                    'unidad' => $articulo['unidad'],
-                    'descripcion' => $articulo['descripcion'],
-                    'precio_unitario' => $articulo['precio_unitario'],
-                ]);
-            }
-            
             Orden_compras::create([
                 "id_orden"=>$idnuevaorden,
                 "admin_id"=>session('loginId'),
@@ -773,10 +765,39 @@ class controladorCompras extends Controller
                 "updated_at"=>Carbon::now(),
             ]);
 
-            Requisiciones::where('id_requisicion',$rid)->update([
-                "estado"=>"Comprado",
-                "updated_at"=>Carbon::now(),
-            ]);
+            foreach ($articulosFiltrados as $id => $articulo) {
+                // Aquí puedes acceder a cada elemento del array $articulo
+                $articuloUnico = Articulos::where('id',$id)->first();
+                $cantidad_total = $articuloUnico->cantidad - $articulo['cantidad'];
+
+                // Determina el estatus antes de la actualización
+                $estatus = $cantidad_total == 0 ? 1 : 0;
+                Articulos::where('id', $id)->update([
+                    'cantidad' => $cantidad_total,
+                    'unidad' => $articulo['unidad'],
+                    'descripcion' => $articulo['descripcion'],
+                    'precio_unitario' => $articulo['precio_unitario'],
+                    'ult_compra'=>$articulo['cantidad'],
+                    'estatus' => $estatus, // Usa la variable $estatus aquí
+                    'orden_id'=>$idnuevaorden
+                ]);
+            }
+
+            $totalArticulos = Articulos::where('requisicion_id',$rid)
+            ->where('estatus',0)
+            ->count();
+
+            if ($totalArticulos == 0){
+                Requisiciones::where('id_requisicion',$rid)->update([
+                    "estado"=>"Finalizado",
+                    "updated_at"=>Carbon::now(),
+                ]);
+            } else{
+                Requisiciones::where('id_requisicion',$rid)->update([
+                    "estado"=>"Comprado",
+                    "updated_at"=>Carbon::now(),
+                ]);
+            }            
 
             session()->forget('datosOrden');
 
@@ -784,7 +805,7 @@ class controladorCompras extends Controller
         }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -796,6 +817,21 @@ class controladorCompras extends Controller
     }
 
     public function deleteOrd($id,$sid){
+        $articulos_ord = Articulos::where('orden_id', $id)->get();
+    
+    foreach ($articulos_ord as $articulo) {
+        // Calculas la nueva cantidad sumando la cantidad actual con la última compra
+        $anterior_cantidad = $articulo->cantidad + $articulo->ult_compra;
+        
+        // Actualizas solo este artículo específico usando su ID único
+        Articulos::where('id', $articulo->id)->update([
+            "cantidad" => $anterior_cantidad,
+            "precio_unitario" => null,
+            "estatus" => 0,
+            "orden_id" => null,
+        ]);
+    }
+
         Orden_compras::where('id_orden',$id)->delete();
 
         Requisiciones::where('id_requisicion',$sid)->update([
@@ -803,6 +839,24 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now()
         ]);
         return back()->with('eliminada','eliminada');
+    }
+
+    public function FinalizarC($id){
+        Orden_Compras::where('id_orden',$id)->update([
+            "estado"=>"Finalizado",
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        return back()->with('finalizada','finalizada');
+    }
+
+    public function FinalizarReq($id){
+        Requisiciones::where('id_requisicion',$id)->update([
+            "estado"=>"Finalizada",
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        return back()->with('finalizada','finalizada');
     }
 
     public function reportes() {
@@ -950,23 +1004,43 @@ class controladorCompras extends Controller
             case "semanal":
                 $unaSemanaAtras = Carbon::now()->subWeek();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();      
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->get();
+
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->get();
                 
                 break;
             case "mensual":
                 $inicioDelMes = Carbon::now()->startOfMonth();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $inicioDelMes)
+                ->get();    
+
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();    
 
@@ -974,24 +1048,41 @@ class controladorCompras extends Controller
             case "anual":
                 $inicioDelAnio = Carbon::now()->startOfYear();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
+                ->get();
+
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelAnio)
                 ->get();
 
                 break;
             case "todas":
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->get();  
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->get();         
+
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
+                ->get();         
 
                 break;
         }

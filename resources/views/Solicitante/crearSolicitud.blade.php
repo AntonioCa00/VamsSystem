@@ -51,7 +51,7 @@
                                 <form action="{{ route('eliminarElemento', ['index' => $index]) }}" method="post">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-primary">Eliminar</button>
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
                                 </form>
                             </th>
                         </tr>
@@ -96,7 +96,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
-                    <input name="Descripcion" type="text" class="form-control" placeholder="Describe el articulo" required>
+                    <input name="Descripcion" type="text" maxlength="47" class="form-control" placeholder="Describe el articulo" required>
                 </div>                
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Unidad de medidad:</label>
@@ -132,11 +132,7 @@
         </div>
         <div class="card-footer py-3 text-center">
             <form action="{{route('requisicion')}}" method="post">
-                @csrf
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Notas:</label>
-                    <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
-                </div>
+                @csrf                
                 @if(session('departamento')=== "Mantenimiento")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
@@ -146,6 +142,10 @@
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             @endforeach
                         </select>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Notas:</label>
+                            <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
+                        </div>
                     </div>
                 @endif
                 <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>

@@ -76,17 +76,18 @@
                     <span>Unidades</span></a>
             </li>
 
+            {{-- @if (session('departamento') === "Mantenimiento")
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('manteni')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Mantenimiento</span></a>
+            </li>
+            @endif --}}
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('refaccionesDir')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Almacen</span></a>
             </li> --}}
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('proveedoresDir')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Proveedores</span></a>
-            </li>
 
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('entradasDir')}}">

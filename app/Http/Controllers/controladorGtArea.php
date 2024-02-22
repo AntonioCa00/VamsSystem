@@ -231,7 +231,7 @@ class controladorGtArea extends Controller
     }
 
     /*
-      Actualiza la información de un proveedor específico en la base de datos.
+      TODO: Actualiza la información de un proveedor específico en la base de datos.
      
       Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
       la información de un proveedor específico identificado por su ID. Los campos actualizables incluyen el nombre,
@@ -640,7 +640,7 @@ class controladorGtArea extends Controller
     }
 
     /*
-      Procesa el rechazo final de una cotización para una solicitud específica y actualiza el estado correspondiente.
+      TODO: Procesa el rechazo final de una cotización para una solicitud específica y actualiza el estado correspondiente.
      
       1. Crea un nuevo registro de comentario con los detalles proporcionados por el usuario, asociado a la solicitud específica,
         para documentar la razón del rechazo.
@@ -681,7 +681,7 @@ class controladorGtArea extends Controller
     }
 
     /*
-      Elimina una cotización específica de la base de datos.
+      TODO: Elimina una cotización específica de la base de datos.
      
       Este método permite a los usuarios con los permisos adecuados eliminar una cotización específica,
       identificada por su ID, de la base de datos. La eliminación de una cotización puede ser necesaria
@@ -699,6 +699,27 @@ class controladorGtArea extends Controller
         // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');    
     }
+
+    /*
+      TODO: Recupera y muestra un listado de unidades activas elegibles para mantenimiento.
+     
+      Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
+      (estatus '1'), excluyendo una unidad específica por su ID (en este caso, la unidad con ID '1') para razones de filtrado
+      específicas de la aplicación. Las unidades activas se ordenan en orden ascendente por su ID para facilitar su visualización
+      y gestión, especialmente en lo que respecta a las tareas de mantenimiento.
+     
+      Retorna la vista 'GtArea.mantenimiento', pasando el listado de unidades activas para su visualización y gestión.
+    */
+    public function mantenimiento (){
+        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
+        $unidades = Unidades::where('estatus','1')
+        ->where('id_unidad','!=','1')
+        ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+
+        // Carga y muestra la vista con el listado de unidades activas
+        return view('GtArea.mantenimiento',compact('unidades'));    
+    }
+
     //! ESTE REPORTE AUN NO SE IMPLEMENTA
     public function reporteEnc(Request $req){
 
