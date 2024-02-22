@@ -393,7 +393,7 @@ class controladorSolic extends Controller
 
     public function updateSolicitud (Request $req, $id){
         // Recopilación de información de la requisición y generación del nuevo PDF
-        $notas = $req->Comentarios;
+        $notas = $req->Notas;
         $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->where('requisiciones.id_requisicion',$id)
@@ -421,7 +421,7 @@ class controladorSolic extends Controller
 
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start(); // Iniciar el búfer de salida
-        include(public_path('/pdf/TCPDF-main/examples/RequisicionAprobada.php'));
+        include(public_path('/pdf/TCPDF-main/examples/RequisicionEditada.php'));
         ob_end_clean();    
 
         // Actualización del estado de la requisición a 'Aprobado'

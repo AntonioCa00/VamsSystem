@@ -141,7 +141,7 @@ $pdf->Cell(30, 7, 'RFC', 1, 1, 'C', 1);
 $pdf->Cell(35, 7, $datosProveedor->telefono, 1);
 $pdf->Cell(55, 7, $datosProveedor->contacto, 1);
 $pdf->Cell(60, 7, $datosProveedor->correo, 1);
-$pdf->Cell(30, 7, $datosProveedor->id_proveedor , 1,1);
+$pdf->Cell(30, 7, $datosProveedor->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
 $pdf->SetFont('helvetica', '', 10);
