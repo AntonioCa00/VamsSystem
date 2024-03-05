@@ -70,6 +70,14 @@
                     <span>Solicitudes</span></a>
             </li>
 
+            @if (session('departamento') === "Finanzas" && session('rol') === "Gerente Area")
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{route('pagosDir')}}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Pagos Fijos</span></a>
+                </li>
+            @endif
+        
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('unidadesDir')}}">
                     <i class="fas fa-fw fa-table"></i>

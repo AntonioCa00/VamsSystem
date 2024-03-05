@@ -40,24 +40,72 @@
 
 <div class="container-fluid">
 
-    <!-- Page Heading -->
+    <!-- Encabezado de la tabla -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
     
-    <!-- DataTales Example -->
+    <!-- Tabla de los datos -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Solicitudes creadas</h6>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">HISTORIAL DE SOLICITUDES</h6>
+            <div class="form-group d-flex align-items-center">
+                <a href="" class="btn btn-secondary" href="#" data-toggle="modal" data-target="#Filtro">
+                    <img src="{{asset('img/filtrar.png')}}">Filtrar requisiciones
+                </a>
+                <div class="modal fade" id="Filtro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Filtrado de requisiciones</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">X</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group align-items-center">
+                                    <form action="{{route('filtrarSolic','departamento')}}" method="POST" class="w-100 d-flex align-items-center mb-4">
+                                        @csrf
+                                        <select name="filtro" class="form-control flex-grow-1 mr-2" required>
+                                            <option value="" disabled selected>Filtrar por departamento...</option>
+                                            @foreach ($departamentos as $dpto)
+                                                <option value="{{$dpto->departamento}}">{{$dpto->departamento}}</option>                        
+                                            @endforeach                    
+                                        </select>
+                                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    </form>
+                                    <form action="{{route('filtrarSolic','estado')}}" method="POST" class="w-100 d-flex align-items-center mb-2">
+                                        @csrf
+                                        <select name="filtro" class="form-control flex-grow-1 mr-2" required>
+                                            <option value="" disabled selected>Filtrar por estatus...</option>
+                                            @foreach ($estatus as $estat)
+                                                <option value="{{$estat->estado}}">{{$estat->estado}}</option>                        
+                                            @endforeach                    
+                                        </select>
+                                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    </form>                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="{{route('solicitudes')}}" class="btn btn-success">Ver Todas</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>                  
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID requisicion</th>            
+                            <th>Folio:</th>            
                             <th>Encargado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Estado:</th>
                             <th>Unidad:</th>
+                            {{-- <th style="width: 150px; /* o el ancho específico que desees */
+                            max-width: 150px; /* coincide con el ancho para asegurar el límite */
+                            overflow: hidden;
+                            white-space: nowrap;text-overflow: ellipsis;">Servicio:</th> --}}
                             <th>Requisicion:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -72,10 +120,14 @@
                             @if (empty($solicitudes->unidad_id))
                                 <th>Sin unidad</th>
                             @elseif ($solicitudes->unidad_id == "1")
-                                <th>No asignada</th>
+                                <th>Varios</th>
                             @else 
                                 <th>{{$solicitudes->unidad_id}}</th>
                             @endif
+                            {{-- <th style="width: 100px; /* o el ancho específico que desees */
+                            max-width: 100px; /* coincide con el ancho para asegurar el límite */
+                            overflow: hidden;
+                            white-space: nowrap;text-overflow: ellipsis;">Mantenimientooooooooooooooooooooooooooo</th> --}}
                             <th>
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
@@ -130,4 +182,4 @@
         </div>
     </div>
 </div>
-@endsection
+@endsection 

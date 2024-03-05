@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requisiciones', function (Blueprint $table) {
-            $table->bigIncrements('id_requisicion');
+        Schema::create('pagos_fijos', function (Blueprint $table) {
+            $table->bigIncrements('id_pago');
+            $table->bigInteger('servicio_id')->unsigned();
+            $table->foreign('servicio_id')->references('id_servicio')->on('servicios')->onDelete('cascade');
             $table->bigInteger('usuario_id')->unsigned();
             $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('unidad_id')->nullable();
-            $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
+            $table->float('costo_total',10,2);
             $table->string('pdf');
+            $table->string('estado');
             $table->string('notas');
-            $table->string('estado');           
+            $table->string('comprobante_pago')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('solicitudes');
+        Schema::dropIfExists('pagos_fijos');
     }
 };

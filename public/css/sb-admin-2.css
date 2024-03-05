@@ -47,6 +47,26 @@
   
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0; /* Elimina el margen inferior por defecto de .form-group */
+}
+
+.form-control {
+  margin-left: .5rem; /* Ajusta según sea necesario */
+}
+
+button {
+  margin-left: .5rem; /* Ajusta según sea necesario */
+}
+
 *,
 *::before,
 *::after {

@@ -99,6 +99,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
         Route::post('reportesCompras/Requisiciones',[controladorCompras::class,'reporteReq'])->name('reportesReqCom');
         Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
+        Route::post('solicitudes/Compras/{filt}',[controladorCompras::class,'filtrarSolicitudes'])->name('filtrarSolic');
     });
     
     Route::middleware(['check.role:Gerente Area'])->group(function () {
@@ -113,6 +114,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('edit-proveedorD/{id}',[controladorGtArea::class,'editProveedor'])->name('editProveedorDir');
         Route::get('almacen/GtArea', [controladorGtArea::class, 'tableRefaccion'])->name('refaccionesDir');
         Route::get('solicitudes/GtArea',[controladorGtArea::class,'tableSolicitud'])->name('solicitudesDir');
+        Route::get('pagos/GtArea',[controladorGtArea::class,'tablePagos'])->name('pagosDir');
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
@@ -133,7 +135,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('rechazarArticulo/{id}',[controladorGtArea::class,'rechazaArt'])->name('rechazaArt');
         Route::put('aprobarArt/{rid}',[controladorGtArea::class,'aprobar'])->name('aprobar');
         Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
-        Route::delete('delete-cotizacion/{id}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');
+        Route::delete('delete-cotizacion/{id}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');        
+        Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
+        Route::put('delete-pago/{id}',[controladorGtArea::class,'deletePago'])->name('deletePago');
     });
     
     Route::middleware(['check.role:Almacen'])->group(function () {
@@ -174,7 +178,9 @@ Route::middleware(['authcheck'])->group(function () {
     
         Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
         Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
-        Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
+        // Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
+        Route::get('pagos',[controladorSolic::class,'pagosFijos'])->name('pagos');
+        Route::get('pagos/form',[controladorSolic::class,'crearPago'])->name('crearPagos');
         Route::get('salidas', [controladorSolic::class, 'tableSalidas'])->name('salidasSoli');
         Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
@@ -191,6 +197,12 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('create-articulo/{id}',[controladorSolic::class,'createArt'])->name('createArt');
         Route::put('update-articulo/{id}',[controladorSolic::class,'updateArt'])->name('updateArt');
         Route::delete('delete-Articulo/{id}',[controladorSolic::class,'deleteArt'])->name('deleteArt');
+        Route::post('servicio',[controladorSolic::class,'createServicio'])->name('createServicio');
+        Route::put('edit-servicio/{id}',[controladorSolic::class,'editServicio'])->name('editServicio');
+        Route::delete('delete-servicio/{id}',[controladorSolic::class,'deleteServicio'])->name('deleteServicio');
+        Route::post('pago',[controladorSolic::class,'createPago'])->name('createPago');
+        Route::put('update-pago/{id}',[controladorSolic::class,'updatePago'])->name('updatePago');
+        Route::delete('delete-pago/{id}',[controladorSolic::class,'deletePago'])->name('deletePago');
         Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');

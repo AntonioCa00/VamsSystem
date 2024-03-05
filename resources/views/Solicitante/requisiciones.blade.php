@@ -7,7 +7,19 @@
         Swal.fire({
         position: 'center',
         icon: 'success',
-        title: 'solicitud registrada!',
+        title: 'Solicitud Registrada!',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
+@if(session()->has('editado'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Solicitud Editada!',
         showConfirmButton: false,
         timer: 1000
         })
@@ -19,7 +31,7 @@
         Swal.fire({
         position: 'center',
         icon: 'success',
-        title: 'solicitud eliminada!',
+        title: 'Solicitud Eliminada!',
         showConfirmButton: false,
         timer: 1000
         })

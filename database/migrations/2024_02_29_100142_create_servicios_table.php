@@ -14,7 +14,11 @@ return new class extends Migration
         Schema::create('servicios', function (Blueprint $table) {
             $table->bigIncrements('id_servicio');
             $table->string('nombre_servicio');
-            $table->string('descripcion');
+            $table->bigInteger('usuario_id')->unsigned();
+            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->bigInteger('proveedor_id')->unsigned();
+            $table->foreign('proveedor_id')->references('id_proveedor')->on('proveedores')->onDelete('cascade');
+            $table->string('estatus');
             $table->timestamps();
         });
     }

@@ -70,11 +70,13 @@
                     <span>Solicitudes</span></a>
             </li>
 
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('almacenSoli')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Almacen</span></a>
-            </li>
+            @if (session('departamento') != "Mantenimiento")
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{route('pagos')}}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Pagos Fijos</span></a>
+                </li>
+            @endif            
 
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('salidasSoli')}}">

@@ -6,6 +6,7 @@ use App\Models\Orden_compras;
 use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Cotizaciones;
+use App\Models\Pagos_Fijos;
 Use Carbon\Carbon;
 use DB;
 
@@ -90,17 +91,21 @@ class controladorGerenciaGen extends Controller
 
         // Suma total de costos para el mes actual
         $mesActual = now()->format('m'); 
-        $TotalMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
+        $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
+        $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->where('estado','Pagado')->sum('costo_total');
+        $TotalMes = $totalRequisicionesMes + $totalPagosMes;
 
         // Suma total de costos para el año en curso
         $anioActual = now()->year;
-        $TotalAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
+        $totalRequisicionesAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
+        $totalPagosAnio= Pagos_Fijos::whereYear('created_at', $anioActual)->where('estado','Pagado')->sum('costo_total');
+        $TotalAnio = $totalRequisicionesAnio + $totalPagosAnio;
 
         // Conteo de requisiciones completas
-        $completas = Requisiciones::where('estado', 'Comprado')->count();
+        $completas = Requisiciones::where('estado', 'Finalizado')->count();
 
         // Conteo de requisiciones pendientes
-        $pendiente = Requisiciones::where('estado','!=', 'Comprado')->where('estado','!=','Rechazado')->count();
+        $pendiente = Requisiciones::where('estado','!=', 'Finalizado')->where('estado','!=','Rechazado')->count();
 
         // Pasar los datos a la vista
         return view("Gerencia General.index",[
@@ -479,7 +484,7 @@ class controladorGerenciaGen extends Controller
       @return void
     */
     public function reporteOrd(Request $req){
-        // Recopilación de información del empleado para incluirla en el reporte
+        //Recopilación de datos del usuario en sesión
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),
             'nombres' => session('loginNombres'),
@@ -489,56 +494,105 @@ class controladorGerenciaGen extends Controller
             'dpto' =>session('departamento')
         ];
 
-        // Valida el tipo de reporte que se desea obtener
+        //Variable que define los rangos de reportes
         $tipoReporte = $req->input('tipoReport');
 
-        // Recopilación de datos de las requisiciones para el periodo seleccionado
+        //Validación de la variable
         switch ($tipoReporte){
             case "semanal":
+                //Si es semana, define el tiempo con la librería Carbon
                 $unaSemanaAtras = Carbon::now()->subWeek();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                //Recuperar las ordenes de compra que no se han finalizado (pagado).
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();      
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->get();
+
+                //Recuperar las ordenes de compra que se han finalizado (pagado).
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->get();
                 
                 break;
             case "mensual":
+                //Si es mensual, definir el mes actual al momento del reporte con la librería Carbon
                 $inicioDelMes = Carbon::now()->startOfMonth();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                //Recuperar las ordenes de compra que no se han finalizado (pagado)
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $inicioDelMes)
+                ->get();    
+
+                //Recuperar las ordenes de compra que se han finalizado (pagado)
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();    
 
                 break;
             case "anual":
+                //Si es mensual, definir el mes actual al momento del reporte con la librería Carbon
                 $inicioDelAnio = Carbon::now()->startOfYear();
 
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                //Recuperar las ordenes de compra que no se han finalizado (pagado)
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
+                ->get();
+
+                //Recuperar las ordenes de compra que se han finalizado (pagado)
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelAnio)
                 ->get();
 
                 break;
             case "todas":
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosGastos = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                //Al ser todas, no define rangos de tiempo.
+                //Recuperar las ordenes de compra que no se han finalizado (pagado)
+                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->get();  
+                ->where('orden_compras.estado','!=','Finalizado')
+                ->get();         
+
+                //Recuperar las ordenes de compra que se han finalizado (pagado)
+                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                ->join('users','requisiciones.usuario_id','users.id')
+                ->where('orden_compras.estado','=','Finalizado')
+                ->get();         
 
                 break;
         }
@@ -548,10 +602,9 @@ class controladorGerenciaGen extends Controller
         $rutaArchivo = storage_path('app/datos_empleados.txt');
         file_put_contents($rutaArchivo, $datosSerializados);
 
-        // Incluir el archivo Reporte_Ordenes.php y pasar la ruta del archivo como una variable
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start();
         include(public_path('/pdf/TCPDF-main/examples/Reporte_Ordenes.php'));
-        // Generación del PDF del reporte y envío del contenido al navegador
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
         echo $pdfContent;
