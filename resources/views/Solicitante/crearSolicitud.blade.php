@@ -141,13 +141,13 @@
                             @foreach ($unidades as $unidad)                            
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             @endforeach
-                        </select>
-                        <div class="form-group">
-                            <label for="exampleFormControlInput1">Notas:</label>
-                            <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
-                        </div>
+                        </select>                        
                     </div>
                 @endif
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Notas:</label>
+                    <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
+                </div>
                 <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
             </form>
         </div>
