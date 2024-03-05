@@ -121,7 +121,7 @@
                     </select>
                 </div>
                 <div class="form-group" id="otro" style="display: none;">
-                    <label for="exampleFormControlInput1">Otra unidad de medida</label>
+                    <label for="exampleFormControlInput1">Otra unidad de medida:</label>
                     <input name="otro" id="otraUnidad" type="text" class="form-control" placeholder="Escribe la unidad de medida">
                 </div>  
                 <div class="form-group">

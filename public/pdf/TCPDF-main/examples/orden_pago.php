@@ -6,12 +6,12 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 // set document information
 $pdf->setCreator(PDF_CREATOR);
 $pdf->setAuthor('Javier Chavez');
-$pdf->setTitle('Orden_compra ');
+$pdf->setTitle('Orden_pago');
 $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' orden de compra ', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Orden de pago ', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -33,13 +33,13 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Orden de compra n° ". $idnuevaorden, 0, 1, 'L');
+$pdf->Cell(0, 10, "Orden de pago n° ". $idcorresponde, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Orden de compra ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Orden de pago ", 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
@@ -74,86 +74,64 @@ $pdf->Ln(10); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 12);
 
 // Imprimir el subtutitulo 
-$pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
+$pdf->Cell(0, 10, "Servicio", 0, 1, 'C',0);
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 
 $pdf->Cell(20, 10, 'Cantidad', 1, 0, 'C', 1);
-$pdf->Cell(20, 10, 'Medida', 1, 0, 'C', 1);
-$pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', 1);
-$pdf->Cell(25, 10, 'Precio_unitario', 1, 0, 'C', 1);
+$pdf->Cell(135, 10, 'Descripción del servicio', 1, 0, 'C', 1);
 $pdf->Cell(25, 10, 'Monto total', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos filtrados y agregar filas a la tabla
-foreach ($articulosFiltrados as &$articulo) {
-    $montoTotal = $articulo['cantidad'] * $articulo['precio_unitario'];
-    $articulo['monto_total'] = $montoTotal;
-    $pdf->Cell(20, 10, $articulo['cantidad'], 1);
-    $pdf->Cell(20, 10, $articulo['unidad'], 1);
-    $pdf->Cell(90, 10, $articulo['descripcion'], 1);
-    $pdf->Cell(25, 10, '$' . number_format($articulo['precio_unitario'], 2), 1);
-    $pdf->Cell(25, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
-}
-
-// Calcular el total de montos totales dentro del bucle
-$totalGastos = array_sum(array_column($articulosFiltrados, 'monto_total'));
+$pdf->Cell(20, 10, 1, 1);
+$pdf->Cell(135, 10, $servicio->nombre_servicio, 1);
+$pdf->Cell(25, 10, '$' . $importe, 1, 1, 'R');
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(155, 10, 'Subtotal (IVA no incluido):', 1);
-$pdf->Cell(25, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
+$pdf->Cell(155, 10, 'Total a pagar', 1);
+$pdf->Cell(25, 10, '$' . number_format($importe , 2), 1, 1, 'R');
 
-if(!empty($unidad)){
+if (!empty($Nota)){
+    $pdf->Ln(10); // Salto de línea antes de la tabl1a   
     // Definir la fuente y el tamaño de la fuente
     $pdf->SetFont('helvetica', 'A', 11);
     // Encabezados de la tabla
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(180, 7, 'Unidad', 1, 1, 'C', 1);
-    // notas que agrega el solicitante
-    $pdf->MultiCell(180, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 1 ,'C', 0 );
+    $pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
+    // notas que agrega el solicitante 
+    $pdf->MultiCell(180, 5, $Nota, 1, 1 ,'C', 0 );
 }
-
-$pdf->Ln(10); // Salto de línea antes de la tabla   
-// Definir la fuente y el tamaño de la fuente
-$pdf->SetFont('helvetica', 'A', 11);
-// Encabezados de la tabla
-$pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
-// notas que agrega el solicitante 
-
-$pdf->MultiCell(180, 5, $Nota, 1, 1 ,'C', 0 );
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 10);
-$pdf->Cell(0, 10, "Proveedor seleccionado", 0, 1, 'C',0);
+$pdf->Cell(0, 10, "Proveedor del servicio", 0, 1, 'C',0);
 
 // Crear la tabla de gastos
 
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(180, 7, 'Nombre', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $datosProveedor->nombre, 1,1);
-$pdf->Cell(180, 7, 'Correo(s):', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $datosProveedor->correo, 1,1);
+$pdf->MultiCell(180, 7, $servicio->nombre, 1,1);
+$pdf->Cell(180, 7, 'Correo(s)', 1, 1, 'C', 1);
+$pdf->MultiCell(180, 7, $servicio->correo, 1,1);
 $pdf->Cell(35, 7, 'Telefono', 1, 0, 'C', 1);
 $pdf->Cell(85, 7, 'Nombre del contacto', 1, 0, 'C', 1);
 $pdf->Cell(60, 7, 'RFC', 1, 1, 'C', 1);
-$pdf->Cell(35, 7, $datosProveedor->telefono, 1);
-$pdf->Cell(85, 7, $datosProveedor->contacto, 1);
-$pdf->Cell(60, 7, $datosProveedor->rfc , 1,1);
+$pdf->Cell(35, 7, $servicio->telefono, 1);
+$pdf->Cell(85, 7, $servicio->contacto, 1);
+$pdf->Cell(60, 7, $servicio->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
 $pdf->SetFont('helvetica', '', 10);
-if ((!empty($datosProveedor->banco) && !empty($datosProveedor->n_cuenta) && !empty($datosProveedor->n_cuenta_clabe))){
+if ((!empty($servicio->banco) && !empty($servicio->n_cuenta) && !empty($servicio->n_cuenta_clabe))){
     $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
     $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
     $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
-    $pdf->Cell(60, 7, $datosProveedor->banco, 1);
-    $pdf->Cell(60, 7, $datosProveedor->n_cuenta, 1);
-    $pdf->Cell(60, 7, $datosProveedor->n_cuenta_clabe, 1,1);
-    $pdf->Cell(50, 7, 'Condicion de pago: '.$condiciones, 1, 0, 'C', 1);
-    $pdf->Cell(130, 7, 'Días de credito acordados: '. $dias, 1, 1, 'C', 1);
+    $pdf->Cell(60, 7, $servicio->banco, 1);
+    $pdf->Cell(60, 7, $servicio->n_cuenta, 1);
+    $pdf->Cell(60, 7, $servicio->n_cuenta_clabe, 1,1);
 }else{
     $pdf->Cell(180, 7, 'No se han cargado los datos bancarios de este proveedor', 1, 1, 'C', 1);
 }
@@ -181,14 +159,12 @@ $pdf->Line(75, $y, 130, $y);
 $pdf->Line(140, $y, 190, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '     Gerente de area                                 Aprueba compras                                   Gerente general ', 0, 1, 'A', 0);
-
-
+$pdf->Cell(0, 10, '        Solicitante                                                 Finanzas                                     Gerente general ', 0, 1, 'A', 0);
 
 // Nombre del archivo y ruta proporcionados desde el controlador
-$nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
+$nombreArchivo = 'pagoFijo_' . $idcorresponde. '.pdf';
 
-//$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
-$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
+$rutaDescarga = 'D:/laragon/www/VamsSystem/public/pagosFijos/' . $nombreArchivo;
+//$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/pagosFijos/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

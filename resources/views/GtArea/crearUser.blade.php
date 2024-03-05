@@ -1,4 +1,4 @@
-@extends('plantillaDir')
+@extends('plantillaGtArea')
 
 @section('contenido')
 

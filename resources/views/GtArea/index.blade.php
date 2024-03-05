@@ -1,4 +1,4 @@
-@extends('plantillaDir')
+@extends('plantillaGtArea')
 
 @section('contenido')
 
@@ -169,18 +169,18 @@
 </div>
 <script defer>
     document.addEventListener("DOMContentLoaded", function() {
-        var enero = {{ $enero->enero }};
-    var febrero = {{ $febrero->febrero }};
-    var marzo = {{ $marzo->marzo }};
-    var abril = {{ $abril->abril }};
-    var mayo = {{ $mayo->mayo }};
-    var junio = {{ $junio->junio }};
-    var julio = {{ $julio->julio }};
-    var agosto = {{ $agosto->agosto }};
-    var septiembre = {{ $septiembre->septiembre }};
-    var octubre = {{ $octubre->octubre }};
-    var noviembre = {{ $noviembre->noviembre }};
-    var diciembre = {{ $diciembre->diciembre }};
+    var enero = {{ $enero }};
+    var febrero = {{ $febrero }};
+    var marzo = {{ $marzo }};
+    var abril = {{ $abril }};
+    var mayo = {{ $mayo }};
+    var junio = {{ $junio }};
+    var julio = {{ $julio }};
+    var agosto = {{ $agosto }};
+    var septiembre = {{ $septiembre }};
+    var octubre = {{ $octubre }};
+    var noviembre = {{ $noviembre }};
+    var diciembre = {{ $diciembre }};
 
     generarGraficaCombinada(enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre);
     });

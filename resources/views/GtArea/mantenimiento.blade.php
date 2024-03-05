@@ -1,4 +1,4 @@
-@extends('plantillaDir')
+@extends('plantillaGtArea')
 
 @section('contenido')
     @if (session()->has('regis'))
@@ -114,26 +114,151 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body modal-body-scrollable">
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1"><strong>Fecha ultimo
-                                                                    mantenimiento:</strong></label>
-                                                            <h6>26-03-2024</h6>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="exampleFormControlInput1"><strong>Kilometraje:</strong></label>
-                                                            <h6>12000 kms</h6>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1"><strong>Chofer
-                                                                    asignado:</strong></label>
-                                                            <h6>Jesus Eduardo</h6>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="exampleFormControlInput1"><strong>Observaciones:</strong></label>
-                                                            <h6>Sin observaciones</h6>
-                                                        </div>
+                                                        <div class="col-xl-7 col-md-4 ">
+                                                            <div
+                                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                                <h6 class="m-0 font-weight-bold text-primary">Unidad
+                                                                    {{ $unidad->id_unidad }}</h6>
+                                                                <div class="dropdown no-arrow">
+                                                                </div> <!-- Fin de la clase dropdown no-arrow -->
+                                                            </div> <!-- Fin de la clase card-header py-3 -->
+                                                            <div class="card-body">
+                                                                <div class="row mt-5">
+                                                                    <div class="col-md-12">
+                                                                        <td><!-- Inicio de la clase td -->
+
+                                                                            <div class="d-flex justify-content-left">
+
+                                                                                <?php                                                                                
+                                                                                $porcentaje = 90;
+                                                                                $color = '';
+                                                                                if ($porcentaje < 25) {
+                                                                                    $color = 'red';
+                                                                                } elseif ($porcentaje < 50) {
+                                                                                    $color = 'orange';
+                                                                                } elseif ($porcentaje < 75) {
+                                                                                    $color = 'yellow';
+                                                                                } else {
+                                                                                    $color = 'green';
+                                                                                }
+                                                                                ?>
+                                                                                <ul>
+                                                                                    <li>
+                                                                                        <div
+                                                                                            style="width: 900%; background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px;">
+                                                                                            <div
+                                                                                                style="width: <?php echo $porcentaje; ?>%; background-color: <?php echo $color; ?>; height: 19px; border-radius: 1px;">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <!-- Fin de la clase d-flex -->
+                                                                                        <span
+                                                                                            style="margin-left: 12px; color: black"><?php echo 'Aceite  '; ?>
+                                                                                        </span>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div
+                                                                                            style="width: 900%; background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px;">
+                                                                                            <div
+                                                                                                style="width: <?php echo $porcentaje; ?>%; background-color: <?php echo $color; ?>; height: 19px; border-radius: 1px;">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <!-- Fin de la clase d-flex -->
+                                                                                        <span
+                                                                                            style="margin-left: 12px; color: black"><?php echo 'Filtros  '; ?>
+                                                                                        </span>
+                                                                                    </li>
+                                                                                </ul>                                                                        
+                                                                            </div> <!-- Fin de la clase col-md-12 -->
+
+                                                                            <div class="d-flex justify-content-end">
+                                                                                <?php //  Inicio de la clase php
+                                                                                $Unidad = $unidad->tipo;
+                                                                                $tiempo = 1 + rand(0, 5);
+                                                                                
+                                                                                switch ($Unidad) {
+                                                                                    case 'AUTOMOVIL':
+                                                                                        switch ($tiempo) {
+                                                                                            case 1:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusAmarillo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 2:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusAzul.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 3:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusGris.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 4:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusNaranja.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 5:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusRojo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 6:
+                                                                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusVerde.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                                echo 'Imagen no encontrada';
+                                                                                        }
+                                                                                        break;
+                                                                                    case 'CAMIÓN':
+                                                                                        switch ($tiempo) {
+                                                                                            case 1:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusAmarillo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 2:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusAzul.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 3:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusGris.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 4:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusNaranja.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 5:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusRojo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 6:
+                                                                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusVerde.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                                echo 'Imagen no encontrada';
+                                                                                        }
+                                                                                        break;
+                                                                                    case 'CAMIONETA':
+                                                                                        switch ($tiempo) {
+                                                                                            case 1:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusAmarillo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 2:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusAzul.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 3:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusGris.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 4:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusNaranja.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 5:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusRojo.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                            case 6:
+                                                                                                echo '<img src="\img\Unidad\Estatus_van\EstatusVerde.jpg" style="width: 100px;">';
+                                                                                                break;
+                                                                                                echo 'Imagen no encontrada';
+                                                                                        }
+                                                                                        break;
+                                                                                }
+                                                                                
+                                                                                ?>
+                                                                                <!-- Fin de la clase php -->
+                                                                                <button
+                                                                                    class="btn bg-gradient-info text-white"
+                                                                                    style="width: 20%; font-size: 12px;">Programar
+                                                                                    mantenimiento</button>
+                                                                            </div>
+                                                                    </div> <!-- Fin de la clase d-flex -->
+                                                                </div> <!-- Fin de la clase d-flex -->
+                                                                </td> <!-- Fin de la clase td -->
+                                                            </div> <!-- Fin de la clase col-md-12 -->
+                                                        </div> <!-- Fin de la clase card-body -->
                                                     </div>
                                                 </div>
                                             </div>
