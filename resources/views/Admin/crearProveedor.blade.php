@@ -49,43 +49,41 @@
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Telefono:<span style="color: red;">*</span></label>
                         <input maxlength="10" name="telefono" type="text" class="form-control"
-                            placeholder="No° telefonico del proveedor" value="{{ old('telefono') }}"required>
+                            placeholder="No° telefonico del proveedor" value="{{ old('telefono') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Telefono secundario:</label>
                         <input maxlength="10" name="telefono2" type="text" class="form-control"
-                            placeholder="No° telefonico secundarop del proveedor" value="{{ old('telefono2') }}"required>
+                            placeholder="No° telefonico secundarop del proveedor" value="{{ old('telefono2') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Nombre del contacto:<span style="color: red;">*</span></label>
                         <input name="contacto" type="text" class="form-control"
-                            placeholder="Nombre de la persona contacto de la empresa" value="{{ old('contacto') }}"
-                            required>
+                            placeholder="Nombre de la persona contacto de la empresa" value="{{ old('contacto') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Dirección:<span style="color: red;">*</span></label>
                         <input name="direccion" type="text" class="form-control" placeholder="Dirección de la empresa"
-                            value="{{ old('direccion') }}" required>
+                            value="{{ old('direccion') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Domicilio fiscal:<span style="color: red;">*</span></label>
                         <input name="domicilio" type="text" class="form-control"
-                            placeholder="Domicilio fiscal de la empresa" value="{{ old('domicilio') }}" required>
+                            placeholder="Domicilio fiscal de la empresa" value="{{ old('domicilio') }}" >
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">RFC:<span style="color: red;">*</span></label>
                         <input maxlength="13" name="rfc" type="text" class="form-control" placeholder="RFC de la empresa"
-                            value="{{ old('rfc') }}" required>
+                            value="{{ old('rfc') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Correo:<span style="color: red;">*</span></label>
                         <input name="correo" type="email" class="form-control"
-                            placeholder="Correo electronico de la empresa" value="{{ old('correo') }}"required>
+                            placeholder="Correo electronico de la empresa" value="{{ old('correo') }}">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">CIF en formato PDF:<span style="color: red;">*</span></label>
-                        <input name="archivo_CIF" type="file" class="form-control" value="{{ old('archivo_CIF') }}"
-                            required>
+                        <input name="archivo_CIF" type="file" class="form-control" value="{{ old('archivo_CIF') }}">
                     </div>
                     <div class="card-body">
                         <h3 class="text-center">Datos bancarios</h3>

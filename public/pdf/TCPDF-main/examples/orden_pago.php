@@ -164,7 +164,7 @@ $pdf->Cell(0, 10, '        Solicitante                                          
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'pagoFijo_' . $idcorresponde. '.pdf';
 
-$rutaDescarga = 'D:/laragon/www/VamsSystem/public/pagosFijos/' . $nombreArchivo;
-//$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/pagosFijos/'. $nombreArchivo;
+//$rutaDescarga = 'D:/laragon/www/VamsSystem/public/pagosFijos/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/pagosFijos/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');
