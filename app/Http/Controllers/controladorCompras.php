@@ -666,33 +666,8 @@ class controladorCompras extends Controller
       Redirige al usuario a la lista de proveedores con una sesión flash que indica que el nuevo proveedor ha sido insertado exitosamente.
     */
     public function insertProveedor(Request $req){
-        // Validación de archivo
-        $req->validate([
-            'archivo_CIF' =>'required|file|mimes:pdf',
-        ]);
 
-        //Procesamiento y almacenamiento de los archivo CIF
-        $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
-        $archivo = $req->file('archivo_CIF');
-        $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
-    
-        $archivo->storeAs('CIF', $nombreArchivo, 'public');
-        $CIF_pdf = 'CIF/' . $nombreArchivo;        
-
-        //Validacion de datos bancarios para validar archivos de cuenta
-        if(!empty($req->banco) || !empty($req->n_cuenta) || !empty($req->n_cuenta_clabe)) {
-            // Solo validar 'archivo_estadoCuenta' si se cumplen las condiciones
-            $req->validate([
-                'archivo_estadoCuenta' => 'required|file|mimes:pdf',
-            ]);
-
-            //Procesamiento y almacenamiento del archivo estado de cuenta
-            $archivo = $req->file('archivo_estadoCuenta');
-            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
-            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
-            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
-
-            // Creación del registro de proveedor en la base de datos
+        if (empty($req->file('archivo_CIF')) && (empty($req->banco) || empty($req->n_cuenta) || empty($req->n_cuenta_clabe))){
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "telefono"=>$req->input('telefono'),
@@ -702,28 +677,67 @@ class controladorCompras extends Controller
                 "domicilio"=>$req->input('domicilio'),
                 "rfc"=>$req->input('rfc'),
                 "correo"=>$req->input('correo'),
-                "CIF"=>$CIF_pdf,
-                "banco"=>$req->input('banco'),
-                "n_cuenta"=>$req->input('n_cuenta'),
-                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
-                "estado_cuenta"=>$estadoCuenta_pdf,
-                "estatus"=>"1",
+                "CIF"=>null,
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
-        }else{
-            //En caso de no tener datos bancarios crea el registro son esos datos
-            Proveedores::create([
-                "nombre"=>$req->input('nombre'),
-                "telefono"=>$req->input('telefono'),
-                "telefono2"=>$req->input('telefono2'),
-                "contacto"=>$req->input('contacto'),
-                "direccion"=>$req->input('direccion'),
-                "domicilio"=>$req->input('domicilio'),
-                "rfc"=>$req->input('rfc'),
-                "correo"=>$req->input('correo'),
-                "CIF"=>$CIF_pdf,
-            ]);
+        } else {
+            //Procesamiento y almacenamiento de los archivo CIF
+            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_CIF');
+            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+        
+            $archivo->storeAs('CIF', $nombreArchivo, 'public');
+            $CIF_pdf = 'CIF/' . $nombreArchivo;        
+
+            //Validacion de datos bancarios para validar archivos de cuenta
+            if(!empty($req->banco) || !empty($req->n_cuenta) || !empty($req->n_cuenta_clabe)) {
+                // Solo validar 'archivo_estadoCuenta' si se cumplen las condiciones
+                $req->validate([
+                    'archivo_estadoCuenta' => 'required|file|mimes:pdf',
+                ]);
+
+                //Procesamiento y almacenamiento del archivo estado de cuenta
+                $archivo = $req->file('archivo_estadoCuenta');
+                $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+                $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+                $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+                // Creación del registro de proveedor en la base de datos
+                Proveedores::create([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "telefono2"=>$req->input('telefono2'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),
+                    "CIF"=>null,
+                    "banco"=>$req->input('banco'),
+                    "n_cuenta"=>$req->input('n_cuenta'),
+                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                    "estado_cuenta"=>$null,
+                    "estatus"=>"1",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                    ]);
+            }else{
+                //En caso de no tener datos bancarios crea el registro son esos datos
+                Proveedores::create([
+                    "nombre"=>$req->input('nombre'),
+                    "telefono"=>$req->input('telefono'),
+                    "telefono2"=>$req->input('telefono2'),
+                    "contacto"=>$req->input('contacto'),
+                    "direccion"=>$req->input('direccion'),
+                    "domicilio"=>$req->input('domicilio'),
+                    "rfc"=>$req->input('rfc'),
+                    "correo"=>$req->input('correo'),
+                    "CIF"=>$CIF_pdf,
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                ]);
+            }
         }
 
         // Redirección con mensaje de éxito
@@ -842,7 +856,7 @@ class controladorCompras extends Controller
                     "estado_cuenta"=>$estadoCuenta_pdf
                 ]);                
             }      
-        } else{
+        } else {
             //Datos bancarios no actualizados
             if(empty($req->archivo_CIF)){
                 //Si no se modifia el CIF, actualiza los datos unicamente que son obligatorios

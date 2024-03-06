@@ -50,7 +50,7 @@
     </script> 
 @endif
 
-@if(session()->has('Eliminado'))
+@if(session()->has('eliminado'))
     <script type="text/javascript">          
         Swal.fire({
         position: 'center',
