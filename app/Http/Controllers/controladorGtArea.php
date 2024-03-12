@@ -821,7 +821,10 @@ class controladorGtArea extends Controller
 
         } else{
             // Manejo del caso en que no se sube un archivo válido
-            return back()->with('error', 'No se ha seleccionado ningún archivo.');
+            Pagos_Fijos::where('id_pago',$id)->update([
+                "estado"=>"Pagado",
+                "updated_at"=>Carbon::now()
+            ]);
         }
     }
 

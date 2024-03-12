@@ -78,7 +78,6 @@
                     <tbody>
                         @if (session('departamento') === "Finanzas" && session('rol')==="Gerente Area")
                             @foreach ($solicitudes as $solicitudes)                            
-                                @if (session('departamento') === $solicitudes->departamento || $solicitudes->estado === "Pre Validado")                        
                                 <tr>
                                     <th>{{$solicitudes->id_requisicion}}</th>
                                     <th>{{$solicitudes->nombres}}</th>
@@ -137,7 +136,7 @@
                                     </th>
                                     <th>
                                         <!-- Ver Cotizaciones -->
-                                        @if ($solicitudes->estado === "Cotizado")
+                                        @if ($solicitudes->estado === "Cotizado" && session('departamento') === $solicitudes->departamento)
                                             <a class="btn btn-primary" href="{{route('verCotiza', $solicitudes->id_requisicion)}}">
                                                 Revisar cotizaciones
                                             </a>
@@ -146,7 +145,7 @@
                                                 Confirmar validación
                                             </a>                                    
                                         <!-- Validar o Rechazar -->
-                                        @elseif ($solicitudes->estado === "Solicitado") 
+                                        @elseif ($solicitudes->estado === "Solicitado" && session('departamento') === $solicitudes->departamento) 
                                         <a class="btn btn-success" href="{{route('aprobarArt',$solicitudes->id_requisicion)}}">
                                             Aprobar
                                         </a>                                
@@ -181,11 +180,10 @@
                                             </div>
                                         </div>
                                         @else
-                                        <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Revisar Cotizaciones</a>                                
+                                        <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
                                         @endif
                                     </th>
-                                </tr>
-                                @endif                    
+                                </tr>                  
                             @endforeach
                         @else
                             @foreach ($solicitudes as $solicitudes)                            
