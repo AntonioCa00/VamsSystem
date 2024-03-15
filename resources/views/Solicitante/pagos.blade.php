@@ -89,7 +89,6 @@
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th>ID:</th>
                                                 <th>Servicio:</th>
                                                 <th>Proveedor:</th>
                                                 <th>Opciones:</th>
@@ -97,8 +96,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($servicios as $servicio)
-                                            <tr>
-                                                <th>{{$servicio->id_servicio}}</th>                                        
+                                            <tr>                                       
                                                 <th>{{$servicio->nombre_servicio}}</th>
                                                 <th>{{$servicio->nombre}}</th>
                                                 <th>
@@ -199,17 +197,28 @@
                             <tr>
                                 <th>{{$pago->id_pago}}</th>
                                 <th>{{$pago->nombre_servicio}}</th>
-                                <th>{{$pago->estado}}</th>
-                                <th>$ {{$pago->costo_total}}</th>
+                                @if ($pago->estado === "Pagado")
+                                    <th class="font-weight-bold text-success">{{$pago->estado}}</th>
+                                @else
+                                    <th>{{$pago->estado}}</th>
+                                @endif
+                                
+                                <th>${{$pago->costo_total}}</th>
                                 <th>{{$pago->nombre}}</th>
-                                <th>
+                                <th class="text-center">
                                     <a href="{{ asset($pago->pdf) }}" target="_blank">
                                         <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                     </a>
                                 </th>
                                 <th>
                                     @if ($pago->estado === "Pagado")
-                                        <a href="#" class="btn btn-danger" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
+                                        @if(empty($pago->comprobante_pago))
+                                            Sin comprobante
+                                        @else 
+                                            <a href="{{ asset($pago->comprobante_pago)}}" target="_blank">
+                                                Comprobante pago
+                                            </a>
+                                        @endif                      
                                     @else
                                         <a class="btn btn-success" href="#" data-toggle="modal" data-target="#EditarPago{{$pago->id_pago}}">
                                             Editar
@@ -285,11 +294,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
-                                </th>
-                                
-                                <th>
-                                    
+                                    @endif                                    
                                 </th>
                             </tr>
                         @endforeach                        

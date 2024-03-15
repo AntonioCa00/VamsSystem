@@ -37,65 +37,137 @@ class controladorCompras extends Controller
         $anio_actual = date('Y');
 
         // Consultas para sumar los costos totales por cada mes del año actual
-        $Enero = Orden_compras::
+        $EneroPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
+            ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $EneroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
             ->first();
+        $Enero = $EneroPagos->enero + $EneroCompras->enero;
 
-        $Febrero = Orden_compras::
+        $FebreroPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
+            ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $FebreroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
             ->first();
+        $Febrero = $FebreroPagos->febrero + $FebreroCompras->febrero;
 
-        $Marzo = Orden_compras::
+        $MarzoPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
+            ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $MarzoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
             ->first();
+        $Marzo = $MarzoPagos->marzo + $MarzoCompras->marzo;
 
-        $Abril = Orden_compras::
+        $AbrilPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
+            ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $AbrilCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
             ->first();
+        $Abril = $AbrilPagos->abril + $AbrilCompras->abril;
 
-        $Mayo = Orden_compras::
+        $MayoPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
+            ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $MayoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
             ->first();
+        $Mayo = $MayoPagos->mayo + $MayoCompras->mayo;
 
-        $Junio = Orden_compras::
+        $JunioPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
+            ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $JunioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
             ->first();
+        $Junio = $JunioPagos->junio + $JunioCompras->junio;
 
-        $Julio = Orden_compras::
+        $JulioPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
+            ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $JulioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
             ->first();
+        $Julio = $JulioPagos->julio + $JulioCompras->julio;
 
-        $Agosto = Orden_compras::
+        $AgostoPagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
+            ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $AgostoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
             ->first();
+        $Agosto = $AgostoPagos->agosto + $AgostoCompras->agosto;
 
-        $Septiembre = Orden_compras::
+        $SeptiembrePagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
+            ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $SeptiembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
             ->first();
+        $Septiembre = $SeptiembrePagos->septiembre + $SeptiembreCompras->septiembre;
 
-        $Octubre = Orden_compras::
+        $OctubrePagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
+            ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $OctubreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
             ->first();
+        $Octubre = $OctubrePagos->octubre + $OctubreCompras->octubre;
 
-        $Noviembre = Orden_compras::
+        $NoviembrePagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
+            ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
+            ->where('estado','Pagado')
+            ->first();
+        $NoviembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
             ->first();
+        $Noviembre = $NoviembrePagos->noviembre + $NoviembreCompras->noviembre;
 
-        $Diciembre = Orden_compras::
+        $DiciembrePagos = Pagos_Fijos::
+            select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
+            ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
+            ->where('estado','Pagado')  
+            ->first();
+        $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
             ->first();
+        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;        
 
         // Suma total de costos para el mes actual
         $mesActual = now()->format('m'); 
@@ -110,10 +182,15 @@ class controladorCompras extends Controller
         $TotalAnio = $totalRequisicionesAnio + $totalPagosAnio;
 
         // Conteo de requisiciones completas
-        $completas = Requisiciones::where('estado', 'Finalizado')->count();
+        $completas = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
+        ->where('requisiciones.estado', 'Finalizado')
+        ->count();
 
         // Conteo de requisiciones pendientes
-        $pendiente = Requisiciones::where('estado','!=', 'Finalizado')->where('estado','!=','Rechazado')->count();
+        $pendiente = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
+        ->where('requisiciones.estado','!=', 'Finalizado')
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->count();
 
         // Pasar los datos a la vista
         return view("Admin.index",[
@@ -134,7 +211,7 @@ class controladorCompras extends Controller
             'octubre'    => $Octubre,
             'noviembre'  => $Noviembre,
             'diciembre'  => $Diciembre,]);
-    }  
+    }
 
     //VISTAS DE LAS TABLAS
     /*
@@ -713,11 +790,11 @@ class controladorCompras extends Controller
                     "domicilio"=>$req->input('domicilio'),
                     "rfc"=>$req->input('rfc'),
                     "correo"=>$req->input('correo'),
-                    "CIF"=>null,
+                    "CIF"=>$CIF_pdf,
                     "banco"=>$req->input('banco'),
                     "n_cuenta"=>$req->input('n_cuenta'),
                     "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
-                    "estado_cuenta"=>$null,
+                    "estado_cuenta"=>$estadoCuenta_pdf,
                     "estatus"=>"1",
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now()
@@ -1155,6 +1232,26 @@ class controladorCompras extends Controller
         ]);
 
         return back()->with('finalizada','finalizada');
+    }
+
+    public function pagosFijos() {
+        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
+        ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
+        ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
+        ->orderBy('id_pago','desc')
+        ->get();
+
+        $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+        $proveedores = Proveedores::where('estatus','1')
+        ->orderBy('nombre','asc')
+        ->get();
+
+        return view('Admin.pagos',compact('pagos','servicios','proveedores'));
     }
 
     public function reportes() {

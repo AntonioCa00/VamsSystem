@@ -95,9 +95,9 @@
                                                             {!!method_field('PUT')!!}   
                                                             <div class="form-group">
                                                                 <label>Favor de cargar su comprobante de pago:</label>
-                                                                <input name="comprobante_pago" type="file" class="form-control" required>
+                                                                <input name="comprobante_pago" type="file" class="form-control">
                                                             </div>
-                                                            <button type="submit" class="btn btn-primary">Subir archivo</button>
+                                                            <button type="submit" class="btn btn-primary">Registrar pago</button>
                                                         </form>
                                                     </div>                                                
                                                 </div>

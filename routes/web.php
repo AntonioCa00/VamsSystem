@@ -71,6 +71,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('form-compra',[controladorCompras::class,'createCompra'])->name('createCompra');
         Route::get('form/{id}/cotizar',[controladorCompras::class,'createCotiza'])->name('createCotiza');
         Route::get('ordenCompra/{id}',[controladorCompras::class,'ordenCompra'])->name('ordenCompra');
+        Route::get('pagosFijos/Compras',[controladorCompras::class,'pagosFijos'])->name('pagosFijos');
         Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
         

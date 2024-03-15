@@ -491,7 +491,7 @@ class controladorSolic extends Controller
     }
 
     public function pagosFijos(){
-        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre')
+        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
         ->where('pagos_fijos.usuario_id',session('loginId'))
         ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
         ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')

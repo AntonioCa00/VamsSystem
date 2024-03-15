@@ -68,6 +68,12 @@
                     <span>Solicitudes</span></a>
             </li>
 
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('pagosFijos')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Pagos Fijos</span></a>
+            </li>
+
             <!-- Nav Item - Tables -->
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('unidades')}}">
