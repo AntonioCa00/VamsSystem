@@ -825,6 +825,8 @@ class controladorGtArea extends Controller
                 "estado"=>"Pagado",
                 "updated_at"=>Carbon::now()
             ]);
+
+            return back()->with('pagado','pagado');
         }
     }
 
