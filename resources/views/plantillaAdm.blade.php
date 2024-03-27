@@ -21,6 +21,7 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
 
 
     <!-- Custom styles for this page -->
@@ -69,10 +70,22 @@
             </li>
 
             <li class="nav-item active">
+                <a class="nav-link" href="{{route('ordenesCompras')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Orden de compra</span></a>
+            </li> 
+
+            <li class="nav-item active">
                 <a class="nav-link" href="{{route('pagosFijos')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Pagos Fijos</span></a>
-            </li>
+            </li>            
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('proveedores')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Proveedores</span></a>
+            </li>              
 
             <!-- Nav Item - Tables -->
             <li class="nav-item active">
@@ -80,18 +93,6 @@
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>
             </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('proveedores')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Proveedores</span></a>
-            </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('ordenesCompras')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Orden de compra</span></a>
-            </li>   
             
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('entradas')}}">

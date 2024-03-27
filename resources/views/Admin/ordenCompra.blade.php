@@ -25,12 +25,12 @@
                         <tr> 
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>    
                             </th>                            
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>               
                         </tr>
@@ -56,7 +56,7 @@
                         @foreach($articulos as $index => $articulo)
                         <tr>
                             <th>
-                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{$articulo->id}}">
+                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{$articulo->id}}" onchange="toggleRequired(this)">
                             </th>
                             <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
                                 <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
@@ -103,6 +103,45 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Obtener el checkbox universal
+    var checkTodos = document.getElementById('checkTodos');
+    // Obtener todos los checkboxes individuales
+    var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+
+    // Iterar sobre cada checkbox y establecer el atributo "required" en el campo precio_unitario correspondiente
+    checkboxes.forEach(function (checkbox) {
+        var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
+        precioInput.required = true;
+
+        // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox individual
+        checkbox.addEventListener('change', function () {
+            toggleRequired(this);
+        });
+    });
+
+    // Función para cambiar el estado del atributo "required" según el estado del checkbox individual
+    function toggleRequired(checkbox) {
+        var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
+        if (checkbox.checked) {
+            precioInput.required = true;
+        } else {
+            precioInput.required = false;
+        }
+    }
+
+    // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox universal
+    checkTodos.addEventListener('change', function (e) {
+        var estado = this.checked; // true o false
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = estado;
+            toggleRequired(checkbox);
+        });
+    });
+});
+  
     document.getElementById('condicionPago').addEventListener('change', function() {
     var valor = this.value;
     var datosBancarios = document.getElementById('datosBancarios');

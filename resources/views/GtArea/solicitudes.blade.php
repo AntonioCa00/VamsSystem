@@ -84,14 +84,14 @@
                                     <th>{{$solicitudes->departamento}}</th>
                                     <th>{{$solicitudes->created_at}}</th>
                                     <th>{{$solicitudes->estado}}</th>
-                                    <th>
+                                    <th class="text-center">
                                         <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
-                                            <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                            <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                         </a>
                                     </th>
                                     <th>
                                         <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitudes->id_requisicion}}">
-                                            <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
+                                            <img class="imagen-container" src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
                                         </a>
                                         
                                         @if (empty($solicitudes->detalles))
@@ -194,9 +194,9 @@
                                     <th>{{$solicitudes->departamento}}</th>
                                     <th>{{$solicitudes->created_at}}</th>
                                     <th>{{$solicitudes->estado}}</th>
-                                    <th>
+                                    <th class="text-center">
                                         <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
-                                            <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                            <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                         </a>
                                     </th>
                                     <th>

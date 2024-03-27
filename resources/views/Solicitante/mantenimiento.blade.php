@@ -1,4 +1,4 @@
-@extends('plantillaGtArea')
+@extends('plantillaSol')
 
 @section('contenido')
     @if (session()->has('kilometraje'))
@@ -25,17 +25,60 @@
         </script>
     @endif
 
-    <div class="container-fluid">
+    @if (session()->has('importado'))
+        <script type="text/javascript">
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Se han actualizado los kilometrajes',
+                showConfirmButton: false,
+                timer: 1400
+            })
+        </script>
+    @endif
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">MANTENIMIENTO UNIDADES</h1>
+    <div class="container-fluid">
+        <div class="py-1 d-flex justify-content-between align-items-center">
+            <!-- Page Heading -->
+            <h1 class="h3 mb-2 text-gray-800">MANTENIMIENTO UNIDADES</h1>
+            <a class="btn btn-primary text-white"href="#"
+                data-toggle="modal" data-target="#ActualizarKms">
+                Actualizar kilometrajes
+            </a>
+            <!-- Rechazar Modal-->
+            <div class="modal fade" id="ActualizarKms" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Actualizar
+                                kilometraje de todas la unidades</h5>
+                            <h4 class="font-weight-bold"></4>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">X</span>
+                                </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{route('kilometrajes')}}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group">
+                                    <label>Favor de cargar su excel de registro de kms</label>
+                                    <input name="file" type="file" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Actualizar kilometrajes</button>
+                            </form>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="container-fluid">
             <!-- Page Heading -->
             <div class="row">
                 @php
-                // Ordenar la colección de unidades por el promedio de tiempo (tiempo)
-                $unidadesOrdenadas = $unidades->sortBy('tiempo')->values()->all();
+                    // Ordenar la colección de unidades por el promedio de tiempo (tiempo)
+                    $unidadesOrdenadas = $unidades->sortBy('tiempo')->values()->all();
                 @endphp
 
                 @foreach ($unidadesOrdenadas as $unidad)
@@ -117,15 +160,15 @@
                                         <td>
                                             <div class="d-flex justify-content-center">
                                                 <?php
-                                                $Unidad = $unidad->tipo;                                                                                            
-
+                                                $Unidad = $unidad->tipo;
+                                                
                                                 echo $unidad->tiempo;
                                                 switch ($Unidad) {
                                                     case 'AUTOMOVIL':
                                                         if ($unidad->tiempo > 0 && $unidad->tiempo < 18) {
-                                                            echo '<img src="\img\Unidad\Estatus_automovil\EstatusRojo.jpg" style="width: 100px;">';                                                        
+                                                            echo '<img src="\img\Unidad\Estatus_automovil\EstatusRojo.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 18 && $unidad->tiempo < 36) {
-                                                            echo '<img src="\img\Unidad\Estatus_automovil\EstatusNaranja.jpg" style="width: 100px;">';                                                            
+                                                            echo '<img src="\img\Unidad\Estatus_automovil\EstatusNaranja.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 36 && $unidad->tiempo < 54) {
                                                             echo '<img src="\img\Unidad\Estatus_automovil\EstatusGris.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 54 && $unidad->tiempo < 72) {
@@ -135,22 +178,22 @@
                                                         } elseif ($unidad->tiempo >= 90 && $unidad->tiempo <= 100) {
                                                             echo '<img src="\img\Unidad\Estatus_automovil\EstatusVerde.jpg" style="width: 100px;">';
                                                         }
-                                                    break;
+                                                        break;
                                                     case 'CAMIÓN':
                                                         if ($unidad->tiempo > 0 && $unidad->tiempo < 18) {
                                                             echo '<img src="\img\Unidad\Estatus_camion\EstatusRojo.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 18 && $unidad->tiempo < 36) {
-                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusNaranja.jpg" style="width: 100px;">';                                                            
+                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusNaranja.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 36 && $unidad->tiempo < 54) {
                                                             echo '<img src="\img\Unidad\Estatus_camion\EstatusGris.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 54 && $unidad->tiempo < 72) {
-                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusAmarillo.jpg" style="width: 100px;">';              
-                                                        } elseif ($unidad->tiempo >= 72 && $unidad->tiempo < 90) {                                             
-                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusAzul.jpg" style="width: 100px;">';                
+                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusAmarillo.jpg" style="width: 100px;">';
+                                                        } elseif ($unidad->tiempo >= 72 && $unidad->tiempo < 90) {
+                                                            echo '<img src="\img\Unidad\Estatus_camion\EstatusAzul.jpg" style="width: 100px;">';
                                                         } elseif ($unidad->tiempo >= 90 && $unidad->tiempo <= 100) {
                                                             echo '<img src="\img\Unidad\Estatus_camion\EstatusVerde.jpg" style="width: 100px;">';
                                                         }
-                                                    break;
+                                                        break;
                                                     case 'CAMIONETA':
                                                         if ($unidad->tiempo > 0 && $unidad->tiempo < 18) {
                                                             echo '<img src="\img\Unidad\Estatus_van\EstatusAmarillo.jpg" style="width: 100px;">';
@@ -165,7 +208,7 @@
                                                         } elseif ($unidad->tiempo >= 90 && $unidad->tiempo <= 100) {
                                                             echo '<img src="\img\Unidad\Estatus_van\EstatusVerde.jpg" style="width: 100px;">';
                                                         }
-                                                    break;
+                                                        break;
                                                 }
                                                 ?>
                                             </div> <!-- Fin de la clase d-flex -->

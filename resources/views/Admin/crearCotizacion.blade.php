@@ -53,16 +53,16 @@
                         <th class="text-center">{{ $loop->iteration }}</th>
                             <th>
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container"  src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>    
                             </th>
                             <th>
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container"  src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
-                                <form action="{{route('deleteCotiza',$cotizacion->id_cotizacion)}}" method="POST">
+                                <form action="{{ route('deleteCotiza', ['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->id_requisicion]) }}" method="POST">
                                     @csrf
                                     {!!method_field('DELETE')!!}                            
                                     <button type="submit" class="btn btn-primary">Eliminar</button>

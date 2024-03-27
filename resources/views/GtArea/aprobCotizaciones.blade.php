@@ -40,12 +40,12 @@
                             <th>{{$validada->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($validada->reqPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>    
                             </th>                            
                             <th class="text-center">
                                 <a href="{{ asset($validada->cotPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>

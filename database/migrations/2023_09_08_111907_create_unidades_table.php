@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('caracteristicas');
             $table->string('n_de_serie');
             $table->string('n_de_permiso');
+            $table->string('kilometraje');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });

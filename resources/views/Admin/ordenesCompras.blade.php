@@ -73,7 +73,7 @@
                             <th>${{$orden->costo_total}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($orden->ordPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/compra.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>{{$orden->created_at}}</th>
