@@ -58,6 +58,7 @@
                             <th>Requisicion:</th>
                             <th>Proveedor:</th>
                             <th>Costo total:</th>
+                            <th>Estado:</th>
                             <th>Orden de compra</th>
                             <th>Fecha de creacion:</th>
                             <th>Opciones:</th>
@@ -70,7 +71,12 @@
                             <th>{{$orden->nombres}}</th>
                             <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->proveedor}}</th>
-                            <th>${{$orden->costo_total}}</th>
+                            <th>${{$orden->costo_total}}</th>                        
+                            @if ($orden->estado === "Pagado")
+                                <th class="text-success">{{$orden->estado}}</th>
+                            @else
+                                <th class="text-warning">Pendiente</th>
+                            @endif
                             <th class="text-center">
                                 <a href="{{ asset($orden->ordPDF) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/compra.jpg') }}" alt="Abrir PDF">
@@ -79,7 +85,7 @@
                             <th>{{$orden->created_at}}</th>
                             <th>                        
                                 @if($orden->estadoComp === null)
-                                    <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
+                                    {{-- <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
                                         Registrar pago
                                     </a>
                                     <!-- Logout Modal-->
@@ -104,7 +110,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
                                         Eliminar
                                     </a>
@@ -131,9 +137,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                @else
-                                <a href="#" class="btn btn-success" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Registrar pago</a>                                
-                                <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                                                
+                                @else                                
+                                @if(empty($orden->comprobante_pago))
+                                    Sin comprobante
+                                @else 
+                                    <a href="{{ asset($orden->comprobante_pago)}}" target="_blank">
+                                        Comprobante pago
+                                    </a>
+                                @endif 
                                 @endif
                             </th>
                         </tr>

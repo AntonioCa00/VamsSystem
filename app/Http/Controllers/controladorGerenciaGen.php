@@ -7,6 +7,8 @@ use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Cotizaciones;
 use App\Models\Pagos_Fijos;
+use App\Models\Servicios;
+use App\Models\Proveedores;
 Use Carbon\Carbon;
 use DB;
 
@@ -467,6 +469,38 @@ class controladorGerenciaGen extends Controller
 
         // Redirige al usuario a la página para visualizar las cotizaciones
         return view('Gerencia General.cotizaciones',compact('cotizaciones'));
+    }
+
+    public function compras(){
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        ->join('users','orden_compras.admin_id','=','users.id')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->orderBy('orden_compras.created_at','desc')
+        ->get();
+        return view ('Gerencia General.ordenesCompras',compact('ordenes'));
+    }
+
+    public function pagos(){
+        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
+        ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
+        ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
+        ->orderBy('id_pago','desc')
+        ->get();
+
+        $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+        $proveedores = Proveedores::where('estatus','1')
+        ->orderBy('nombre','asc')
+        ->get();
+
+        return view('Gerencia General.pagos',compact('pagos','servicios','proveedores'));
     }
 
     /*

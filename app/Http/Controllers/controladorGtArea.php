@@ -825,6 +825,10 @@ class controladorGtArea extends Controller
     public function registrarPago(Request $req, $id){
         // Verifica que se haya subido un archivo y que sea válido
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
+            
+            $req->validate([
+                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+            ]);
                 
             // Se genera el nombre y ruta para guardar PDF
             $nombreArchivo = 'comprobantePago_' . $id . '.pdf';
@@ -875,6 +879,10 @@ class controladorGtArea extends Controller
 
     public function FinalizarC(Request $req, $id){
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
+
+            $req->validate([
+                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+            ]);
                 
             // Se genera el nombre y ruta para guardar PDF
             $nombreArchivo = 'comprobantePagoOrden_' . $id . '.pdf';

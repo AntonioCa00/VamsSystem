@@ -14,6 +14,18 @@
     </script> 
 @endif
 
+@if ($errors->any())
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: 'Debe de ser un archivo tipo PDF',
+        showConfirmButton: false,
+        timer: 1500
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->

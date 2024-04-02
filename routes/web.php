@@ -39,6 +39,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
         Route::get('reportesGerencia',[controladorGerenciaGen::class,'reportes'])->name('reportes');
+        Route::get('compras/GerenciaGen',[controladorGerenciaGen::class,'compras'])->name('comprasGerGen');
+        Route::get('pagos/GerenciaGen',[controladorGerenciaGen::class,'pagos'])->name('pagosGerGen');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 

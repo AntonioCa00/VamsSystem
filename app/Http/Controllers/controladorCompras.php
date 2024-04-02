@@ -1070,7 +1070,6 @@ class controladorCompras extends Controller
             $proveedor = $req->input('Proveedor');
             $articulos = $req->input('articulos');
 
-            return $articulos;
             $condiciones = $req->input('condiciones');
 
             //Si se condiciona a credito guarda el valor de los días acordados
@@ -1113,7 +1112,6 @@ class controladorCompras extends Controller
             //Variable que contiene los articulos seleccionados en el formulario.
             $articulosSeleccionados = $req->input('articulos_seleccionados');
 
-            return $articulosSeleccionados;
             //Filtrar solo los articulos seleccionados
             $articulosFiltrados = array_filter($articulos, function($articulo) use ($articulosSeleccionados){
                 return in_array($articulo['id'],$articulosSeleccionados);
@@ -1206,7 +1204,7 @@ class controladorCompras extends Controller
         }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
