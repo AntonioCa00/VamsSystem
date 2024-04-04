@@ -128,15 +128,15 @@
                             max-width: 100px; /* coincide con el ancho para asegurar el límite */
                             overflow: hidden;
                             white-space: nowrap;text-overflow: ellipsis;">Mantenimientooooooooooooooooooooooooooo</th> --}}
-                            <th>
+                            <th class="text-center">
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container"  src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
                                 @if ($solicitudes->estado === "Aprobado" || $solicitudes->estado === "Cotizado")
                                     <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
-                                        Cargar cotizaciones
+                                        Subir cotizaciones
                                     </a>                                   
                                 @elseif ($solicitudes->estado === "Validado" ||$solicitudes->estado ==="Comprado")
                                     <a class="btn btn-info" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">

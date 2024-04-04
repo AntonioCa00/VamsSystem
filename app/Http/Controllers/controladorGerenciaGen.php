@@ -7,6 +7,8 @@ use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Cotizaciones;
 use App\Models\Pagos_Fijos;
+use App\Models\Servicios;
+use App\Models\Proveedores;
 Use Carbon\Carbon;
 use DB;
 
@@ -37,6 +39,7 @@ class controladorGerenciaGen extends Controller
         $EneroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Enero = $EneroPagos->enero + $EneroCompras->enero;
 
@@ -48,6 +51,7 @@ class controladorGerenciaGen extends Controller
         $FebreroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Febrero = $FebreroPagos->febrero + $FebreroCompras->febrero;
 
@@ -59,6 +63,7 @@ class controladorGerenciaGen extends Controller
         $MarzoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Marzo = $MarzoPagos->marzo + $MarzoCompras->marzo;
 
@@ -70,6 +75,7 @@ class controladorGerenciaGen extends Controller
         $AbrilCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Abril = $AbrilPagos->abril + $AbrilCompras->abril;
 
@@ -81,6 +87,7 @@ class controladorGerenciaGen extends Controller
         $MayoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Mayo = $MayoPagos->mayo + $MayoCompras->mayo;
 
@@ -92,6 +99,7 @@ class controladorGerenciaGen extends Controller
         $JunioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Junio = $JunioPagos->junio + $JunioCompras->junio;
 
@@ -103,6 +111,7 @@ class controladorGerenciaGen extends Controller
         $JulioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Julio = $JulioPagos->julio + $JulioCompras->julio;
 
@@ -114,6 +123,7 @@ class controladorGerenciaGen extends Controller
         $AgostoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Agosto = $AgostoPagos->agosto + $AgostoCompras->agosto;
 
@@ -125,6 +135,7 @@ class controladorGerenciaGen extends Controller
         $SeptiembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Septiembre = $SeptiembrePagos->septiembre + $SeptiembreCompras->septiembre;
 
@@ -136,6 +147,7 @@ class controladorGerenciaGen extends Controller
         $OctubreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Octubre = $OctubrePagos->octubre + $OctubreCompras->octubre;
 
@@ -147,6 +159,7 @@ class controladorGerenciaGen extends Controller
         $NoviembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Noviembre = $NoviembrePagos->noviembre + $NoviembreCompras->noviembre;
 
@@ -158,8 +171,9 @@ class controladorGerenciaGen extends Controller
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
-        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;        
+        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;            
 
         // Suma total de costos para el mes actual
         $mesActual = now()->format('m'); 
@@ -455,6 +469,38 @@ class controladorGerenciaGen extends Controller
 
         // Redirige al usuario a la página para visualizar las cotizaciones
         return view('Gerencia General.cotizaciones',compact('cotizaciones'));
+    }
+
+    public function compras(){
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        ->join('users','orden_compras.admin_id','=','users.id')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->orderBy('orden_compras.created_at','desc')
+        ->get();
+        return view ('Gerencia General.ordenesCompras',compact('ordenes'));
+    }
+
+    public function pagos(){
+        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
+        ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
+        ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
+        ->orderBy('id_pago','desc')
+        ->get();
+
+        $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+        $proveedores = Proveedores::where('estatus','1')
+        ->orderBy('nombre','asc')
+        ->get();
+
+        return view('Gerencia General.pagos',compact('pagos','servicios','proveedores'));
     }
 
     /*

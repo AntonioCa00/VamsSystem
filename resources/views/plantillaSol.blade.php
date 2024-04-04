@@ -21,6 +21,7 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -76,7 +77,15 @@
                         <i class="fas fa-fw fa-table"></i>
                         <span>Pagos Fijos</span></a>
                 </li>
-            @endif            
+            @endif
+
+            {{-- @if (session('departamento') == "Mantenimiento")
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{route('manteniento')}}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Mantenimiento</span></a>
+                </li>
+            @endif --}}
 
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('salidasSoli')}}">

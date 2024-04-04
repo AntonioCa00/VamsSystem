@@ -39,6 +39,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
         Route::get('reportesGerencia',[controladorGerenciaGen::class,'reportes'])->name('reportes');
+        Route::get('compras/GerenciaGen',[controladorGerenciaGen::class,'compras'])->name('comprasGerGen');
+        Route::get('pagos/GerenciaGen',[controladorGerenciaGen::class,'pagos'])->name('pagosGerGen');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -86,15 +88,14 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('validar-soli/{id}',[controladorCompras::class,'validarSoli'])->name('validSoli');
         Route::post('insert-compra',[controladorCompras::class,'insertCompra'])->name('insertCompra');
         Route::post('insert-cotiza',[controladorCompras::class,'insertCotiza'])->name('insertCotiza');
-        Route::delete('delete-cotiza/{id}',[controladorCompras::class,'deleteCotiza'])->name('deleteCotiza');
+        Route::delete('delete-cotiza/{id}/{rid}',[controladorCompras::class,'deleteCotiza'])->name('deleteCotiza');
         Route::post('insert-proveedor',[controladorCompras::class,'insertProveedor'])->name('insertProveedor');
         Route::put('update-proveedor/{id}',[controladorCompras::class,'updateProveedor'])->name('updateProveedor');
         Route::put('delete-proveedor/{id}',[controladorCompras::class,'deleteProveedor'])->name('deleteProveedor');
         Route::put('deleteOrd/{id}/{sid}',[controladorCompras::class,'deleteOrd'])->name('deleteOrd');
         Route::post('array-ordenCom',[controladorCompras::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
         Route::delete('delete-arrayOrden/{index}',[controladorCompras::class,'deleteArray'])->name('eliminarElemOrden');
-        Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
-        Route::put('finalizarCompra/{id}',[controladorCompras::class,'finalizarC'])->name('FinalizarC');
+        Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');        
         Route::put('finalizarRequisicion/{id}',[controladorCompras::class,'FinalizarReq'])->name('FinalizarReq');
         Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
@@ -119,7 +120,11 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
+        Route::get('ordenesCompras/GtArea',[controladorGtArea::class,'ordenesCompras'])->name('ordenesComprasDir');
+
+        //------------------------MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento/GtArea',[controladorGtArea::class,'mantenimiento'])->name('manteni');
+        Route::get('mantenimiento/informacion/{id}',[controladorGtArea::class,'infoMantenimiento'])->name('infoMantenimiento');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
     
@@ -136,9 +141,13 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('rechazarArticulo/{id}',[controladorGtArea::class,'rechazaArt'])->name('rechazaArt');
         Route::put('aprobarArt/{rid}',[controladorGtArea::class,'aprobar'])->name('aprobar');
         Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
-        Route::delete('delete-cotizacion/{id}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');        
+        Route::delete('delete-cotizacion/{id}/{rid}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');        
         Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
         Route::put('delete-pago/{id}',[controladorGtArea::class,'deletePago'])->name('deletePago');
+        Route::put('finalizarCompra/{id}',[controladorGtArea::class,'finalizarC'])->name('FinalizarC');
+
+        //------------------------MODULO DE MANTENIMIENTO--------------------------//
+        Route::put('actualiza-km/{id}',[controladorGtArea::class,'updateKilom'])->name('updateKilom');
     });
     
     Route::middleware(['check.role:Almacen'])->group(function () {
@@ -187,6 +196,10 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
         Route::get('solicitud/edit/{id}',[controladorSolic::class,'editReq'])->name('editReq');
         Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
+
+        //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
+        Route::get('mantenimiento',[controladorSolic::class,'mantenimiento'])->name('manteniento');
+        Route::get('mantenimiento/informacion/{id}',[controladorSolic::class,'infoMantenimiento'])->name('infoMantenimiento');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
         Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
@@ -197,7 +210,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('update-solici/{id}',[controladorSolic::class,'updateSolicitud'])->name('updateSolicitud');
         Route::post('create-articulo/{id}',[controladorSolic::class,'createArt'])->name('createArt');
         Route::put('update-articulo/{id}',[controladorSolic::class,'updateArt'])->name('updateArt');
-        Route::delete('delete-Articulo/{id}',[controladorSolic::class,'deleteArt'])->name('deleteArt');
+        Route::delete('delete-Articulo/{id}/{rid}',[controladorSolic::class,'deleteArt'])->name('deleteArt');
         Route::post('servicio',[controladorSolic::class,'createServicio'])->name('createServicio');
         Route::put('edit-servicio/{id}',[controladorSolic::class,'editServicio'])->name('editServicio');
         Route::delete('delete-servicio/{id}',[controladorSolic::class,'deleteServicio'])->name('deleteServicio');
@@ -208,5 +221,6 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
         Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
+        Route::post('actualizar-kms',[controladorSolic::class,'actualizarkms'])->name('kilometrajes');
     });
 });

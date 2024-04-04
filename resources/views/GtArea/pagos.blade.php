@@ -59,14 +59,18 @@
                                 <th>{{$pago->nombre_servicio}}</th>
                                 <th>$ {{$pago->costo_total}}</th>
                                 <th>{{$pago->nombre}}</th>                                                            
-                                <th>
+                                <th class="text-center">
                                     <a href="{{ asset($pago->pdf) }}" target="_blank">
-                                        <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                        <img class="imagen-container" src="{{ asset('img/pago.jpg') }}" alt="Abrir PDF">
                                     </a>
                                 </th>
-                                <th>
+                                <th class="text-center">
                                     @if (empty($pago->comprobante_pago))
-                                        No se ha registrado el pago
+                                        @if ($pago->estado === "Pagado")
+                                            Sin comprobante
+                                        @else 
+                                            No se ha registrado un pago
+                                        @endif                                        
                                     @else
                                         <a href="{{ asset($pago->comprobante_pago) }}" target="_blank">
                                             <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">

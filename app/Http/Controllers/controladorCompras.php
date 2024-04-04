@@ -45,6 +45,7 @@ class controladorCompras extends Controller
         $EneroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Enero = $EneroPagos->enero + $EneroCompras->enero;
 
@@ -56,6 +57,7 @@ class controladorCompras extends Controller
         $FebreroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Febrero = $FebreroPagos->febrero + $FebreroCompras->febrero;
 
@@ -67,6 +69,7 @@ class controladorCompras extends Controller
         $MarzoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Marzo = $MarzoPagos->marzo + $MarzoCompras->marzo;
 
@@ -78,6 +81,7 @@ class controladorCompras extends Controller
         $AbrilCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Abril = $AbrilPagos->abril + $AbrilCompras->abril;
 
@@ -89,6 +93,7 @@ class controladorCompras extends Controller
         $MayoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Mayo = $MayoPagos->mayo + $MayoCompras->mayo;
 
@@ -100,6 +105,7 @@ class controladorCompras extends Controller
         $JunioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Junio = $JunioPagos->junio + $JunioCompras->junio;
 
@@ -111,6 +117,7 @@ class controladorCompras extends Controller
         $JulioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Julio = $JulioPagos->julio + $JulioCompras->julio;
 
@@ -122,6 +129,7 @@ class controladorCompras extends Controller
         $AgostoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Agosto = $AgostoPagos->agosto + $AgostoCompras->agosto;
 
@@ -133,6 +141,7 @@ class controladorCompras extends Controller
         $SeptiembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Septiembre = $SeptiembrePagos->septiembre + $SeptiembreCompras->septiembre;
 
@@ -144,6 +153,7 @@ class controladorCompras extends Controller
         $OctubreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Octubre = $OctubrePagos->octubre + $OctubreCompras->octubre;
 
@@ -155,6 +165,7 @@ class controladorCompras extends Controller
         $NoviembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Noviembre = $NoviembrePagos->noviembre + $NoviembreCompras->noviembre;
 
@@ -166,6 +177,7 @@ class controladorCompras extends Controller
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;        
 
@@ -613,7 +625,7 @@ class controladorCompras extends Controller
     */
     public function createCotiza($id){
         // Recupera las cotizaciones activas asociadas a la solicitud específica
-        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->where('cotizaciones.requisicion_id', $id)->where('cotizaciones.estatus','1')->get();
 
@@ -689,9 +701,18 @@ class controladorCompras extends Controller
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la cotización ha sido eliminada exitosamente.
     */
-    public function deleteCotiza($id){
+    public function deleteCotiza($id, $rid){
         // Elimina la cotización específica por su ID
         Cotizaciones::where('id_cotizacion', $id)->delete();
+
+        $n_cotizaciones = Cotizaciones::where('requisicion_id',$rid)->count();
+
+        if ($n_cotizaciones == 0){
+            Requisiciones::where('id_requisicion',$rid)->update([
+                "estado"=>"Aprobado",
+                "updated_at"=>Carbon::now(),
+            ]);
+        }
 
         // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');    
@@ -1048,6 +1069,7 @@ class controladorCompras extends Controller
             $Nota = $req->input('Notas');
             $proveedor = $req->input('Proveedor');
             $articulos = $req->input('articulos');
+
             $condiciones = $req->input('condiciones');
 
             //Si se condiciona a credito guarda el valor de los días acordados
@@ -1094,6 +1116,8 @@ class controladorCompras extends Controller
             $articulosFiltrados = array_filter($articulos, function($articulo) use ($articulosSeleccionados){
                 return in_array($articulo['id'],$articulosSeleccionados);
             });
+
+            
 
             // Serializar los datos del empleado y almacenarlos en un archivo
             $datosSerializados = serialize($datosEmpleado);
@@ -1180,7 +1204,7 @@ class controladorCompras extends Controller
         }
 
     public function ordenesCompras(){
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -1214,15 +1238,6 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now()
         ]);
         return back()->with('eliminada','eliminada');
-    }
-
-    public function FinalizarC($id){
-        Orden_Compras::where('id_orden',$id)->update([
-            "estado"=>"Finalizado",
-            "updated_at"=>Carbon::now(),
-        ]);
-
-        return back()->with('finalizada','finalizada');
     }
 
     public function FinalizarReq($id){

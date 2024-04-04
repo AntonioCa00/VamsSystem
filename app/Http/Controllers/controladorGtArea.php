@@ -17,6 +17,7 @@ use App\Models\Logs;
 use App\Models\Articulos;
 use App\Models\Pagos_Fijos;
 use App\Models\Servicios;
+use App\Models\CamionServicioPreventivo;
 use Carbon\Carbon;
 use DB;
 
@@ -47,6 +48,7 @@ class controladorGtArea extends Controller
         $EneroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Enero = $EneroPagos->enero + $EneroCompras->enero;
 
@@ -58,6 +60,7 @@ class controladorGtArea extends Controller
         $FebreroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Febrero = $FebreroPagos->febrero + $FebreroCompras->febrero;
 
@@ -69,6 +72,7 @@ class controladorGtArea extends Controller
         $MarzoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Marzo = $MarzoPagos->marzo + $MarzoCompras->marzo;
 
@@ -80,6 +84,7 @@ class controladorGtArea extends Controller
         $AbrilCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Abril = $AbrilPagos->abril + $AbrilCompras->abril;
 
@@ -91,6 +96,7 @@ class controladorGtArea extends Controller
         $MayoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Mayo = $MayoPagos->mayo + $MayoCompras->mayo;
 
@@ -102,6 +108,7 @@ class controladorGtArea extends Controller
         $JunioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Junio = $JunioPagos->junio + $JunioCompras->junio;
 
@@ -113,6 +120,7 @@ class controladorGtArea extends Controller
         $JulioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Julio = $JulioPagos->julio + $JulioCompras->julio;
 
@@ -124,6 +132,7 @@ class controladorGtArea extends Controller
         $AgostoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Agosto = $AgostoPagos->agosto + $AgostoCompras->agosto;
 
@@ -135,6 +144,7 @@ class controladorGtArea extends Controller
         $SeptiembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Septiembre = $SeptiembrePagos->septiembre + $SeptiembreCompras->septiembre;
 
@@ -146,6 +156,7 @@ class controladorGtArea extends Controller
         $OctubreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Octubre = $OctubrePagos->octubre + $OctubreCompras->octubre;
 
@@ -157,6 +168,7 @@ class controladorGtArea extends Controller
         $NoviembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Noviembre = $NoviembrePagos->noviembre + $NoviembreCompras->noviembre;
 
@@ -168,6 +180,7 @@ class controladorGtArea extends Controller
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
+            ->where('estado','Pagado')
             ->first();
         $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;        
 
@@ -770,13 +783,22 @@ class controladorGtArea extends Controller
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la cotización ha sido eliminada exitosamente.
     */
-    public function deleteCotiza($id){
+    public function deleteCotiza($id, $rid){
         // Elimina la cotización específica por su ID
         Cotizaciones::where('id_cotizacion', $id)->delete();
 
+        $n_cotizaciones = Cotizaciones::where('requisicion_id',$rid)->count();
+
+        if ($n_cotizaciones == 0){
+            Requisiciones::where('id_requisicion',$rid)->update([
+                "estado"=>"Aprobado",
+                "updated_at"=>Carbon::now(),
+            ]);
+        }
+
         // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');    
-    }
+    }  
 
     public function tablePagos(){
         $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','users.nombres as usuario','proveedores.nombre')
@@ -803,6 +825,10 @@ class controladorGtArea extends Controller
     public function registrarPago(Request $req, $id){
         // Verifica que se haya subido un archivo y que sea válido
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
+            
+            $req->validate([
+                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+            ]);
                 
             // Se genera el nombre y ruta para guardar PDF
             $nombreArchivo = 'comprobantePago_' . $id . '.pdf';
@@ -839,6 +865,53 @@ class controladorGtArea extends Controller
         return back()->with('eliminado','eliminado');
     }
 
+    public function ordenesCompras(){
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at','orden_compras.comprobante_pago')
+        ->join('users','orden_compras.admin_id','=','users.id')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->orderBy('orden_compras.created_at','desc')
+        ->get();
+        return view ('GtArea.ordenesCompras',compact('ordenes'));
+    }
+
+    public function FinalizarC(Request $req, $id){
+        if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
+
+            $req->validate([
+                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+            ]);
+                
+            // Se genera el nombre y ruta para guardar PDF
+            $nombreArchivo = 'comprobantePagoOrden_' . $id . '.pdf';
+            $rutaDescargas = 'comprobantesPagosOrden/' . $nombreArchivo;
+
+            $archivo = $req->file('comprobante_pago');
+            $archivo->storeAs('comprobantesPagosOrden', $nombreArchivo, 'public');
+
+            Orden_compras::where('id_orden',$id)->update([
+                "comprobante_pago"=>$rutaDescargas,
+                "estado"=>"Pagado",
+                "updated_at"=>Carbon::now()
+            ]);
+
+            return back()->with('pagado','pagado');
+
+        } else{
+
+            return "no reconoce el archivo";
+            // Manejo del caso en que no se sube un archivo válido
+            Orden_compras::where('id_orden',$id)->update([
+                "estado"=>"Pagado",
+                "updated_at"=>Carbon::now()
+            ]);
+
+            return back()->with('pagado','pagado');
+        }
+    }
+
     /*
       TODO: Recupera y muestra un listado de unidades activas elegibles para mantenimiento.
      
@@ -851,12 +924,81 @@ class controladorGtArea extends Controller
     */
     public function mantenimiento (){
         // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
-        $unidades = Unidades::where('estatus','1')
+        $unidades = Unidades::leftJoin('camion_servicios_preventivos as servicios','unidades.id_unidad','=','servicios.unidad_id')
+        ->where('estatus','1')
         ->where('id_unidad','!=','1')
         ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
 
+        $unidades->each(function ($unidad) {
+            $filtro_aireG = 100-((($unidad->kilometraje-$unidad->filtro_aire_grande)/30000)*100);
+            $filtro_aireC = 100-((($unidad->kilometraje-$unidad->filtro_aire_chico)/45000)*100);
+            $filtro_diesel = 100-((($unidad->kilometraje-$unidad->filtro_diesel)/15000)*100);
+            $filtro_aceite = 100-((($unidad->kilometraje-$unidad->filtro_aceite)/15000)*100);
+            $wk1060_trampa = 100-((($unidad->kilometraje-$unidad->wk1016_trampa)/45000)*100);
+            $aceite_motor = 100-((($unidad->kilometraje-$unidad->aceite_motor)/15000)*100);
+            $filtro_urea = 100-((($unidad->kilometraje-$unidad->filtro_urea)/45000)*100);
+            $anticongelante = 100-((($unidad->kilometraje-$unidad->anticongelante)/100000)*100);
+            $aceite_direccion = 100-((($unidad->kilometraje-$unidad->aceite_direccion)/150000)*100);
+            $banda_poles = 100-((($unidad->kilometraje-$unidad->banda_poles)/90000)*100);
+            $ajuste_frenos = 100-((($unidad->kilometraje-$unidad->ajuste_frenos)/15000)*100);
+            $engrasado_chasis = 100-((($unidad->kilometraje-$unidad->engrasado_chasis)/15000)*100);
+
+            $promedio = ($filtro_aireG + $filtro_aireC + $filtro_diesel + $filtro_aceite + $wk1060_trampa +
+            $aceite_motor + $filtro_urea + $anticongelante + $aceite_direccion + $banda_poles +
+            $ajuste_frenos + $engrasado_chasis) / 12; // Dividiendo por 12 para obtener el promedio de 12 valores
+
+            $unidad->tiempo = $promedio; // Agregar el promedio como un nuevo atributo
+        });
+        
         // Carga y muestra la vista con el listado de unidades activas
         return view('GtArea.mantenimiento',compact('unidades'));    
+    }
+
+    public function updateKilom(Request $req, $id){
+        $kilometraje = $req->kilometraje;
+
+        Unidades::where('id_unidad',$id)->update([
+            "kilometraje"=>$kilometraje,
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        return back()->with('kilometraje','kilometraje');
+    }
+
+    public function infoMantenimiento ($id){
+        $unidad = Unidades::where('id_unidad',$id)->first();
+        $kmInicial = $unidad->kilometraje;
+        $servicio = CamionServicioPreventivo::where('unidad_id',$id)->first();
+
+        $filtro_aireG = 100-((($kmInicial-$servicio->filtro_aire_grande)/30000)*100);
+        $filtro_aireC = 100-((($kmInicial-$servicio->filtro_aire_chico)/45000)*100);
+        $filtro_diesel = 100-((($kmInicial-$servicio->filtro_diesel)/15000)*100);
+        $filtro_aceite = 100-((($kmInicial-$servicio->filtro_aceite)/15000)*100);
+        $wk1060_trampa = 100-((($kmInicial-$servicio->wk1016_trampa)/45000)*100);
+        $aceite_motor = 100-((($kmInicial-$servicio->aceite_motor)/15000)*100);
+        $filtro_urea = 100-((($kmInicial-$servicio->filtro_urea)/45000)*100);
+        $anticongelante = 100-((($kmInicial-$servicio->anticongelante)/100000)*100);
+        $aceite_direccion = 100-((($kmInicial-$servicio->aceite_direccion)/150000)*100);
+        $banda_poles = 100-((($kmInicial-$servicio->banda_poles)/90000)*100);
+        $ajuste_frenos = 100-((($kmInicial-$servicio->ajuste_frenos)/15000)*100);
+        $engrasado_chasis = 100-((($kmInicial-$servicio->engrasado_chasis)/15000)*100);
+
+        $datos [] = [
+            "filtro_aireC" =>$filtro_aireG,
+            "filtro_aireG" =>$filtro_aireC,
+            "filtro_diesel" =>$filtro_diesel,
+            "filtro_aceite" =>$filtro_aceite,
+            "wk1060_trampa" =>$wk1060_trampa,
+            "aceite_motor" =>$aceite_motor,
+            "filtro_urea" =>$filtro_urea,
+            "anticongelante" =>$anticongelante,
+            "aceite_direccion" =>$aceite_direccion,
+            "banda_poles" =>$banda_poles,
+            "ajuste_frenos" =>$ajuste_frenos,
+            "engrasado_chasis" =>$engrasado_chasis,
+        ];
+
+        return view('GtArea.infoMantenimiento',compact('unidad','datos'));
     }
 
     //! ESTE REPORTE AUN NO SE IMPLEMENTA

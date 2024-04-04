@@ -21,6 +21,7 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -68,6 +69,18 @@
                 <a class="nav-link" href="{{route('solicitudesGerGen')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Solicitudes</span></a>
+            </li>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('comprasGerGen')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Ordenes de compra</span></a>
+            </li>            
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('pagosGerGen')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Ordenes de pago</span></a>
             </li>
 
             <li class="nav-item active">

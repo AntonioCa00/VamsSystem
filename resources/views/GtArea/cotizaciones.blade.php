@@ -41,12 +41,12 @@
                             <th>{{$cotizacion->usuario}}</th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>    
                             </th>                            
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
@@ -93,7 +93,7 @@
                                             <div class="modal-body">Selecciona confirmar para eliminar esta cotización</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteCotiza', $cotizacion->id_cotizacion)}}" method="POST">                                                
+                                                <form action="{{route('deleteCotizacion',['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->requisicion_id])}}" method="POST">                                                
                                                     @csrf
                                                     {!!method_field('DELETE')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>

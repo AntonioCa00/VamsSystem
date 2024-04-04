@@ -19,6 +19,7 @@ class Unidades extends Model
         'n_de_serie',
         'n_de_permiso',
         'estatus',
+        'kilometraje',
         'created_at',
         'updated_at'
     ];

@@ -101,7 +101,7 @@
                                 <th>{{$pago->nombre}}</th>
                                 <th class="text-center">
                                     <a href="{{ asset($pago->pdf) }}" target="_blank">
-                                        <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                        <img class="imagen-container" src="{{ asset('img/pago.jpg') }}" alt="Abrir PDF">
                                     </a>
                                 </th>
                                     @if ($pago->estado === "Pagado")

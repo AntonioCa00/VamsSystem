@@ -83,7 +83,7 @@ $pdf->Cell(20, 10, 'Cantidad', 1, 0, 'C', 1);
 $pdf->Cell(20, 10, 'Medida', 1, 0, 'C', 1);
 $pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', 1);
 $pdf->Cell(25, 10, 'Precio_unitario', 1, 0, 'C', 1);
-$pdf->Cell(25, 10, 'Monto total', 1, 1, 'C', 1);
+$pdf->Cell(25, 10, 'Total bruto', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos filtrados y agregar filas a la tabla
 foreach ($articulosFiltrados as &$articulo) {
@@ -101,7 +101,7 @@ $totalGastos = array_sum(array_column($articulosFiltrados, 'monto_total'));
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(155, 10, 'Subtotal (IVA no incluido):', 1);
+$pdf->Cell(155, 10, 'Subtotal (IVA/ Retenciones no incluido):', 1);
 $pdf->Cell(25, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
 
 if(!empty($unidad)){

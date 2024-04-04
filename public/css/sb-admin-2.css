@@ -47,6 +47,16 @@
   
 }
 
+.imagen-container {
+    max-width: 100%; /* Ajusta el ancho máximo al 100% del contenedor padre */
+    max-height: 40px; /* Establece la altura máxima que deseas */
+}
+
+.imagen-container img {
+    width: 100%; /* Ajusta el ancho de la imagen al 100% del contenedor */
+    height: auto; /* Permite que la altura se ajuste automáticamente para mantener la proporción */
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;

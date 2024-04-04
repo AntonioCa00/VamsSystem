@@ -54,7 +54,9 @@
                     <thead>
                         <tr>
                             <th>Codigo:</th>
-                            <th>Unidad:</th>                                                    
+                            @if(session('departamento') === "Mantenimiento")
+                                <th>Unidad:</th>         
+                            @endif                                                                       
                             <th>Estado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Requisición:</th>
@@ -66,12 +68,18 @@
                         @foreach ($solicitudes as $solicitud)
                         <tr>
                             <th>{{$solicitud->id_requisicion}}</th>
-                            <th>{{$solicitud->unidad_id}}</th>
-                            <th>{{$solicitud->estado}}</th>
+                            @if(session('departamento') === "Mantenimiento")
+                                <th>{{$solicitud->unidad_id}}</th>    
+                            @endif                       
+                            @if ($solicitud->estado === "Incompleta")
+                                <th class="text-danger">{{$solicitud->estado}}</th>
+                            @else
+                                <th>{{$solicitud->estado}}</th>
+                            @endif                                   
                             <th>{{$solicitud->created_at}}</th>
                             <th>
                                 <a href="{{ asset($solicitud->pdf) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
@@ -120,7 +128,7 @@
                                 @endif
                             </th>
                             <th>                                
-                                @if($solicitud->estado === "Solicitado" || $solicitud->estado === "Rechazado")
+                                @if($solicitud->estado === "Solicitado" || $solicitud->estado === "Rechazado" || $solicitud->estado === "Incompleta")
                                 <a href="{{route('editReq',$solicitud->id_requisicion)}}" class="btn btn-success">Editar requisición</a>
                                 <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitud->id_requisicion}}">
                                     Eliminar

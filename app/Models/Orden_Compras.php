@@ -9,7 +9,7 @@ class Orden_Compras extends Model
 {
     protected $table = 'orden_compras';
 
-    protected $fillable = [       
+    protected $fillable = [
         'id_orden',
         'admin_id',
         'cotizacion_id',
