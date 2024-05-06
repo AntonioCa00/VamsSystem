@@ -2,11 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login;
-use App\Http\Controllers\controladorGerenciaGen;
-use App\Http\Controllers\controladorCompras;
-use App\Http\Controllers\controladorSolic;
-use App\Http\Controllers\controladorGtArea;
-use App\Http\Controllers\controladorAlm;
+use App\Http\Controllers\Compras\controladorGerenciaGen;
+use App\Http\Controllers\Compras\controladorCompras;
+use App\Http\Controllers\Compras\controladorSolic;
+use App\Http\Controllers\Compras\controladorGtArea;
+use App\Http\Controllers\Compras\controladorAlm;
+use App\Http\Controllers\Mantenimiento\controladorMante;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,9 +146,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
         Route::put('delete-pago/{id}',[controladorGtArea::class,'deletePago'])->name('deletePago');
         Route::put('finalizarCompra/{id}',[controladorGtArea::class,'finalizarC'])->name('FinalizarC');
-
-        //------------------------MODULO DE MANTENIMIENTO--------------------------//
-        Route::put('actualiza-km/{id}',[controladorGtArea::class,'updateKilom'])->name('updateKilom');
+        
     });
     
     Route::middleware(['check.role:Almacen'])->group(function () {
@@ -198,8 +197,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
 
         //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
-        Route::get('mantenimiento',[controladorSolic::class,'mantenimiento'])->name('manteniento');
-        Route::get('mantenimiento/informacion/{id}',[controladorSolic::class,'infoMantenimiento'])->name('infoMantenimiento');
+        Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
+        Route::get('mantenimiento/informacion/{id}',[controladorMante::class,'infoMantenimiento'])->name('infoMantenimiento');
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
         Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
@@ -221,6 +220,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
         Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
-        Route::post('actualizar-kms',[controladorSolic::class,'actualizarkms'])->name('kilometrajes');
+
+        //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
+        Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');
+        Route::put('actualiza-km/{id}',[controladorMante::class,'updateKilom'])->name('updateKilom');
     });
 });

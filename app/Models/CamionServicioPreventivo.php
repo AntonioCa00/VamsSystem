@@ -24,6 +24,8 @@ class CamionServicioPreventivo extends Model
         'banda_poles',
         'ajuste_frenos',
         'engrasado_chasis',
+        'created_at',
+        'updated_at'
     ];
 
     use HasFactory;

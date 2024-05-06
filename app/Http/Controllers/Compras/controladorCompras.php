@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
 
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Almacen;

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
+
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use App\Models\User;
 use App\Models\Orden_compras;
 use App\Models\Requisiciones;

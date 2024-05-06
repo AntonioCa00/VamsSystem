@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
 
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Unidades;
@@ -952,18 +953,7 @@ class controladorGtArea extends Controller
         
         // Carga y muestra la vista con el listado de unidades activas
         return view('GtArea.mantenimiento',compact('unidades'));    
-    }
-
-    public function updateKilom(Request $req, $id){
-        $kilometraje = $req->kilometraje;
-
-        Unidades::where('id_unidad',$id)->update([
-            "kilometraje"=>$kilometraje,
-            "updated_at"=>Carbon::now(),
-        ]);
-
-        return back()->with('kilometraje','kilometraje');
-    }
+    }    
 
     public function infoMantenimiento ($id){
         $unidad = Unidades::where('id_unidad',$id)->first();
