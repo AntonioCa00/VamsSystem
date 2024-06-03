@@ -30,7 +30,7 @@ class controladorMante extends Controller
             $join->on('unidades.id_unidad', '=', 'servicios.unidad_id')
                 ->on('ultimo_servicio.ultima_fecha', '=', 'servicios.created_at');
         })
-        ->select('unidades.id_unidad','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
+        ->select('unidades.id_unidad','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo','unidades.n_de_permiso','unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
         ->where('unidades.estatus', '1')
         ->where('unidades.id_unidad', '!=', '1')
         ->where('unidades.estado', 'Activo')
@@ -78,7 +78,7 @@ class controladorMante extends Controller
                 $join->on('unidades.id_unidad', '=', 'servicios.unidad_id')
                     ->on('ultimo_servicio.ultima_fecha', '=', 'servicios.created_at');
             })
-            ->select('unidades.id_unidad','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
+            ->select('unidades.id_unidad','unidades.tipo','unidades.n_de_permiso','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
             ->where('unidades.estatus', '1')
             ->where('unidades.id_unidad', $id) // Filtrar por la unidad específica
             ->where('unidades.estado', 'Activo')
@@ -260,7 +260,7 @@ class controladorMante extends Controller
 
     public function calendario()
     {
-        $unidades = Unidades::select('unidades.id_unidad','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje')
+        $unidades = Unidades::select('unidades.id_unidad','unidades.n_de_permiso','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje')
         ->where('unidades.estatus', '1')
         ->where('unidades.id_unidad', '!=', '1')
         ->where('unidades.estado', 'Activo')
@@ -272,10 +272,21 @@ class controladorMante extends Controller
 
     public function getEvents()
     {
-        $events = programaciones::where('estatus', '1')->orwhere('estatus','2')->get()->map(function ($event) {
+        $events = programaciones::
+        join('unidades', 'programaciones.unidad_id', 'unidades.id_unidad')
+        ->where('programaciones.estatus', '1')
+        ->orWhere('programaciones.estatus', '2')
+        ->get()->map(function ($event) {
+            $title = 'Unidad: ';
+            if ($event->tipo != 'AUTOMOVIL') {
+                $title .= $event->n_de_permiso; // Suponiendo que 'n_de_permiso' es la columna para el permiso del camión
+            } else{
+                $title .= $event->id_unidad; // Suponiendo que 'placas' es la columna para las placas del automóvil
+            }
+    
             return [
                 'id' => $event->id_programacion,
-                'title' => 'Unidad: ' . $event->unidad_id, // Usar unidad_id en lugar de notas
+                'title' => $title,
                 'start' => $event->fecha_progra,
                 'status' => $event->estatus,
                 'url' => route('infoMantenimiento', ['id' => $event->unidad_id]) // URL de redirección

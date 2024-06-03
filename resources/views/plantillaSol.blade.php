@@ -96,7 +96,7 @@
                 </li>
             @endif
 
-            @if (session('departamento') == "Mantenimiento")
+            {{-- @if (session('departamento') == "Mantenimiento")
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 
@@ -117,7 +117,7 @@
                         <span>Calendario</span></a>
                 </li>
                     
-            @endif            
+            @endif             --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

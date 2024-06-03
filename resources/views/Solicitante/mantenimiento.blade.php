@@ -108,7 +108,11 @@
                     <div class="col-xl-3 col-md-4 ">
                         <div class="card shadow mb-4 ">
                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->id_unidad }}</h6>
+                                @if($unidad->tipo != "AUTOMOVIL")
+                                    <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->n_de_permiso }}</h6>
+                                @else 
+                                   <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->id_unidad }}</h6>
+                                @endif
                                 @include('shared.alertUni',['unidad_id'=>$unidad->id_unidad])
                             </div> <!-- Fin de la clase card-header py-3 -->
                             <div class="card-body">

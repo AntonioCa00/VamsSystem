@@ -27,7 +27,11 @@
     <div class="container-fluid">
         <div class="card shadow mb-5 ">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Unidad {{ $unidad->id_unidad }}</h6>
+                @if($unidad->tipo != "AUTOMOVIL")
+                    <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->n_de_permiso }}</h6>
+                @else 
+                    <h6 class="m-0 font-weight-bold text-primary">Unidad {{ $unidad->id_unidad }}</h6>
+                @endif        
             </div> <!-- Fin de la clase card-header py-3 -->
             <div class="card-body justify-content-between">
                 @if (!empty($programacion))
