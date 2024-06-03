@@ -181,7 +181,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('createSalida/{id}',[controladorAlm::class,'createSalida'])->name('createSalida');
         Route::get('createSalidaAlm/{id}',[controladorAlm::class,'createSalidaAlm'])->name('createSalidaAlm');
     });
-    
+
     Route::middleware(['check.role:General'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
     
@@ -195,10 +195,16 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
         Route::get('solicitud/edit/{id}',[controladorSolic::class,'editReq'])->name('editReq');
         Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
+        Route::get('unidades',[controladorSolic::class,'unidades'])->name('unidadesSoli');
+        Route::get('/solicitud/form-Unidad', [controladorSolic::class, 'createUnidad'])->name('CreateUnidadSoli');
+        Route::get('solicitud/edit-Unidad/{id}/{from}', [controladorSolic::class, 'editUnidad'])->name('editUnidadSoli');
+        Route::get('solicitud/activ-Unidad',[controladorSolic::class,'activarUnidad'])->name('actUnuiSoli');
 
         //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
         Route::get('mantenimiento/informacion/{id}',[controladorMante::class,'infoMantenimiento'])->name('infoMantenimiento');
+        Route::get('calendario', [controladorMante::class, 'calendario'])->name('calendar');
+        Route::get('calendario/programacion', [controladorMante::class, 'getEvents'])->name('programa');  
     
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
         Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
@@ -220,9 +226,18 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
         Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
+        Route::post('insert-unidad',[controladorSolic::class,'insertUnidad'])->name('insertUnidadSoli');
+        Route::put('update-unidad/{id}',[controladorSolic::class, 'updateUnidad'])->name('updateUnidadSoli');
+        Route::put('delete-Unidad/{id}',[controladorSolic::class,'deleteUnidad'])->name('deleteUnidadSoli');
+        Route::put('baja-Unidad/{id}',[controladorSolic::class,'bajaUnidad'])->name('bajaUnidadSoli');
+        Route::put('activ-unidad/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
 
         //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
         Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');
         Route::put('actualiza-km/{id}',[controladorMante::class,'updateKilom'])->name('updateKilom');
+        Route::post('programarMant/{id}',[controladorMante::class,'programMant'])->name('programar');
+        Route::post('programarMantC',[controladorMante::class,'programMantC'])->name('programarC');
+        Route::post('reprogramarMant/{unidad}/{progra}',[controladorMante::class,'reprogramMant'])->name('reprogramar');
+        Route::post('registrarMant/{progra}',[controladorMante::class,'registrarMant'])->name('registrarM');
     });
 });

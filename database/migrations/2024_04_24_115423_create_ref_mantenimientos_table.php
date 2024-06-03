@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('nombre');
             $table->integer('cantidad');
             $table->string('unidad_medida');
+            $table->integer('tiempo_cambio');
+            $table->bigInteger('tipo_mant')->unsigned();
+            $table->foreign('tipo_mant')->references('id_mantenimiento')->on('mantenimientos')->onDelete('cascade');
             $table->timestamps();
         });
     }

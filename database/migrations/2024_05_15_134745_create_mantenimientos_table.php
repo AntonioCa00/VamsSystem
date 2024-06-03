@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id_mantenimiento');
             $table->string('nombre');
             $table->string('descripcion');
+            $table->string('status');
             $table->timestamps();
         });
     }

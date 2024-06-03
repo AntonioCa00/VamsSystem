@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servicios_refacciones', function (Blueprint $table) {
-            $table->bigIncrements('id_serivicio_ref');
+        Schema::create('historial_mants', function (Blueprint $table) {
+            $table->bigIncrements('id_historial');
+            $table->bigInteger('programacion_id')->unsigned()->nullable();
+            $table->foreign('programacion_id')->references('id_programacion')->on('programaciones')->onDelete('cascade');
             $table->bigInteger('mantenimiento_id')->unsigned();
             $table->foreign('mantenimiento_id')->references('id_mantenimiento')->on('mantenimientos')->onDelete('cascade');
-            $table->bigInteger('refaccion_id')->unsigned();
-            $table->foreign('refaccion_id')->references('id_refaccion_mant')->on('ref_mantenimientos')->onDelete('cascade');
-            $table->integer('tiempo_cambio');
-            $table->string('cambio_limpieza');
+            $table->integer('estatus');
+            $table->integer('km_final');
+            $table->integer('ciclo');
+            $table->string('notas')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('servicios_refacciones');
+        Schema::dropIfExists('historial_mants');
     }
 };

@@ -13,8 +13,10 @@ class refMantenimientos extends Model
         'nombre',
         'cantidad',
         'unidad_medida',
+        'tiempo_cambio',
         'created_at',
         'updated_at'
-    ]
+    ];
+
     use HasFactory;
 }

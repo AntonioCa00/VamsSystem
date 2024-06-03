@@ -47,6 +47,24 @@
   
 }
 
+.fc-header-toolbar {
+  font-size: 16px; /* Tamaño de fuente para los botones y el título */
+}
+
+.fc-daygrid-day-number {
+  font-size: 14px; /* Tamaño de fuente para los números de los días */
+}
+
+.fc-event {
+  font-size: 12px; /* Tamaño de fuente para los eventos */
+  padding: 5px; /* Espaciado dentro de los eventos */
+}
+
+.fc-daygrid-event-dot {
+  width: 10px; /* Tamaño del punto en los eventos de día */
+  height: 10px; /* Altura del punto en los eventos de día */
+}
+
 .imagen-container {
     max-width: 100%; /* Ajusta el ancho máximo al 100% del contenedor padre */
     max-height: 40px; /* Establece la altura máxima que deseas */

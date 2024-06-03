@@ -1,98 +1,64 @@
 @extends('plantillaSol')
 
 @section('contenido')
+
+    @if(!empty($alert))
+        <script type="text/javascript">
+            Swal.fire({
+            title: "Has registrado un mantenimiento incompleto",
+            text: "{{$alert->notas}}",
+            icon: "warning"
+            });
+        </script>
+    @endif
+
+    @if (session()->has('programado'))
+    <script type="text/javascript">
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Se ha programado tu mantenimiento!',
+            showConfirmButton: false,
+            timer: 1000
+        })
+    </script>
+    @endif
+
     <div class="container-fluid">
         <div class="card shadow mb-5 ">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Unidad {{ $unidad->id_unidad }}</h6>
             </div> <!-- Fin de la clase card-header py-3 -->
             <div class="card-body justify-content-between">
-                <?php
-                if (!function_exists('porcentaje')) {
-                    function porcentaje($porcentaje)
-                    {
-                        $color = '';
-                        if ($porcentaje < 10) {
-                            $color = 'rgb(236, 0, 0)'; // Rojo
-                        } elseif ($porcentaje < 20) {
-                            $color = 'rgb(236, 39, 0)'; // Naranja
-                        } elseif ($porcentaje < 30) {
-                            $color = 'rgb(236, 118, 0)';
-                        } elseif ($porcentaje < 40) {
-                            $color = 'rgb(236, 158, 0)';
-                        } elseif ($porcentaje < 50) {
-                            $color = 'rgb(236, 197, 0)';
-                        } elseif ($porcentaje < 60) {
-                            $color = 'rgb(236, 236, 0)'; // Amarillo
-                        } elseif ($porcentaje < 70) {
-                            $color = 'rgb(197, 236, 0)';
-                        } elseif ($porcentaje < 89) {
-                            $color = 'rgb(158, 236, 0)';
-                        } elseif ($porcentaje < 90) {
-                            $color = 'rgb(118, 236, 0)';
-                        } else {
-                            $color = 'rgb(79, 236, 0)'; // Verde
-                        }
-                        return $color; // Se añade el retorno del color calculado
-                    }
-                }
-                ?>
+                @if (!empty($programacion))
+                    @if($programacion->dias <=0 )
+                        <h5 class="mb-2 m-0 font-weight-bold text-danger">Se ha vencido la fecha de tu mantenimiento</h5>                    
+                    @elseif($programacion->dias > 0 && $programacion->dias <= '3')
+                        <h5 class="mb-2 m-0 font-weight-bold text-danger">Faltan {{$programacion->dias}} días para realizar tu mantenimiento</h5>                    
+                    @elseif ($programacion->dias > '3' && $programacion->dias <= '10')
+                        <h5 class="mb-2 m-0 font-weight-bold text-warning">Faltan {{$programacion->dias}} días para realizar tu mantenimiento</h5>
+                    @else 
+                        <h5 class="mb-2 m-0 font-weight-bold text-success">Faltan {{$programacion->dias}} días para realizar tu mantenimiento</h5>
+                    @endif
+                @endif
+                @if (!empty($programacion->notas))
+                    <h5 class="mb-2 m-0 font-weight-bold">Notas del mantenimiento: {{$programacion->notas}}</h5>
+                @endif
                 <div class="row">
                     <div class="col-md-6 container-fluid">
                         <div class="card">
                             <div class="card-body">
                                 <div class="justify-content-left">
-                                    <ul>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['filtro_aireG']}}%; background-color: <?php echo porcentaje($datos[0]['filtro_aireG']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Filtro de Aire Grande  '; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style=" width: {{$datos[0]['filtro_aireC']}}%; background-color: <?php echo porcentaje($datos[0]['filtro_aireC']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Filtro de Aire Chico '; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['filtro_diesel']}}%; background-color: <?php echo porcentaje($datos[0]['filtro_diesel']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Filtro de Diesel '; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['filtro_aceite']}}%; background-color: <?php echo porcentaje($datos[0]['filtro_aceite']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Filtro de Aceite '; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['wk1060_trampa']}}%; background-color: <?php echo porcentaje($datos[0]['wk1060_trampa']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'WK 1060 Trampa'; ?> </span>
-                                        </li>
-
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['aceite_motor']}}%; background-color: <?php echo porcentaje($datos[0]['aceite_motor']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Aceite de motor'; ?> </span>
-                                        </li>
-                                    </ul>
+                                    <h5>Las refacciones que requieren cambio proximamente son:</h5>
+                                    @foreach ($refacciones as $refaccion)                                        
+                                        <ul>
+                                            @if (($unidad->contador+1)%$refaccion->ciclo == 0) 
+                                                <li>
+                                                    <h6 style="color: red;"><strong>{{strtoupper($refaccion->nombre)}}</strong></h6>
+                                                </li>
+                                            @endif                                             
+                                        </ul>                             
+                                    @endforeach                                    
                                 </div> <!-- Fin de la clase col-md-12 -->
                             </div>
                         </div>
@@ -102,136 +68,135 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="justify-content-left">
-                                    <ul>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['filtro_urea']}}%; background-color: <?php echo porcentaje($datos[0]['filtro_urea']); ?>; height: 19px; border-radius: 1px;">
+                                    <h5>Las refacciones que requieren limpieza proximamente son:</h5>
+                                    @foreach ($refacciones as $refaccion)
+                                        <ul>
+                                            @if (($unidad->contador+1)%$refaccion->ciclo != 0) 
+                                                <li>
+                                                    <h6 style="color: orange;"><strong>{{strtoupper($refaccion->nombre)}}</strong></h6>
+                                                </li>
+                                            @endif
+                                        </ul>                             
+                                    @endforeach
+                                </div>     
+                                <div class="py-1 d-flex justify-content-between">
+                                    @if (empty($programacion))
+                                        <a class="btn bg-gradient-info text-white"href="#"
+                                            data-toggle="modal" data-target="#programacion"
+                                            style="width: 200px; font-size: 13px;">
+                                            PROGRAMAR mantenimiento
+                                        </a>
+
+                                        <!--Modal para programar un mantenimiento-->
+                                        <div class="modal fade" id="programacion" tabindex="-1" role="dialog"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Programar mantenimiento de la unidad</h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">X</span>
+                                                            </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{route('programar',$unidad->id_unidad)}}" method="POST">
+                                                            @csrf
+                                                            <label>Seleccione la fecha en que realizará el siguiente mantenimiento:</label>
+                                                            <div class="form-group">                                                                
+                                                                <input name="date" type="date" class="form-control">
+                                                            </div>
+                                                            <label>Notas del mantenimiento:</label>
+                                                            <div class="form-group">                                                                                                                                
+                                                                <input name="notas" type="input" class="form-control">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Programar mantenimiento</button>
+                                                        </form>
+                                                    </div>                        
                                                 </div>
-                                            </div> <!-- Fin de la clase d-flex -->  
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Fitro Urea'; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['anticongelante']}}%; background-color: <?php echo porcentaje($datos[0]['anticongelante']); ?>; height: 19px; border-radius: 1px;">
+                                            </div>
+                                        </div>
+                                    @else 
+                                        <a class="btn bg-gradient-info text-white"href="#"
+                                        data-toggle="modal" data-target="#reprogramacion"
+                                        style="width: 200px; font-size: 13px;">
+                                        RE-PROGRAMAR mantenimiento
+                                        </a>
+
+                                        <!--Modal para programar un mantenimiento-->
+                                        <div class="modal fade" id="reprogramacion" tabindex="-1" role="dialog"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Re-programar mantenimiento de la unidad</h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">X</span>
+                                                            </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{route('reprogramar',['unidad'=>$unidad->id_unidad, 'progra' =>$programacion->id_programacion])}}" method="POST">
+                                                            @csrf
+                                                            <label>Seleccione la fecha en que realizará el siguiente mantenimiento:</label>
+                                                            <div class="form-group">                                                                                                                            
+                                                                <input value="{{$programacion->fecha_progra}}" name="date" type="date" class="form-control" required>
+                                                            </div>
+                                                            <label>Notas del mantenimiento:</label>
+                                                            <div class="form-group">                                                                
+                                                                <input value="{{$programacion->notas}}" name="notas" type="input" class="form-control">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Programar mantenimiento</button>
+                                                        </form>
+                                                    </div>                        
                                                 </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Anticongelante'; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['aceite_direccion']}}%; background-color: <?php echo porcentaje($datos[0]['aceite_direccion']); ?>; height: 19px; border-radius: 1px;">
+                                            </div>
+                                        </div>
+                                        <a class="btn bg-gradient-success text-white"href="#"
+                                        data-toggle="modal" data-target="#registrarM"
+                                        style="width: 200px; font-size: 13px;">
+                                        REGISTRAR mantenimiento
+                                        </a>    
+                                        
+                                        <!--Modal para programar un mantenimiento-->
+                                        <div class="modal fade" id="registrarM" tabindex="-1" role="dialog"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Registrar la realización de un mantenimiento</h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">X</span>
+                                                            </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{route('registrarM',$programacion->id_programacion)}}" method="POST">    
+                                                            @csrf
+                                                            <label>¿Se realizó completo el mantenimiento?</label>
+                                                            <div class="form-group">                                                            
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="estatus" id="inlineRadio1" value="1" checked>
+                                                                    <label class="form-check-label" for="inlineRadio1">Sí</label>
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="radio" name="estatus" id="inlineRadio2" value="2">
+                                                                    <label class="form-check-label" for="inlineRadio2">No</label>
+                                                                </div>
+                                                            </div>
+                                                            <label>Ultimo kilometraje:</label>
+                                                            <div class="form-group">                                                            
+                                                                <input name="kms" type="input" class="form-control" required>
+                                                            </div>
+                                                            <label>Notas del mantenimiento:</label>
+                                                            <div class="form-group">                                                            
+                                                                <input name="notas" type="input" class="form-control">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Registrar mantenimiento</button>
+                                                        </form>
+                                                    </div>                        
                                                 </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Aceite direccion'; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['banda_poles']}}%; background-color: <?php echo porcentaje($datos[0]['banda_poles']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Banda de poles'; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['ajuste_frenos']}}%; background-color: <?php echo porcentaje($datos[0]['ajuste_frenos']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Ajuste frenos'; ?> </span>
-                                        </li>
-                                        <li>
-                                            <div style="background-color: lightgrey; border: 1px solid black; border-radius: 3px; padding: 1px; display: flex; width: 100%;">
-                                                <div
-                                                    style="width: {{$datos[0]['engrasado_chasis']}}%; background-color: <?php echo porcentaje($datos[0]['engrasado_chasis']); ?>; height: 19px; border-radius: 1px;">
-                                                </div>
-                                            </div> <!-- Fin de la clase d-flex -->
-                                            <span style="margin-left: 12px; color: black"><?php echo 'Engrasado de chasis'; ?> </span>
-                                        </li>
-                                    </ul>
+                                            </div>
+                                        </div>
+                                    @endif                                    
                                 </div>
-                                <?php //  Inicio de la clase php
-                                $Unidad = $unidad->tipo;
-                                $tiempo = 1 + rand(0, 5);
-                                
-                                switch ($Unidad) {
-                                    case 'AUTOMOVIL':
-                                        switch ($tiempo) {
-                                            case 1:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusAmarillo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 2:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusAzul.jpg" style="width: 100px;">';
-                                                break;
-                                            case 3:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusGris.jpg" style="width: 100px;">';
-                                                break;
-                                            case 4:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusNaranja.jpg" style="width: 100px;">';
-                                                break;
-                                            case 5:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusRojo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 6:
-                                                echo '<img src="\img\Unidad\Estatus_automovil\EstatusVerde.jpg" style="width: 100px;">';
-                                                break;
-                                                echo 'Imagen no encontrada';
-                                        }
-                                        break;
-                                    case 'CAMIÓN':
-                                        switch ($tiempo) {
-                                            case 1:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusAmarillo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 2:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusAzul.jpg" style="width: 100px;">';
-                                                break;
-                                            case 3:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusGris.jpg" style="width: 100px;">';
-                                                break;
-                                            case 4:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusNaranja.jpg" style="width: 100px;">';
-                                                break;
-                                            case 5:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusRojo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 6:
-                                                echo '<img src="\img\Unidad\Estatus_camion\EstatusVerde.jpg" style="width: 100px;">';
-                                                break;
-                                                echo 'Imagen no encontrada';
-                                        }
-                                        break;
-                                    case 'CAMIONETA':
-                                        switch ($tiempo) {
-                                            case 1:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusAmarillo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 2:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusAzul.jpg" style="width: 100px;">';
-                                                break;
-                                            case 3:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusGris.jpg" style="width: 100px;">';
-                                                break;
-                                            case 4:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusNaranja.jpg" style="width: 100px;">';
-                                                break;
-                                            case 5:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusRojo.jpg" style="width: 100px;">';
-                                                break;
-                                            case 6:
-                                                echo '<img src="\img\Unidad\Estatus_van\EstatusVerde.jpg" style="width: 100px;">';
-                                                break;
-                                                echo 'Imagen no encontrada';
-                                        }
-                                        break;
-                                }
-                                ?> <!-- Fin de la clase php -->
-                                <button class="btn bg-gradient-info text-white"
-                                    style="width: 200px; font-size: 12px;">Programar
-                                    mantenimiento</button>
                             </div>
                         </div>
                     </div>
