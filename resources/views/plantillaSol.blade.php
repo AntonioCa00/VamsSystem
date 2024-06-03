@@ -11,6 +11,14 @@
 
     <title>Sistema de informacion</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href='https://unpkg.com/@fullcalendar/core@4.3.1/main.min.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/daygrid@4.3.0/main.min.css' rel='stylesheet' />
+    <script src='https://unpkg.com/@fullcalendar/core@4.3.1/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid@4.3.0/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/interaction@4.3.0/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/core/locales/es.js'></script>
+
     <!-- Custom fonts for this template -->
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -71,6 +79,15 @@
                     <span>Solicitudes</span></a>
             </li>
 
+            @if (session('departamento') === "Mantenimiento")
+            <!-- Nav Item - Tables -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('unidadesSoli')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Unidades</span></a>
+            </li>
+            @endif
+
             @if (session('departamento') != "Mantenimiento")
                 <li class="nav-item active">
                     <a class="nav-link" href="{{route('pagos')}}">
@@ -80,18 +97,27 @@
             @endif
 
             {{-- @if (session('departamento') == "Mantenimiento")
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Modulo de mantenimiento
+                </div>
+                
                 <li class="nav-item active">
                     <a class="nav-link" href="{{route('manteniento')}}">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Mantenimiento</span></a>
                 </li>
-            @endif --}}
 
-            {{-- <li class="nav-item active">
-                <a class="nav-link" href="{{route('salidasSoli')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Salidas</span></a>
-            </li>         --}}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{route('calendar')}}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Calendario</span></a>
+                </li>
+                    
+            @endif             --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -151,10 +177,8 @@
                 </nav>
                 <!-- End of Topbar -->
 
-
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
                 @yield('contenido') 
-
 
             </div>
             <!-- End of Main Content -->
@@ -226,6 +250,8 @@
 
     <!-- Incluir jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 
 </body>
 </html>

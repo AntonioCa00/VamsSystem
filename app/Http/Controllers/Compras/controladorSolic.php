@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
 
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
@@ -423,9 +424,12 @@ class controladorSolic extends Controller
         // Elimina el artículo específico por su ID
         Articulos::where('id',$id)->delete();
 
+        //Valida el numero de articulos que se han registrado al, hacer una requisición
         $N_articulos = Articulos::where('requisicion_id',$rid)->count();
 
+        //Valida si la cantidad de articulos registrados al editar una requisición sea 0
         if($N_articulos == 0){
+            //Si no hay ningun articulo automaticamente se cambia el estatus a incompleta.
             Requisiciones::where('id_requisicion',$rid)->update([
                 "estado"=>"Incompleta",
                 "updated_at"=>Carbon::now(),
@@ -435,11 +439,25 @@ class controladorSolic extends Controller
         return back();
     }
 
-    public function updateSolicitud (Request $req, $id){
+    /*
+      Actualiza la información de una solicitud específica y regenera su documento PDF asociado.
+     
+      Este método es responsable de verificar si la solicitud especificada contiene artículos. Si no hay artículos,
+      retorna al usuario a la página anterior con un mensaje de error. Si hay artículos, procede a regenerar el PDF
+      de la solicitud con la información actualizada, elimina el PDF anterior si existe, y actualiza la base de datos 
+      con los nuevos detalles de la solicitud, incluyendo notas y el estado 'Solicitado'. Finalmente, redirige al usuario
+      a una página con un mensaje de éxito.
+     
+      @param int $id El ID de la requisición que se está actualizando.
 
+     * Devuelve una redirección al usuario a la página de la solicitud con una notificación que indica si la operación fue exitosa o no.
+    */
+    public function updateSolicitud (Request $req, $id){
+        // Contar los artículos asociados a la requisición
         $N_articulos = Articulos::where('requisicion_id',$id)->count();
 
         if($N_articulos == 0 ){
+            // Si no hay artículos, retorna un mensaje de error
             return back ()->with('error','error');
         } else {
             // Recopilación de información de la requisición y generación del nuevo PDF
@@ -449,7 +467,7 @@ class controladorSolic extends Controller
             ->where('requisiciones.id_requisicion',$id)
             ->first();
 
-            //Guarda la ruta del archivo PDF de la requisicion
+            // Eliminar el archivo PDF anterior si existe
             $fileToDelete = public_path($datos->pdf);
 
             //Si existe el archivo lo elimina 
@@ -457,7 +475,7 @@ class controladorSolic extends Controller
                 unlink($fileToDelete);
             }
 
-            //Recupera los articulos por requisicion
+            // Recuperar artículos por requisición
             $articulos = Articulos::where('requisicion_id',$id)->get();
 
             //Valida si la requisicion tiene una unidad asignada y recupera su información
@@ -465,7 +483,7 @@ class controladorSolic extends Controller
                 $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
             }
 
-            // Nombre y ruta del archivo en laravel
+            // Generar el nombre y ruta del nuevo archivo PDF
             $nombreArchivo = 'requisicion_' . $datos->id_requisicion . '.pdf';
             $rutaDescargas = 'requisiciones/' . $nombreArchivo;
 
@@ -507,7 +525,18 @@ class controladorSolic extends Controller
         return back()->with('eliminado','eliminado');  
     }
 
+    /*
+      Recupera y muestra una lista detallada de todos los pagos fijos y servicios asociados al usuario actual.
+     
+      Este método consulta la base de datos para obtener un listado completo de los pagos fijos que están registrados bajo el ID
+      del usuario que ha iniciado sesión. Los datos incluyen detalles del pago, información del servicio asociado y el proveedor
+      correspondiente. Además, se recuperan los servicios activos asociados al mismo usuario, proporcionando una vista comprensiva
+      de los compromisos financieros y las obligaciones de servicio del usuario.
+     
+      Devuelve la vista 'Solicitante.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización.
+    */
     public function pagosFijos(){
+        // Obtener los pagos fijos y detalles asociados específicos del usuario logueado
         $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
         ->where('pagos_fijos.usuario_id',session('loginId'))
         ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
@@ -515,6 +544,7 @@ class controladorSolic extends Controller
         ->orderBy('id_pago','desc')
         ->get();
 
+        // Obtener todos los servicios activos asociados al usuario logueado
         $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->orderBy('servicios.nombre_servicio','asc')
@@ -522,28 +552,54 @@ class controladorSolic extends Controller
         ->where('servicios.usuario_id',session('loginId'))
         ->get();
 
+        // Obtener todos los proveedores activos
         $proveedores = Proveedores::where('estatus','1')
         ->orderBy('nombre','asc')
         ->get();
 
+        // Cargar y mostrar la vista con los datos necesarios
         return view('Solicitante.pagos',compact('pagos','servicios','proveedores'));
     }
 
+    /*
+      Prepara y muestra la vista para la creación de un nuevo pago.
+     
+      Este método recupera todos los servicios activos y sus proveedores correspondientes para que los usuarios puedan seleccionar
+      de una lista al momento de crear un nuevo pago fijo. La selección de servicios y proveedores solo incluye aquellos que están activos,
+      asegurando que los datos presentados estén actualizados y sean relevantes. Estos datos se utilizan para llenar los campos en el formulario
+      de creación de pago, simplificando el proceso de entrada de datos por parte del usuario.
+     
+      Devuelve la vista 'Solicitante.crearPago', pasando las listas de servicios y proveedores activos para su visualización y selección.
+    */
     public function crearPago(){
+        // Obtener todos los servicios activos y sus proveedores
         $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->orderBy('servicios.nombre_servicio','asc')
         ->where('servicios.estatus','1')
         ->get();
 
+        // Obtener todos los proveedores activos
         $proveedores = Proveedores::where('estatus','1')
         ->orderBy('nombre','asc')
         ->get();
 
+        // Cargar y mostrar la vista con los datos necesarios para la creación de un nuevo pago
         return view('Solicitante.crearPago',compact('servicios','proveedores'));
     }
 
+    /*
+      Crea un nuevo servicio y lo asocia con un proveedor específico y el usuario actual.
+     
+      Este método recoge datos desde un formulario enviado a través de una solicitud HTTP, incluyendo el nombre del servicio,
+      el ID del proveedor asociado y asocia automáticamente el servicio con el ID del usuario actual en sesión.
+      El servicio se marca como activo ('estatus' = 1) y se registra la fecha y hora de creación y actualización. Tras registrar
+      el servicio correctamente, el usuario es redirigido a la página anterior con una notificación de éxito.
+     
+      Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido creado exitosamente.
+    */
     public function createServicio(Request $req){
+        // Crea un nuevo registro de servicio en la base de datos con los datos proporcionados en la solicitud
         Servicios::create([
             "nombre_servicio"=>$req->nombre,
             "proveedor_id"=>$req->proveedor,
@@ -553,25 +609,53 @@ class controladorSolic extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirige al usuario a la página anterior con un mensaje de éxito
         return back()->with('servicio','servicio');
     }
 
+    /*
+      Actualiza los detalles de un servicio existente basado en la entrada del usuario.
+     
+      Este método recibe datos a través de una solicitud HTTP, que incluyen el nuevo nombre del servicio y el ID del proveedor asociado.
+      Utiliza estos datos para actualizar el registro correspondiente del servicio en la base de datos. El método también registra 
+      la fecha y hora de la actualización.
+     
+      @param int $id El ID del servicio que se está editando.
+
+      Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido editado exitosamente.
+    */
     public function editServicio(Request $req, $id){
+        // Actualiza el registro del servicio en la base de datos con los datos proporcionados
         Servicios::where('id_servicio',$id)->update([
             "nombre_servicio"=>$req->input('nombre'),
             "proveedor_id"=>$req->input('proveedor'),
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Redirige al usuario a la página anterior con un mensaje de éxito
         return back()->with('servEditado','servEditado');
     }
 
+    /*
+      Desactiva un servicio existente cambiando su estado a inactivo.
+     
+      Este método actualiza el estatus de un servicio específico a "0", lo cual se utiliza para indicar que el servicio está
+      desactivado o inactivo. Este enfoque mantiene la integridad de los datos al evitar la eliminación completa de registros,
+      lo que puede ser útil para mantener un historial o para posibles activaciones futuras. La fecha de la última actualización
+      también se registra automáticamente.
+     
+      @param int $id El ID del servicio que se va a desactivar.
+
+      Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido desactivado exitosamente.
+    */
     public function deleteServicio ($id){
+        // Actualiza el registro del servicio para marcarlo como inactivo
         Servicios::where('id_servicio',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Redirige al usuario a la página anterior con un mensaje de éxito
         return back()->with('servDelete','servDelete');
     }
 
@@ -697,115 +781,6 @@ class controladorSolic extends Controller
         return back()->with('eliminado','eliminado');
     }
 
-    public function mantenimiento (){
-        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
-        $unidades = Unidades::leftJoin('camion_servicios_preventivos as servicios','unidades.id_unidad','=','servicios.unidad_id')
-        ->where('estatus','1')
-        ->where('id_unidad','!=','1')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
-
-        $unidades->each(function ($unidad) {
-            $filtro_aireG = 100-((($unidad->kilometraje-$unidad->filtro_aire_grande)/30000)*100);
-            $filtro_aireC = 100-((($unidad->kilometraje-$unidad->filtro_aire_chico)/45000)*100);
-            $filtro_diesel = 100-((($unidad->kilometraje-$unidad->filtro_diesel)/15000)*100);
-            $filtro_aceite = 100-((($unidad->kilometraje-$unidad->filtro_aceite)/15000)*100);
-            $wk1060_trampa = 100-((($unidad->kilometraje-$unidad->wk1016_trampa)/45000)*100);
-            $aceite_motor = 100-((($unidad->kilometraje-$unidad->aceite_motor)/15000)*100);
-            $filtro_urea = 100-((($unidad->kilometraje-$unidad->filtro_urea)/45000)*100);
-            $anticongelante = 100-((($unidad->kilometraje-$unidad->anticongelante)/100000)*100);
-            $aceite_direccion = 100-((($unidad->kilometraje-$unidad->aceite_direccion)/150000)*100);
-            $banda_poles = 100-((($unidad->kilometraje-$unidad->banda_poles)/90000)*100);
-            $ajuste_frenos = 100-((($unidad->kilometraje-$unidad->ajuste_frenos)/15000)*100);
-            $engrasado_chasis = 100-((($unidad->kilometraje-$unidad->engrasado_chasis)/15000)*100);
-
-            $promedio = ($filtro_aireG + $filtro_aireC + $filtro_diesel + $filtro_aceite + $wk1060_trampa +
-            $aceite_motor + $filtro_urea + $anticongelante + $aceite_direccion + $banda_poles +
-            $ajuste_frenos + $engrasado_chasis) / 12; // Dividiendo por 12 para obtener el promedio de los 12 parámetros
-
-            $unidad->tiempo = $promedio; // Agregar el promedio como un nuevo atributo
-        });
-        
-        // Carga y muestra la vista con el listado de unidades activas
-        return view('Solicitante.mantenimiento',compact('unidades'));
-    }
-
-    public function infoMantenimiento ($id){
-        $unidad = Unidades::where('id_unidad',$id)->first();
-        $kmInicial = $unidad->kilometraje;
-        $servicio = CamionServicioPreventivo::where('unidad_id',$id)->first();
-
-        $filtro_aireG = 100-((($kmInicial-$servicio->filtro_aire_grande)/30000)*100);
-        $filtro_aireC = 100-((($kmInicial-$servicio->filtro_aire_chico)/45000)*100);
-        $filtro_diesel = 100-((($kmInicial-$servicio->filtro_diesel)/15000)*100);
-        $filtro_aceite = 100-((($kmInicial-$servicio->filtro_aceite)/15000)*100);
-        $wk1060_trampa = 100-((($kmInicial-$servicio->wk1016_trampa)/45000)*100);
-        $aceite_motor = 100-((($kmInicial-$servicio->aceite_motor)/15000)*100);
-        $filtro_urea = 100-((($kmInicial-$servicio->filtro_urea)/45000)*100);
-        $anticongelante = 100-((($kmInicial-$servicio->anticongelante)/100000)*100);
-        $aceite_direccion = 100-((($kmInicial-$servicio->aceite_direccion)/150000)*100);
-        $banda_poles = 100-((($kmInicial-$servicio->banda_poles)/90000)*100);
-        $ajuste_frenos = 100-((($kmInicial-$servicio->ajuste_frenos)/15000)*100);
-        $engrasado_chasis = 100-((($kmInicial-$servicio->engrasado_chasis)/15000)*100);
-
-        $datos [] = [
-            "filtro_aireC" =>$filtro_aireG,
-            "filtro_aireG" =>$filtro_aireC,
-            "filtro_diesel" =>$filtro_diesel,
-            "filtro_aceite" =>$filtro_aceite,
-            "wk1060_trampa" =>$wk1060_trampa,
-            "aceite_motor" =>$aceite_motor,
-            "filtro_urea" =>$filtro_urea,
-            "anticongelante" =>$anticongelante,
-            "aceite_direccion" =>$aceite_direccion,
-            "banda_poles" =>$banda_poles,
-            "ajuste_frenos" =>$ajuste_frenos,
-            "engrasado_chasis" =>$engrasado_chasis,
-        ];
-
-        return view('Solicitante.infoMantenimiento',compact('unidad','datos'));
-    }
-
-    public function actualizarkms(Request $request)
-    {
-        // Validar que se haya subido un archivo
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
-        ]);
-
-        // Obtener el archivo subido
-        $file = $request->file('file');
-
-        // Cargar el archivo Excel
-        $spreadsheet = IOFactory::load($file);
-
-        // Obtener la primera hoja del archivo
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // Obtener el número total de filas y columnas
-        $highestRow = $sheet->getHighestDataRow();
-        $highestColumn = $sheet->getHighestDataColumn();        
-
-        // Iterar sobre las filas y leer los datos
-        for ($row = 1; $row <= $highestRow; $row++) {
-            // Obtener los datos de la celda A (id_unidad) y G (kilometraje) de cada fila
-            $id_unidad = $sheet->getCell('A' . $row)->getValue();
-            $kilometraje = $sheet->getCell('G' . $row)->getValue();
-
-            // Verificar si la unidad existe en la base de datos
-            $unidad = Unidades::where('id_unidad', $id_unidad)->first();
-
-            if ($unidad) {
-                // Si la unidad existe, actualizar el kilometraje
-                Unidades::where('id_unidad',$unidad->id_unidad)->update([
-                    "kilometraje" => $kilometraje,
-                    "updated_at" => Carbon::now(),
-                ]);
-            }
-        }
-
-        return redirect()->back()->with('importado', 'importado');
-    }
-
     /*
       TODO: Recupera todas las refacciones disponibles en el almacén y las muestra en la vista.
      
@@ -823,5 +798,214 @@ class controladorSolic extends Controller
 
         // Retorna la vista 'Solicitante.almacen', pasando la lista de refacciones
         return view('Solicitante.almacen',compact('refacciones'));
+    }
+
+    /*
+      Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
+     
+      Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
+      (estatus '1'), excluyendo la unidad con ID '1' por razones específicas de negocio o de la aplicación. Además, las unidades
+      activas se ordenan en orden ascendente por su ID para facilitar su visualización y gestión.
+     
+      Retorna la vista 'Solicitanteunidad', pasando el listado de unidades activas para su visualización.
+    */
+    public function unidades(){
+        // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
+        $unidades = Unidades::where('estatus','1')
+        ->where('id_unidad','!=','1')
+        ->where('estado','Activo')->orderBy('id_unidad','asc')
+        ->get();
+
+        // Carga y muestra la vista con el listado de unidades activas
+        return view('Solicitante.unidad',compact('unidades'));
+    }
+
+    /*
+      Muestra la vista para la creación de una nueva unidad.
+     
+      Este método se encarga de cargar y presentar la vista que contiene el formulario utilizado para la creación
+      de nuevas unidades dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
+      esencial de la nueva unidad.
+          
+      Retorna la vista 'SolicitantecrearUnidad', que contiene el formulario para la creación de una nueva unidad.
+    */
+    public function CreateUnidad(){
+        // Cargar y mostrar la vista con el formulario de creación de unidad
+        return view('Solicitante.crearUnidad');
+    }
+
+    /*
+      Inserta una nueva unidad en la base de datos con la información proporcionada a través de un formulario.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
+      año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
+      crear una nueva entrada en la base de datos para la unidad, asignándole un estatus '1' para marcarla como activa.      
+     
+      @param  \Illuminate\Http\Request  $req La petición HTTP que contiene los datos del formulario.
+
+      Redirige al usuario a la lista de unidades con una sesión flash que indica que la nueva unidad ha sido registrada exitosamente.
+    */    
+    public function insertUnidad(Request $req){
+        // Crea la nueva unidad con los datos proporcionados
+        Unidades::create([
+        "id_unidad"=>$req->input('id_unidad'),
+        "tipo"=>$req->input('tipo'),
+        "estado"=>$req->input('estado'),
+        "anio_unidad"=>$req->input('anio_unidad'),
+        "marca"=>$req->input('marca'),
+        "modelo"=>$req->input('modelo'),
+        "caracteristicas"=>$req->input('caracteristicas'),
+        "n_de_serie"=>$req->input('serie'),
+        "n_de_permiso"=>$req->input('permiso'),
+        "estatus"=>"1",
+        "created_at"=>Carbon::now(),
+        "updated_at"=>Carbon::now()
+        ]);
+
+        // Redirige al usuario a la vista de unidades
+        return redirect()->route('unidadesSoli')->with('regis','regis');
+    }
+
+    /*
+      Muestra la vista para editar los detalles de una unidad específica.
+     
+      Este método se encarga de recuperar los detalles de una unidad específica, identificada por su ID, de la base de datos.
+      La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
+      de la unidad, permitiendo así que los administradores o los usuarios con los permisos adecuados realicen cambios en la información
+      de la unidad como tipo, estado, año, marca, modelo, características, número de serie, y número de permiso. 
+     
+      @param  int  $id  El ID de la unidad cuyos detalles se van a editar.
+      
+      Retorna la vista 'SolicitanteeditarUnidad', pasando los detalles de la unidad específica para su edición.
+    */
+    public function editUnidad($id, $from){
+        // Recupera los detalles de la unidad específica por su ID
+        $unidad= Unidades::where('id_unidad',$id)->first();
+
+        // Almacenar la URL de origen en la sesión
+        session(['url_origen' => $from]);
+
+        // Carga y muestra la vista con el formulario de edición de unidad, pasando los detalles de la unidad
+        return view('Solicitante.editarUnidad',compact('unidad'));
+    }
+
+    /*
+      Actualiza los detalles de una unidad específica en la base de datos con la información proporcionada por el formulario.
+     
+      Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
+      año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
+      actualizar el registro de la unidad específica en la base de datos, identificado por el ID proporcionado. 
+     
+      @param  int  $id  El ID de la unidad que se va a actualizar.
+
+      Redirige al usuario a la lista de unidades con una sesión flash que indica que la unidad ha sido actualizada exitosamente.
+    */
+    public function updateUnidad(Request $req, $id ){
+        // Actualiza el registro de la unidad específico con los datos proporcionados
+        Unidades::where('id_unidad',$id)->update([
+            "id_unidad"=>$req->input('id_unidad'),
+            "tipo"=>$req->input('tipo'),
+            "estado"=>$req->input('estado'),
+            "anio_unidad"=>$req->input('anio_unidad'),
+            "marca"=>$req->input('marca'),
+            "modelo"=>$req->input('modelo'),
+            "caracteristicas"=>$req->input('caracteristicas'),
+            "n_de_serie"=>$req->input('serie'),
+            "n_de_permiso"=>$req->input('permiso'),
+            "estatus"=>"1",        
+            "updated_at"=>Carbon::now()
+        ]);
+
+        // Obtener la URL de origen desde la sesión
+        $url_origen = session('url_origen', 'default_route');
+
+        // Redirigir a la URL de origen
+        if ($url_origen == 'unidades') {
+            return redirect()->route('unidadesSoli')->with('update', 'update');
+        } elseif ($url_origen == 'mantenimiento') {
+            return redirect()->route('manteniento')->with('update', 'update');
+        }
+    }
+
+    /*
+      Desactiva una unidad específica marcándola como inactiva en la base de datos.
+     
+      En lugar de eliminar el registro de la unidad, este método actualiza el campo 'estatus' a 0,
+      indicando que la unidad está inactiva. Esta operación es crucial para mantener la integridad de los datos
+      y permite la recuperación del registro en el futuro si es necesario. Además, se actualiza el campo 'updated_at'
+      para reflejar el momento de la desactivación.
+     
+      @param  int  $id  El ID de la unidad que se va a desactivar.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido desactivada exitosamente.
+    */
+    public function deleteUnidad($id){ 
+        // Actualiza el registro de la unidad específica para marcarla como inactiva       
+        Unidades::where('id_unidad',$id)->update([
+            "estatus"=>"0",
+            "updated_at"=>Carbon::now()
+        ]);
+
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
+        return back()->with('eliminado','eliminado');
+    }
+
+    /*
+      Marca una unidad específica como inactiva en la base de datos.
+     
+      Este método actualiza el estado de una unidad específica, identificada por su ID, a "Inactivo", lo que indica
+      que la unidad ya no está en uso activo dentro del sistema. La fecha de la última actualización también se registra mediante el campo
+      'updated_at'. 
+     
+      @param  int  $id  El ID de la unidad que se va a marcar como inactiva.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido marcada como inactiva exitosamente.
+    */
+    public function bajaUnidad($id){        
+        // Actualiza el registro de la unidad específica para marcarla como inactiva
+        Unidades::where('id_unidad',$id)->update([            
+            "estado"=>"Inactivo",
+            "updated_at"=>Carbon::now()
+        ]);
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
+        return back()->with('baja','baja');
+    }
+
+    /*
+      Recupera y muestra todas las unidades inactivas para su potencial activación.
+     
+      Este método consulta la base de datos para obtener un listado de todas las unidades que actualmente están marcadas
+      como "Inactivo". La intención es proporcionar a los administradores una visión general de las unidades que no están
+      en uso activo pero que pueden ser reactivadas según sea necesario.
+     
+      Retorna la vista 'SolicitanteactivaUnidad', pasando el listado de unidades inactivas para su visualización y potencial activación.
+    */
+    public function activarUnidad(){
+        // Recupera las unidades marcadas como inactivas
+        $unidades = Unidades::where("estado",'Inactivo')->get();
+
+        // Carga y muestra la vista con el listado de unidades inactivas
+        return view('Solicitante.activaUnidad',compact('unidades'));
+    }
+
+    /*
+      Reactiva una unidad específica cambiando su estado a "Activo".
+     
+      Este método actualiza el estado de una unidad específica, identificada por su ID, a "Activo" en la base de datos.
+       La fecha de la última actualización también se registra para mantener un seguimiento adecuado de las modificaciones.
+     
+      @param  int  $id  El ID de la unidad que se va a reactivar.
+
+      Redirige al usuario a la lista de unidades con una sesión flash que indica que la unidad ha sido activada exitosamente.
+    */
+    public function activateUnidad($id){
+        // Actualiza el estado de la unidad específica a "Activo"
+        Unidades::where('id_unidad',$id)->update([
+            "estado"=>"Activo",
+            "updated_at"=>Carbon::now()
+        ]); 
+
+        // Redirige al usuario a la lista de unidades con un mensaje de confirmación
+        return redirect()->route('unidadesSoli')->with('activado','activado');
     }
 }

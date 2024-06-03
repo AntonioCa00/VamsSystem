@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
 
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Unidades;
@@ -800,7 +801,21 @@ class controladorGtArea extends Controller
         return back()->with('eliminado','eliminado');    
     }  
 
+    /*
+      Recupera y muestra una tabla detallada de pagos fijos, excluyendo aquellos que han sido rechazados.
+     
+      Este método consulta la base de datos para obtener un listado completo de los pagos fijos activos, incluyendo
+      detalles relevantes como el ID del pago, el servicio asociado, el nombre del proveedor, y el nombre del usuario
+      que gestionó el pago. La información de los servicios y proveedores activos también se recopila para facilitar
+      la filtración y la gestión dentro de la interfaz de usuario.
+      
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede visualizar las 
+      solicitudes de pagos fijos.
+     
+      Devuelve la vista 'GtArea.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización en forma de tabla.
+    */
     public function tablePagos(){
+        // Obtener los pagos fijos y detalles asociados
         $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','users.nombres as usuario','proveedores.nombre')
         ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
         ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
@@ -809,23 +824,43 @@ class controladorGtArea extends Controller
         ->where('pagos_fijos.estado','!=','Rechazado')
         ->get();
 
+        // Obtener todos los servicios activos y sus proveedores
         $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->orderBy('servicios.nombre_servicio','asc')
         ->where('servicios.estatus','1')
         ->get();
 
+        // Obtener todos los proveedores activos
         $proveedores = Proveedores::where('estatus','1')
         ->orderBy('nombre','asc')
         ->get();
 
+        // Cargar y mostrar la vista con los datos necesarios para la revisión de pagos
         return view('GtArea.pagos',compact('pagos','servicios','proveedores'));
     }
 
+    /*
+      Registra un comprobante de pago para un pago fijo específico y actualiza su estado a "Pagado".
+     
+      Este método maneja la carga de un comprobante de pago en formato PDF para un pago fijo determinado por el ID proporcionado.
+      Valida que el archivo haya sido cargado correctamente y cumpla con los criterios especificados (como el tipo de archivo y tamaño máximo).
+      Si se carga un archivo válido, se almacena en el sistema de archivos y se actualiza el registro del pago para incluir la ruta del archivo
+      y cambiar el estado del pago a "Pagado". Si no se carga un archivo válido, el estado del pago se actualiza a "Pagado", pero sin 
+      almacenar ningún comprobante. Finalmente, el usuario es redirigido a la página anterior con una notificación del resultado del proceso.
+     
+      @param int $id El ID del pago que se está actualizando.
+
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos de las 
+      solicitudes de pagos fijos.
+
+      Redirige al usuario a la página anterior con una notificación que indica si el pago fue registrado exitosamente.
+    */
     public function registrarPago(Request $req, $id){
         // Verifica que se haya subido un archivo y que sea válido
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
             
+            // Validar el archivo subido
             $req->validate([
                 'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
@@ -834,38 +869,73 @@ class controladorGtArea extends Controller
             $nombreArchivo = 'comprobantePago_' . $id . '.pdf';
             $rutaDescargas = 'comprobantesPagos/' . $nombreArchivo;
 
+            // Almacenar el archivo en el sistema de archivos
             $archivo = $req->file('comprobante_pago');
             $archivo->storeAs('comprobantesPagos', $nombreArchivo, 'public');
 
+            // Actualizar el registro del pago con la ruta del comprobante y cambiar el estado a "Pagado"
             Pagos_Fijos::where('id_pago',$id)->update([
                 "comprobante_pago"=>$rutaDescargas,
                 "estado"=>"Pagado",
                 "updated_at"=>Carbon::now()
             ]);
 
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
             return back()->with('pagado','pagado');
 
         } else{
-            // Manejo del caso en que no se sube un archivo válido
+            // Si no se existe un archivo y no es válido, solo actualizar el estado a "Pagado"
             Pagos_Fijos::where('id_pago',$id)->update([
                 "estado"=>"Pagado",
                 "updated_at"=>Carbon::now()
             ]);
 
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
             return back()->with('pagado','pagado');
         }
     }
 
+    /*
+      Cambia el estado de un pago fijo a "Rechazado" y actualiza la información en la base de datos.
+     
+      Este método se utiliza para manejar situaciones en las cuales un pago fijo necesita ser marcado como rechazado,
+      generalmente debido a errores en el proceso de pago, problemas con la validación del pago, o cualquier otra
+      razón administrativa. Al cambiar el estado a "Rechazado", el sistema efectivamente invalida el pago,
+      permitiendo acciones correctivas o adicionales según sea necesario. El método también registra el momento
+      exacto en que se realiza esta acción para mantener una trazabilidad adecuada.
+     
+      @param int $id El ID del pago fijo que se está actualizando.
+
+      Redirige al usuario a la página anterior con una notificación de que el pago ha sido marcado como rechazado.
+    */
     public function deletePago($id){
+        // Actualiza el estado del pago a "Rechazado" en la base de datos
         Pagos_Fijos::where('id_pago',$id)->update([
             "estado"=>'Rechazado',
             "updated_at"=>Carbon::now(),
         ]);
 
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
         return back()->with('eliminado','eliminado');
     }
 
+    /*
+      Recupera y muestra una lista detallada de todas las órdenes de compra activas que no están asociadas a requisiciones rechazadas.
+     
+      Este método consulta la base de datos para obtener un listado completo de las órdenes de compra en el sistema,
+      excluyendo aquellas relacionadas con requisiciones que han sido rechazadas. Los datos recopilados incluyen el ID de la orden,
+      detalles de la requisición asociada, información del administrador que gestionó la orden, datos del proveedor, PDFs de las 
+      cotizaciones, comprobantes de pago, y otros documentos relevantes. Esta información es vital para permitir una gestión 
+      eficaz y una revisión detallada de todas las compras realizadas dentro de la organización. Los datos son luego presentados 
+      en una vista específica, permitiendo a los usuarios de la gerencia tener acceso fácil y ordenado a la información financiera.
+     
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede consultar las ordenes
+      de compra de las requisiciones, esto con fines de registrar pagos y revisar cantidades, proveedores, etc.
+     
+      Devuelve la vista 'GtArea.ordenesCompras', pasando los datos de las órdenes de compra para su visualización.
+    */
     public function ordenesCompras(){
+        // Obtener las órdenes de compra con información relevante de varias tablas relacionadas
         $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at','orden_compras.comprobante_pago')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -874,12 +944,32 @@ class controladorGtArea extends Controller
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('orden_compras.created_at','desc')
         ->get();
+
+        // Cargar y mostrar la vista con los datos necesarios
         return view ('GtArea.ordenesCompras',compact('ordenes'));
     }
 
+    /*
+      Finaliza una orden de compra subiendo un comprobante de pago y actualizando su estado a "Pagado".
+     
+      Este método permite a los usuarios cargar un comprobante de pago en formato PDF para una orden de compra específica.
+      Si el archivo se carga correctamente y cumple con los criterios especificados (tipo de archivo y tamaño máximo), el archivo se almacena,
+      y se actualiza el registro de la orden de compra para incluir la ruta del archivo y cambiar el estado de la orden a "Pagado".
+      Si no se carga un archivo, el método maneja esta situación proporcionando un mensaje de error adecuado y actualizando
+      el estado de la orden a "Pagado" sin almacenar ningún comprobante.
+     
+      @param int $id El ID de la orden de compra que se está actualizando.
+
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos 
+      
+      Devuelve una redirección a la página anterior con una notificación que indica si la orden fue finalizada exitosamente o
+      devuelve un mensaje de error si el archivo no es reconocido.
+    */
     public function FinalizarC(Request $req, $id){
+        // Verifica que se haya subido un archivo y que sea válido
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
 
+            // Validar el archivo subido
             $req->validate([
                 'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
@@ -888,26 +978,28 @@ class controladorGtArea extends Controller
             $nombreArchivo = 'comprobantePagoOrden_' . $id . '.pdf';
             $rutaDescargas = 'comprobantesPagosOrden/' . $nombreArchivo;
 
+            // Almacenar el archivo en el sistema de archivos
             $archivo = $req->file('comprobante_pago');
             $archivo->storeAs('comprobantesPagosOrden', $nombreArchivo, 'public');
 
+            // Actualizar el registro de la orden con la ruta del comprobante y cambiar el estado a "Pagado"
             Orden_compras::where('id_orden',$id)->update([
                 "comprobante_pago"=>$rutaDescargas,
                 "estado"=>"Pagado",
                 "updated_at"=>Carbon::now()
             ]);
 
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
             return back()->with('pagado','pagado');
 
         } else{
-
-            return "no reconoce el archivo";
-            // Manejo del caso en que no se sube un archivo válido
+            //Registra el pago sin coprobante en caso de que no se cargue archivo.
             Orden_compras::where('id_orden',$id)->update([
                 "estado"=>"Pagado",
                 "updated_at"=>Carbon::now()
             ]);
 
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
             return back()->with('pagado','pagado');
         }
     }
@@ -952,24 +1044,28 @@ class controladorGtArea extends Controller
         
         // Carga y muestra la vista con el listado de unidades activas
         return view('GtArea.mantenimiento',compact('unidades'));    
-    }
+    }    
 
-    public function updateKilom(Request $req, $id){
-        $kilometraje = $req->kilometraje;
+    /*
+      Calcula y muestra el estado del mantenimiento preventivo de una unidad específica.
+     
+      Este método se encarga de obtener los datos de kilometraje de una unidad y combinarlos con registros históricos de mantenimiento
+      para calcular la vida útil restante de varios componentes según su uso y los intervalos de mantenimiento recomendados. 
+      Calcula el porcentaje de vida útil restante para cada componente clave como filtros de aire, de diesel, de aceite, trampas de WK, 
+      aceite del motor, entre otros. Estos cálculos permiten a los administradores y técnicos de mantenimiento entender mejor cuándo se
+      requiere mantenimiento preventivo, optimizando la gestión y mantenimiento de la flota.
+     
+      @param int $id El ID de la unidad para la que se realiza el cálculo de mantenimiento.
 
-        Unidades::where('id_unidad',$id)->update([
-            "kilometraje"=>$kilometraje,
-            "updated_at"=>Carbon::now(),
-        ]);
-
-        return back()->with('kilometraje','kilometraje');
-    }
-
+      Devuelve la vista 'GtArea.infoMantenimiento', pasando los datos calculados y los detalles de la unidad para su visualización.
+    */
     public function infoMantenimiento ($id){
+        // Obtener los detalles de la unidad y el último servicio registrado
         $unidad = Unidades::where('id_unidad',$id)->first();
         $kmInicial = $unidad->kilometraje;
         $servicio = CamionServicioPreventivo::where('unidad_id',$id)->first();
 
+        // Cálculos para determinar el porcentaje de vida útil restante de cada componente
         $filtro_aireG = 100-((($kmInicial-$servicio->filtro_aire_grande)/30000)*100);
         $filtro_aireC = 100-((($kmInicial-$servicio->filtro_aire_chico)/45000)*100);
         $filtro_diesel = 100-((($kmInicial-$servicio->filtro_diesel)/15000)*100);
@@ -983,6 +1079,7 @@ class controladorGtArea extends Controller
         $ajuste_frenos = 100-((($kmInicial-$servicio->ajuste_frenos)/15000)*100);
         $engrasado_chasis = 100-((($kmInicial-$servicio->engrasado_chasis)/15000)*100);
 
+        // Preparar los datos para la vista
         $datos [] = [
             "filtro_aireC" =>$filtro_aireG,
             "filtro_aireG" =>$filtro_aireC,
@@ -998,6 +1095,7 @@ class controladorGtArea extends Controller
             "engrasado_chasis" =>$engrasado_chasis,
         ];
 
+        // Carga y muestra la vista con los calculos de mantenimiento.
         return view('GtArea.infoMantenimiento',compact('unidad','datos'));
     }
 

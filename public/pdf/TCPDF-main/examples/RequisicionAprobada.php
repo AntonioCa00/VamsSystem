@@ -93,7 +93,11 @@ if(!empty($unidad)){
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
     $pdf->Cell(160, 7, 'Unidad', 1, 1, 'C', 1);
     // notas que agrega el solicitante
-    $pdf->MultiCell(160, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+    if ($unidad === "AUTOMOVIL" ){
+        $pdf->MultiCell(160, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+    } else { 
+        $pdf->MultiCell(160, 6,'Permiso: '.$unidad->n_de_permiso.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );       
+    }
 }
 
 $pdf->Ln(10); // Salto de línea antes de la tabla   
