@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Compras;
+
+use App\Http\Controllers\Controller; // Asegúrate de incluir esta línea correctamente
 use App\Models\User;
 use App\Models\Orden_compras;
 use App\Models\Requisiciones;
@@ -471,7 +473,18 @@ class controladorGerenciaGen extends Controller
         return view('Gerencia General.cotizaciones',compact('cotizaciones'));
     }
 
+    /*
+      Recupera y muestra una lista detallada de todas las órdenes de compra que no están asociadas a requisiciones rechazadas.
+     
+      Este método consulta la base de datos para obtener información completa sobre cada orden de compra en el sistema,
+      excluyendo aquellas relacionadas con requisiciones que han sido rechazadas. Los datos recopilados incluyen el ID de la orden,
+      detalles de la requisición asociada, información del administrador que manejó la orden, datos del proveedor, PDFs de las 
+      cotizaciones, y otros documentos relevantes como comprobantes de pago. 
+     
+      Devuelve la vista 'Gerencia General.ordenesCompras', pasando los datos de las órdenes de compra para su visualización.
+    */
     public function compras(){
+        // Obtener las órdenes de compra junto con información de segumiento de ordenes de compras
         $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -480,26 +493,42 @@ class controladorGerenciaGen extends Controller
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('orden_compras.created_at','desc')
         ->get();
+
+        // Cargar y mostrar la vista con los datos necesarios para la revisión de órdenes de compra
         return view ('Gerencia General.ordenesCompras',compact('ordenes'));
     }
 
+    /*
+      Recupera y muestra información detallada sobre los pagos fijos, junto con los servicios y proveedores asociados.
+     
+      Este método se encarga de obtener un listado de todos los pagos fijos registrados en el sistema, incluyendo detalles 
+      completos como el ID del pago, el servicio asociado, el nombre del proveedor, y los comprobantes de pago. Adicionalmente,
+      se recupera información sobre todos los servicios activos y sus proveedores asociados, que es esencial para facilitar 
+      la gestión y revisión de pagos.
+     
+      Devuelve la vista 'Gerencia General.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización.
+    */
     public function pagos(){
+        // Obtener los pagos fijos en relación de sus proveedores y servicios al cual va dirigido.
         $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
         ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
         ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
         ->orderBy('id_pago','desc')
         ->get();
 
+        // Obtener todos los servicios activos y sus proveedores
         $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->orderBy('servicios.nombre_servicio','asc')
         ->where('servicios.estatus','1')
         ->get();
 
+        // Obtener todos los proveedores activos
         $proveedores = Proveedores::where('estatus','1')
         ->orderBy('nombre','asc')
         ->get();
 
+        // Cargar y mostrar la vista con los datos necesarios
         return view('Gerencia General.pagos',compact('pagos','servicios','proveedores'));
     }
 
@@ -539,12 +568,13 @@ class controladorGerenciaGen extends Controller
             'dpto' =>session('departamento')
         ];
 
-        // Valida el tipo de reporte que se desea obtener
+        //Variable que define los rangos de reportes
         $tipoReporte = $req->input('tipoReport');
-
-         // Recopilación de datos de las requisiciones para el periodo seleccionado
-        switch ($tipoReporte){
+    
+        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
+        switch ($tipoReporte){            
             case "semanal":
+                //Unicamente las requisiciones realizadas 7 días atrás hasta el día actual
                 $unaSemanaAtras = Carbon::now()->subWeek();
                 
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
@@ -554,6 +584,7 @@ class controladorGerenciaGen extends Controller
                 
                 break;
             case "mensual":
+                //Unicamente las requisiciones realizadas dentro del mes en curso
                 $inicioDelMes = Carbon::now()->startOfMonth();
                 
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
@@ -563,6 +594,7 @@ class controladorGerenciaGen extends Controller
 
                 break;
             case "anual":
+                //Unicamente las requisiciones realizadas dentro del año en curso
                 $inicioDelAnio = Carbon::now()->startOfYear();
                 
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
@@ -572,6 +604,7 @@ class controladorGerenciaGen extends Controller
 
                 break;
             case "todas":
+                //No se realizan excepciones y consulta todas las requisiciones
                 $inicioDelAnio = Carbon::now()->startOfYear(); 
                 
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
@@ -617,16 +650,15 @@ class controladorGerenciaGen extends Controller
             'dpto' =>session('departamento')
         ];
 
-        //Variable que define los rangos de reportes
+        // Determinar el intervalo de tiempo para el reporte
         $tipoReporte = $req->input('tipoReport');
 
-        //Validación de la variable
+        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
         switch ($tipoReporte){
             case "semanal":
-                //Si es semana, define el tiempo con la librería Carbon
+                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas 7 días atrás hasta el día actual
                 $unaSemanaAtras = Carbon::now()->subWeek();
 
-                //Recuperar las ordenes de compra que no se han finalizado (pagado).
                 $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -636,7 +668,7 @@ class controladorGerenciaGen extends Controller
                 ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
                 ->get();
 
-                //Recuperar las ordenes de compra que se han finalizado (pagado).
+                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas 7 días atrás hasta el día actual
                 $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -648,10 +680,10 @@ class controladorGerenciaGen extends Controller
                 
                 break;
             case "mensual":
-                //Si es mensual, definir el mes actual al momento del reporte con la librería Carbon
+                //Si es mensual, //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en cursodefinir el mes actual al momento del reporte con la librería Carbon
                 $inicioDelMes = Carbon::now()->startOfMonth();
 
-                //Recuperar las ordenes de compra que no se han finalizado (pagado)
+                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en curso
                 $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -661,7 +693,7 @@ class controladorGerenciaGen extends Controller
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();    
 
-                //Recuperar las ordenes de compra que se han finalizado (pagado)
+                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas dentro del mes en curso
                 $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -673,7 +705,7 @@ class controladorGerenciaGen extends Controller
 
                 break;
             case "anual":
-                //Si es mensual, definir el mes actual al momento del reporte con la librería Carbon
+                //Si es anual, definir el año actual al momento del reporte con la librería Carbon
                 $inicioDelAnio = Carbon::now()->startOfYear();
 
                 //Recuperar las ordenes de compra que no se han finalizado (pagado)
@@ -699,7 +731,7 @@ class controladorGerenciaGen extends Controller
                 break;
             case "todas":
                 //Al ser todas, no define rangos de tiempo.
-                //Recuperar las ordenes de compra que no se han finalizado (pagado)
+                //No se realizan excepciones y consulta todas las ordenes de compras pendientes
                 $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
                 ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
@@ -717,7 +749,7 @@ class controladorGerenciaGen extends Controller
                 ->where('orden_compras.estado','=','Finalizado')
                 ->get();         
 
-                break;
+            break;
         }
 
         // Serializar los datos del empleado y almacenarlos en un archivo

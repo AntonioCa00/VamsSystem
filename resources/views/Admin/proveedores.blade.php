@@ -60,11 +60,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nombre:</th>
-                            <th>Telefono:</th>
-                            <th>Contacto:</th>
-                            <th>RFC:</th>                            
-                            <th>Correo:</th>                            
+                            <th>Nombre:</th>                         
                             <th>Detalles:</th>
                         </tr>
                     </thead>
@@ -72,10 +68,6 @@
                         @foreach ($proveedores as $proveedor)
                         <tr>                    
                             <th>{{$proveedor->nombre}}</th>
-                            <th>{{$proveedor->telefono}}</th>                            
-                            <th>{{$proveedor->contacto}}</th>
-                            <th>{{$proveedor->rfc}}</th>                            
-                            <th>{{$proveedor->correo}}</th>
                             {{-- <th>
                                 <a href="{{ asset($proveedor->CIF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
