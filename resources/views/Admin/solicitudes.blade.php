@@ -3,7 +3,7 @@
 @section('Contenido')
 
 @if(session()->has('cotizacion'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('finalizada'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,11 +23,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('eliminada'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -35,14 +35,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Encabezado de la tabla -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- Tabla de los datos -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -67,8 +67,8 @@
                                         <select name="filtro" class="form-control flex-grow-1 mr-2" required>
                                             <option value="" disabled selected>Filtrar por departamento...</option>
                                             @foreach ($departamentos as $dpto)
-                                                <option value="{{$dpto->departamento}}">{{$dpto->departamento}}</option>                        
-                                            @endforeach                    
+                                                <option value="{{$dpto->departamento}}">{{$dpto->departamento}}</option>
+                                            @endforeach
                                         </select>
                                         <button type="submit" class="btn btn-primary">Filtrar</button>
                                     </form>
@@ -77,11 +77,11 @@
                                         <select name="filtro" class="form-control flex-grow-1 mr-2" required>
                                             <option value="" disabled selected>Filtrar por estatus...</option>
                                             @foreach ($estatus as $estat)
-                                                <option value="{{$estat->estado}}">{{$estat->estado}}</option>                        
-                                            @endforeach                    
+                                                <option value="{{$estat->estado}}">{{$estat->estado}}</option>
+                                            @endforeach
                                         </select>
                                         <button type="submit" class="btn btn-primary">Filtrar</button>
-                                    </form>                                    
+                                    </form>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                     </div>
-                </div>                  
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -97,11 +97,11 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Folio:</th>            
+                            <th>Folio:</th>
                             <th>Encargado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Estado:</th>
-                            <th>Unidad:</th>
+                            <th>Comentarios:</th>
                             {{-- <th style="width: 150px; /* o el ancho específico que desees */
                             max-width: 150px; /* coincide con el ancho para asegurar el límite */
                             overflow: hidden;
@@ -117,17 +117,53 @@
                             <th>{{$solicitudes->nombres}}</th>
                             <th>{{$solicitudes->fecha_creacion}}</th>
                             <th>{{$solicitudes->estado}}</th>
-                            @if (empty($solicitudes->unidad_id))
-                                <th>Sin unidad</th>
-                            @elseif ($solicitudes->unidad_id == "1")
-                                <th>Varios</th>
-                            @else 
-                                <th>{{$solicitudes->unidad_id}}</th>
-                            @endif
-                            {{-- <th style="width: 100px; /* o el ancho específico que desees */
-                            max-width: 100px; /* coincide con el ancho para asegurar el límite */
-                            overflow: hidden;
-                            white-space: nowrap;text-overflow: ellipsis;">Mantenimientooooooooooooooooooooooooooo</th> --}}
+                            <th class="text-center">
+                                @if (empty($solicitudes->detalles))
+                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitudes->id_requisicion}}">
+                                    <img src="{{ asset('img/comente.png') }}" alt="Abrir PDF">
+                                </a>
+                                    <div class="modal fade text-left" id="Comentarios{{$solicitudes->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Seguimiento de comentarios</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">No existen comentarios de seguimiento en este momento</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitudes->id_requisicion}}">
+                                    <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
+                                </a>
+                                    <div class="modal fade" id="Comentarios{{$solicitudes->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                    aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Seguimiento de comentarios</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Comentario emitido por: <strong>{{$solicitudes->rol}}</strong></div>
+                                                <div class="modal-body">Comentario: <strong>{{$solicitudes->detalles}}</strong></div>
+                                                <div class="modal-body">Fecha del comentario: <strong>{{$solicitudes->fechaCom}}</strong></div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </th>
                             <th class="text-center">
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
                                     <img class="imagen-container"  src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
@@ -137,11 +173,11 @@
                                 @if ($solicitudes->estado === "Aprobado" || $solicitudes->estado === "Cotizado")
                                     <a class="btn btn-primary" href="{{route('createCotiza', $solicitudes->id_requisicion)}}">
                                         Subir cotizaciones
-                                    </a>                                   
+                                    </a>
                                 @elseif ($solicitudes->estado === "Validado" ||$solicitudes->estado ==="Comprado")
                                     <a class="btn btn-info" href="{{route('ordenCompra',$solicitudes->id_requisicion)}}">
                                         Orden de compra
-                                    </a>   
+                                    </a>
                                     <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$solicitudes->id_requisicion}}">
                                         Finalizar
                                     </a>
@@ -158,21 +194,21 @@
                                                 </div>
                                                 <div class="modal-body">Selecciona confirmar para finalizar proceso</div>
                                                 <div class="modal-footer">
-                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                     <form action="{{route('FinalizarReq',$solicitudes->id_requisicion)}}" method="POST">
                                                         @csrf
-                                                        {!!method_field('PUT')!!}    
+                                                        {!!method_field('PUT')!!}
                                                         <button type="submit" class="btn btn-primary">Confirmar</button>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>                                                         
-                                @else 
+                                    </div>
+                                @else
                                     <a class="btn btn-primary" href="" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                         Eliminar
                                     </a>
-                                @endif                                
+                                @endif
                             </th>
                         </tr>
                         @endforeach
@@ -182,4 +218,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

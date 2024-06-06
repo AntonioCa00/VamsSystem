@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('solicitado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('editado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,11 +23,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('eliminado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -35,14 +35,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -55,8 +55,8 @@
                         <tr>
                             <th>Codigo:</th>
                             @if(session('departamento') === "Mantenimiento")
-                                <th>Unidad:</th>         
-                            @endif                                                                       
+                                <th>Unidad:</th>
+                            @endif
                             <th>Estado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Requisición:</th>
@@ -69,26 +69,26 @@
                         <tr>
                             <th>{{$solicitud->id_requisicion}}</th>
                             @if(session('departamento') === "Mantenimiento")
-                                <th>{{$solicitud->unidad_id}}</th>    
-                            @endif                       
+                                <th>{{$solicitud->unidad_id}}</th>
+
+                            @endif
                             @if ($solicitud->estado === "Incompleta")
                                 <th class="text-danger">{{$solicitud->estado}}</th>
                             @else
                                 <th>{{$solicitud->estado}}</th>
-                            @endif                                   
+                            @endif
                             <th>{{$solicitud->created_at}}</th>
                             <th>
                                 <a href="{{ asset($solicitud->pdf) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
-                            <th>
-                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitud->id_requisicion}}">
-                                    <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
-                                </a>
-                                
+                            <th class="text-center">
                                 @if (empty($solicitud->detalles))
-                                    <div class="modal fade" id="Comentarios{{$solicitud->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitud   ->id_requisicion}}">
+                                    <img src="{{ asset('img/comente.png') }}" alt="Abrir PDF">
+                                </a>
+                                    <div class="modal fade text-left" id="Comentarios{{$solicitud->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -100,12 +100,15 @@
                                                 </div>
                                                 <div class="modal-body">No existen comentarios de seguimiento en este momento</div>
                                                 <div class="modal-footer">
-                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                                
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 @else
+                                <a href="#" data-toggle="modal" data-target="#Comentarios{{$solicitud->id_requisicion}}">
+                                    <img src="{{ asset('img/comentarios.png') }}" alt="Abrir PDF">
+                                </a>
                                     <div class="modal fade" id="Comentarios{{$solicitud->id_requisicion}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -127,7 +130,7 @@
                                     </div>
                                 @endif
                             </th>
-                            <th>                                
+                            <th>
                                 @if($solicitud->estado === "Solicitado" || $solicitud->estado === "Rechazado" || $solicitud->estado === "Incompleta")
                                 <a href="{{route('editReq',$solicitud->id_requisicion)}}" class="btn btn-success">Editar requisición</a>
                                 <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitud->id_requisicion}}">
@@ -149,15 +152,15 @@
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                 <form action="{{route('deleteSolicitud',$solicitud->id_requisicion)}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('DELETE')!!}    
+                                                    {!!method_field('DELETE')!!}
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                @else 
-                                    <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>                                
+                                @else
+                                    <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Eliminar</a>
                                 @endif
                             </th>
                         </tr>

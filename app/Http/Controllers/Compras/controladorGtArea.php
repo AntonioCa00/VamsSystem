@@ -27,13 +27,13 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recopila datos para la visualización de informes de gestión en el área correspondiente.
-     
+
       Este método se encarga de compilar datos detallados de operaciones de compra por mes y totales anuales,
       así como el conteo de requisiciones completas y pendientes. Utiliza la clase Orden_compras para sumar los costos totales
       de las compras realizadas en cada mes del año actual y calcula los totales de compras para el mes y año en curso.
       Además, cuenta las requisiciones en estado 'Comprado' y las requisiciones pendientes que no están 'Compradas' ni 'Rechazadas'
       para el departamento del usuario actual.
-     
+
       Retorna la vista 'GtArea.index' con los datos compilados para informes de gestión.
     */
     public function index(){
@@ -176,17 +176,17 @@ class controladorGtArea extends Controller
         $DiciembrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
-            ->where('estado','Pagado')  
+            ->where('estado','Pagado')
             ->first();
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
             ->where('estado','Pagado')
             ->first();
-        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;        
+        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;
 
         // Suma total de costos para el mes actual
-        $mesActual = now()->format('m'); 
+        $mesActual = now()->format('m');
         $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
         $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->where('estado','Pagado')->sum('costo_total');
         $TotalMes = $totalRequisicionesMes + $totalPagosMes;
@@ -232,11 +232,11 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Obtiene todas las refacciones activas del almacén y las muestra en una vista específica.
-     
+
       Este método consulta la tabla 'Almacen' para recuperar todas las entradas de refacciones
       que tienen un estatus activo (estatus = 1). Se asume que el estatus '1' indica que las refacciones
-      están disponibles o activas para uso o asignación. 
-     
+      están disponibles o activas para uso o asignación.
+
       Retorna la vista 'GtArea.refaccion', pasando los datos de las refacciones activas.
     */
     public function tableRefaccion(){
@@ -249,15 +249,15 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera y muestra las unidades activas con ciertos criterios de filtrado.
-     
+
       Este método realiza una consulta a la tabla 'Unidades' para obtener las unidades que cumplen con
       los siguientes criterios: tener un estatus '1' (que indica unidades activas), no ser la unidad con 'id_unidad' igual a 1,
       y tener un estado 'Activo'. Las unidades recuperadas son ordenadas en orden ascendente por su 'id_unidad'.
-     
+
       Retorna la vista 'GtArea.unidad', pasando los datos de las unidades filtradas.
     */
     public function tableUnidad()
-    {   
+    {
         // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
         $unidades = Unidades::where('estatus','1')
         ->where('id_unidad','!=','1')
@@ -289,13 +289,13 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera y muestra todos los proveedores activos.
-     
+
       Este método consulta la tabla 'Proveedores' para obtener todos los registros de proveedores que tienen un estatus '1',
       indicando que están activos. La selección de proveedores activos es crucial para operaciones de negocio,
-      ya que solo se deberían realizar transacciones con proveedores que están actualmente activos y disponibles.      
-     
+      ya que solo se deberían realizar transacciones con proveedores que están actualmente activos y disponibles.
+
       Retorna la vista 'GtArea.proveedores', pasando la lista de proveedores activos.
-    */    
+    */
     public function tableProveedores(){
         // Obtiene todos los proveedores activos (estatus = 1) de la base de datos
         $proveedores = Proveedores::where('estatus','1')->get();
@@ -306,11 +306,11 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera los detalles de un proveedor específico para su edición.
-     
+
       Este método busca en la tabla 'Proveedores' un registro específico utilizando el ID del proveedor proporcionado como parámetro.
       La búsqueda tiene como objetivo encontrar los detalles del proveedor que luego serán mostrados en la vista de edición,
       permitiendo así que los usuarios actualicen la información del proveedor según sea necesario.
-     
+
       @param  int  $id  El ID del proveedor que se desea editar.
       Retorna la vista 'GtArea.editarProveedor', pasando los detalles del proveedor específico para su edición.
     */
@@ -324,12 +324,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Actualiza la información de un proveedor específico en la base de datos.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
       la información de un proveedor específico identificado por su ID. Los campos actualizables incluyen el nombre,
       teléfono y correo electrónico del proveedor. Además, se actualiza el campo 'updated_at' para reflejar
       el momento de la actualización.
-     
+
       @param  \Illuminate\Http\Request  $req  La petición HTTP que contiene los datos del formulario.
       @param  int  $id  El ID del proveedor a actualizar.
       Redirige al usuario a la lista de proveedores con una sesión flash que indica que la actualización fue exitosa.
@@ -349,12 +349,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Desactiva un proveedor específico marcándolo como inactivo en la base de datos.
-     
+
       En lugar de eliminar el registro del proveedor, este método actualiza el campo 'estatus' a 0,
       indicando que el proveedor está inactivo. Esto es útil para mantener la integridad de los datos y permitir
       la recuperación del registro en el futuro si es necesario. Además, se actualiza el campo 'updated_at'
       para reflejar el momento de la desactivación.
-     
+
       @param  int  $id  El ID del proveedor a desactivar.
       Redirige al usuario a la página anterior con una sesión flash que indica que el proveedor ha sido desactivado exitosamente.
     */
@@ -371,23 +371,23 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera y muestra un listado de solicitudes, excluyendo las rechazadas, con información adicional.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las solicitudes que no han sido rechazadas.
       Para cada solicitud, se recopila información detallada incluyendo el ID de la requisición, fecha de creación,
       unidad asociada, estado de la solicitud, departamento y nombres del usuario solicitante, el archivo PDF asociado
-      a la requisición, los detalles del último comentario realizado, y el rol del usuario que hizo el último comentario.      
+      a la requisición, los detalles del último comentario realizado, y el rol del usuario que hizo el último comentario.
       Las solicitudes se ordenan de manera descendente por su fecha de creación y se agrupan por el ID de la requisición
       para evitar duplicados en los resultados. Los datos recopilados se pasan a la vista 'GtArea.solicitudes' para su visualización.
-     
+
       Retorna la vista 'GtArea.solicitudes', pasando el listado de solicitudes recopiladas.
     */
     public function tableSolicitud(){
         // Recupera las solicitudes de la base de datos
-        $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')
-        ->select('requisiciones.id_requisicion','requisiciones.created_at','requisiciones.unidad_id','requisiciones.estado','us.departamento','us.nombres','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
+        $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')->where('requisiciones.estado','!=','Finalizado')
+        ->select('requisiciones.id_requisicion','requisiciones.created_at','requisiciones.unidad_id','requisiciones.estado','us.departamento','us.nombres','requisiciones.created_at','requisiciones.pdf', DB::raw('MAX(comentarios.detalles) as detalles'),'users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->join('users as us','requisiciones.usuario_id','us.id')
         ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
-        ->leftJoin('users','users.id','=','comentarios.usuario_id')        
+        ->leftJoin('users','users.id','=','comentarios.usuario_id')
         ->orderBy('requisiciones.created_at','desc')
         ->groupBY('requisiciones.id_requisicion')
         ->get();
@@ -398,13 +398,13 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera los artículos asociados a una solicitud específica para su aprobación.
-     
+
       Este método busca en la base de datos todos los artículos vinculados a una requisición específica,
       identificada por su ID. La intención es obtener una lista de artículos que necesitan ser revisados
-      y posiblemente aprobados. Esta funcionalidad permie a los usuarios con los permisos adecuados revisar 
+      y posiblemente aprobados. Esta funcionalidad permie a los usuarios con los permisos adecuados revisar
       los detalles de los artículos solicitados antes de proceder con la aprobación o el rechazo de la solicitud.
-     
-      @param  int  $id  El ID de la requisición cuyos artículos se van a recuperar para aprobación.    
+
+      @param  int  $id  El ID de la requisición cuyos artículos se van a recuperar para aprobación.
 
       Retorna la vista 'GtArea.aprobarSolicitud', pasando la lista de artículos asociados a la solicitud.
     */
@@ -418,12 +418,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Actualiza la información de un artículo específico basado en los datos proporcionados por el usuario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
       los detalles de un artículo específico en la base de datos. Los campos actualizables incluyen la cantidad,
       unidad y descripción del artículo. Además, se actualiza el campo 'updated_at' para reflejar el momento
       de la actualización.
-     
+
       @param  int  $id  El ID del artículo que se va a actualizar.
 
       Redirige al usuario a la página anterior tras la actualización exitosa del artículo.
@@ -443,11 +443,11 @@ class controladorGtArea extends Controller
 
     /*
      TODO:Elimina un artículo específico de la base de datos.
-     
+
       Este método se encarga de eliminar de forma permanente un registro de artículo específico,
       identificado por su ID, de la base de datos. Es útil en situaciones donde un artículo ha sido rechazado
       o ya no es necesario en una solicitud o requisición, permitiendo así mantener la base de datos limpia
-      y actualizada. 
+      y actualizada.
 
       @param  int  $id  El ID del artículo que se va a eliminar.
 
@@ -470,9 +470,9 @@ class controladorGtArea extends Controller
       3. Genera un nuevo PDF para la requisición aprobada utilizando una plantilla específica.
       4. Actualiza el estado de la requisición a 'Aprobado' y guarda la ruta del nuevo PDF en la base de datos.
       5. Crea un registro de comentario, si se proporcionan comentarios.
-     
+
       @param  int  $rid El ID de la requisición que se va a aprobar.
-     
+
       Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la aprobación fue exitosa.
     */
     public function aprobar(Request $req,$rid){
@@ -487,7 +487,7 @@ class controladorGtArea extends Controller
         //Guarda la ruta del archivo PDF de la requisicion
         $fileToDelete = public_path($datos->pdf);
 
-        //Si existe el archivo lo elimina 
+        //Si existe el archivo lo elimina
         if (file_exists($fileToDelete)) {
             unlink($fileToDelete);
         }
@@ -507,7 +507,7 @@ class controladorGtArea extends Controller
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start(); // Iniciar el búfer de salida
         include(public_path('/pdf/TCPDF-main/examples/RequisicionAprobada.php'));
-        ob_end_clean();    
+        ob_end_clean();
 
         // Actualización del estado de la requisición a 'Aprobado'
         Requisiciones::where('id_requisicion',$rid)->update([
@@ -524,21 +524,21 @@ class controladorGtArea extends Controller
                 "detalles"=>$req->input('Comentarios'),
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
-            ]);       
+            ]);
         }
 
         // Redirección al usuario con mensaje de éxito
         return redirect('solicitudes/GtArea')->with('aprobado','aprobado');
     }
-    
+
     /*
       TODO: Recupera y muestra todas las cotizaciones activas asociadas a una requisición específica.
-     
+
       Este método consulta la base de datos para obtener un listado de cotizaciones activas (estatus '1')
       que están asociadas a una requisición específica, identificada por su ID. Para cada cotización, se recopilan
       detalles como el ID de la cotización, el ID de la requisición asociada, el nombre del usuario que realizó
       la cotización, y las rutas a los archivos PDF de la requisición y de la cotización.
-     
+
       @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
 
       Retorna la vista 'GtArea.cotizaciones', pasando el listado de cotizaciones y el ID de la requisición.
@@ -557,14 +557,14 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Registra el rechazo de una requisición específica, actualizando su estado y guardando un comentario y un log del evento.
-      
+
       1. Crea un nuevo registro de comentario asociado a la requisición, utilizando el comentario proporcionado
         por el usuario a través del formulario. Esto permite mantener un registro de la razón detrás del rechazo.
       2. Actualiza el estado de la requisición a "Rechazado" y actualiza la fecha de última modificación. Esto marca la
         requisición específicamente como rechazada sin eliminarla de la base de datos, preservando así el registro histórico.
       3. Crea un registro en el log para documentar la acción de rechazo, incluyendo el ID del usuario que realizó la acción
         y el ID de la requisición afectada, lo que facilita el seguimiento de cambios y decisiones importantes sobre las solicitudes.
-     
+
       @param  \Illuminate\Http\Request  $req La petición HTTP que contiene el comentario del formulario.
       @param  int  $id El ID de la requisición que se va a rechazar.
 
@@ -578,14 +578,14 @@ class controladorGtArea extends Controller
             "detalles"=>$req->comentario,
             "created_at"=>Carbon::now(),
             "updated_at"=>Carbon::now()
-        ]); 
+        ]);
 
         // Actualización del estado de la requisición a "Rechazado"
         Requisiciones::where('id_requisicion',$id)->update([
             "estado"=>"Rechazado",
             "updated_at"=>Carbon::now(),
-        ]);    
-        
+        ]);
+
         // Creación de registro en el log para documentar la acción de rechazo
         Logs::create([
             "user_id"=>session('loginId'),
@@ -602,16 +602,16 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Actualiza el estado de una requisición específica a "Aprobado" y registra la acción en el log.
-     
+
       1. Actualiza el estado de la requisición indicada por el ID proporcionado a "Aprobado", marcando así la requisición
         como validada y lista para proceder a las siguientes etapas del proceso de gestión de solicitudes.
         La fecha de actualización también se registra para mantener un seguimiento preciso de cuándo se aprobó la requisición.
       2. Crea un nuevo registro en el log de acciones para documentar la aprobación de la requisición. Este log incluye
         el ID del usuario que realizó la acción, el ID de la requisición afectada, el nombre de la tabla afectada, y la acción
-        específica realizada, proporcionando así un registro auditado de las operaciones importantes realizadas en el sistema.      
-     
+        específica realizada, proporcionando así un registro auditado de las operaciones importantes realizadas en el sistema.
+
       @param  int  $id El ID de la requisición que se va a validar.
-    
+
       Redirige al usuario a la página anterior con una sesión flash indicando que la requisición ha sido validada exitosamente.
     */
     public function validarRequisicion($id){
@@ -637,12 +637,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Selecciona y pre-valida una cotización específica para una solicitud, actualizando el estado de la solicitud y las cotizaciones relacionadas.
-     
+
       Este método primero verifica el estado actual de la solicitud: si ya está "Pre Validado", actualiza su estado a "Validado".
       Si no, actualiza todas las cotizaciones relacionadas con la solicitud, excepto la seleccionada, marcándolas como inactivas (estatus "0"),
       y cambia el estado de la solicitud a "Pre Validado". Este proceso es crucial para gestionar adecuadamente las etapas de validación
       de las cotizaciones y asegurar que solo una cotización sea seleccionada y avanzada en el proceso de aprobación de la solicitud.
-     
+
       @param int $id  El ID de la cotización que se selecciona y pre-valida.
       @param int $sid El ID de la solicitud asociada a la cotización.
 
@@ -699,15 +699,15 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera la cotización validada y todas las cotizaciones no validadas asociadas a una requisición específica.
-     
+
       1. Obtiene la cotización validada (estatus '1') para la requisición especificada, junto con información adicional
         como el ID de la cotización, el ID de la requisición, el nombre del usuario que realizó la cotización,
         y las rutas a los archivos PDF tanto de la requisición como de la cotización.
       2. Recupera todas las demás cotizaciones (estatus '0') para la misma requisición, recopilando la misma información
         que en la consulta anterior.
       Estos datos son esenciales para facilitar el proceso de revisión y aprobación de cotizaciones por parte de los usuarios,
-      permitiéndoles comparar la cotización validada con otras opciones disponibles. 
-     
+      permitiéndoles comparar la cotización validada con otras opciones disponibles.
+
       @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
 
       Retorna la vista 'GtArea.aprobCotizaciones', pasando las cotizaciones recuperadas, el ID de la requisición, y la cotización validada.
@@ -733,13 +733,13 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Procesa el rechazo final de una cotización para una solicitud específica y actualiza el estado correspondiente.
-     
+
       1. Crea un nuevo registro de comentario con los detalles proporcionados por el usuario, asociado a la solicitud específica,
         para documentar la razón del rechazo.
       2. Actualiza el estatus de todas las cotizaciones asociadas a la solicitud indicada a "1", indicando que se pueden consultar
         nuevamente.
       3. Cambia el estado de la solicitud a "Cotizado", indicando que se deberá pre validar cotizaciones del conjunto cargado.
-     
+
       @param int $id El ID de la cotización específica que se rechaza (no usado directamente en la actualización).
       @param int $sid El ID de la solicitud asociada a la cotización rechazada.
 
@@ -774,12 +774,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Elimina una cotización específica de la base de datos.
-     
+
       Este método permite a los usuarios con los permisos adecuados eliminar una cotización específica,
       identificada por su ID, de la base de datos. La eliminación de una cotización puede ser necesaria
       en varias circunstancias, como cuando una cotización ha sido ingresada por error, ya no es relevante,
       o ha sido reemplazada por otra más actualizada.
-     
+
       @param int $id El ID de la cotización que se va a eliminar.
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la cotización ha sido eliminada exitosamente.
@@ -798,20 +798,20 @@ class controladorGtArea extends Controller
         }
 
         // Redirige al usuario a la página anterior con un mensaje de confirmación
-        return back()->with('eliminado','eliminado');    
-    }  
+        return back()->with('eliminado','eliminado');
+    }
 
     /*
       Recupera y muestra una tabla detallada de pagos fijos, excluyendo aquellos que han sido rechazados.
-     
+
       Este método consulta la base de datos para obtener un listado completo de los pagos fijos activos, incluyendo
       detalles relevantes como el ID del pago, el servicio asociado, el nombre del proveedor, y el nombre del usuario
       que gestionó el pago. La información de los servicios y proveedores activos también se recopila para facilitar
       la filtración y la gestión dentro de la interfaz de usuario.
-      
-      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede visualizar las 
+
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede visualizar las
       solicitudes de pagos fijos.
-     
+
       Devuelve la vista 'GtArea.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización en forma de tabla.
     */
     public function tablePagos(){
@@ -842,16 +842,16 @@ class controladorGtArea extends Controller
 
     /*
       Registra un comprobante de pago para un pago fijo específico y actualiza su estado a "Pagado".
-     
+
       Este método maneja la carga de un comprobante de pago en formato PDF para un pago fijo determinado por el ID proporcionado.
       Valida que el archivo haya sido cargado correctamente y cumpla con los criterios especificados (como el tipo de archivo y tamaño máximo).
       Si se carga un archivo válido, se almacena en el sistema de archivos y se actualiza el registro del pago para incluir la ruta del archivo
-      y cambiar el estado del pago a "Pagado". Si no se carga un archivo válido, el estado del pago se actualiza a "Pagado", pero sin 
+      y cambiar el estado del pago a "Pagado". Si no se carga un archivo válido, el estado del pago se actualiza a "Pagado", pero sin
       almacenar ningún comprobante. Finalmente, el usuario es redirigido a la página anterior con una notificación del resultado del proceso.
-     
+
       @param int $id El ID del pago que se está actualizando.
 
-      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos de las 
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos de las
       solicitudes de pagos fijos.
 
       Redirige al usuario a la página anterior con una notificación que indica si el pago fue registrado exitosamente.
@@ -859,12 +859,12 @@ class controladorGtArea extends Controller
     public function registrarPago(Request $req, $id){
         // Verifica que se haya subido un archivo y que sea válido
         if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
-            
+
             // Validar el archivo subido
             $req->validate([
                 'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
-                
+
             // Se genera el nombre y ruta para guardar PDF
             $nombreArchivo = 'comprobantePago_' . $id . '.pdf';
             $rutaDescargas = 'comprobantesPagos/' . $nombreArchivo;
@@ -897,13 +897,13 @@ class controladorGtArea extends Controller
 
     /*
       Cambia el estado de un pago fijo a "Rechazado" y actualiza la información en la base de datos.
-     
+
       Este método se utiliza para manejar situaciones en las cuales un pago fijo necesita ser marcado como rechazado,
       generalmente debido a errores en el proceso de pago, problemas con la validación del pago, o cualquier otra
       razón administrativa. Al cambiar el estado a "Rechazado", el sistema efectivamente invalida el pago,
       permitiendo acciones correctivas o adicionales según sea necesario. El método también registra el momento
       exacto en que se realiza esta acción para mantener una trazabilidad adecuada.
-     
+
       @param int $id El ID del pago fijo que se está actualizando.
 
       Redirige al usuario a la página anterior con una notificación de que el pago ha sido marcado como rechazado.
@@ -921,17 +921,17 @@ class controladorGtArea extends Controller
 
     /*
       Recupera y muestra una lista detallada de todas las órdenes de compra activas que no están asociadas a requisiciones rechazadas.
-     
+
       Este método consulta la base de datos para obtener un listado completo de las órdenes de compra en el sistema,
       excluyendo aquellas relacionadas con requisiciones que han sido rechazadas. Los datos recopilados incluyen el ID de la orden,
-      detalles de la requisición asociada, información del administrador que gestionó la orden, datos del proveedor, PDFs de las 
-      cotizaciones, comprobantes de pago, y otros documentos relevantes. Esta información es vital para permitir una gestión 
-      eficaz y una revisión detallada de todas las compras realizadas dentro de la organización. Los datos son luego presentados 
+      detalles de la requisición asociada, información del administrador que gestionó la orden, datos del proveedor, PDFs de las
+      cotizaciones, comprobantes de pago, y otros documentos relevantes. Esta información es vital para permitir una gestión
+      eficaz y una revisión detallada de todas las compras realizadas dentro de la organización. Los datos son luego presentados
       en una vista específica, permitiendo a los usuarios de la gerencia tener acceso fácil y ordenado a la información financiera.
-     
+
       NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede consultar las ordenes
       de compra de las requisiciones, esto con fines de registrar pagos y revisar cantidades, proveedores, etc.
-     
+
       Devuelve la vista 'GtArea.ordenesCompras', pasando los datos de las órdenes de compra para su visualización.
     */
     public function ordenesCompras(){
@@ -951,17 +951,17 @@ class controladorGtArea extends Controller
 
     /*
       Finaliza una orden de compra subiendo un comprobante de pago y actualizando su estado a "Pagado".
-     
+
       Este método permite a los usuarios cargar un comprobante de pago en formato PDF para una orden de compra específica.
       Si el archivo se carga correctamente y cumple con los criterios especificados (tipo de archivo y tamaño máximo), el archivo se almacena,
       y se actualiza el registro de la orden de compra para incluir la ruta del archivo y cambiar el estado de la orden a "Pagado".
       Si no se carga un archivo, el método maneja esta situación proporcionando un mensaje de error adecuado y actualizando
       el estado de la orden a "Pagado" sin almacenar ningún comprobante.
-     
+
       @param int $id El ID de la orden de compra que se está actualizando.
 
-      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos 
-      
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos
+
       Devuelve una redirección a la página anterior con una notificación que indica si la orden fue finalizada exitosamente o
       devuelve un mensaje de error si el archivo no es reconocido.
     */
@@ -973,7 +973,7 @@ class controladorGtArea extends Controller
             $req->validate([
                 'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
-                
+
             // Se genera el nombre y ruta para guardar PDF
             $nombreArchivo = 'comprobantePagoOrden_' . $id . '.pdf';
             $rutaDescargas = 'comprobantesPagosOrden/' . $nombreArchivo;
@@ -1006,12 +1006,12 @@ class controladorGtArea extends Controller
 
     /*
       TODO: Recupera y muestra un listado de unidades activas elegibles para mantenimiento.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
       (estatus '1'), excluyendo una unidad específica por su ID (en este caso, la unidad con ID '1') para razones de filtrado
       específicas de la aplicación. Las unidades activas se ordenan en orden ascendente por su ID para facilitar su visualización
       y gestión, especialmente en lo que respecta a las tareas de mantenimiento.
-     
+
       Retorna la vista 'GtArea.mantenimiento', pasando el listado de unidades activas para su visualización y gestión.
     */
     public function mantenimiento (){
@@ -1041,20 +1041,20 @@ class controladorGtArea extends Controller
 
             $unidad->tiempo = $promedio; // Agregar el promedio como un nuevo atributo
         });
-        
+
         // Carga y muestra la vista con el listado de unidades activas
-        return view('GtArea.mantenimiento',compact('unidades'));    
-    }    
+        return view('GtArea.mantenimiento',compact('unidades'));
+    }
 
     /*
       Calcula y muestra el estado del mantenimiento preventivo de una unidad específica.
-     
+
       Este método se encarga de obtener los datos de kilometraje de una unidad y combinarlos con registros históricos de mantenimiento
-      para calcular la vida útil restante de varios componentes según su uso y los intervalos de mantenimiento recomendados. 
-      Calcula el porcentaje de vida útil restante para cada componente clave como filtros de aire, de diesel, de aceite, trampas de WK, 
+      para calcular la vida útil restante de varios componentes según su uso y los intervalos de mantenimiento recomendados.
+      Calcula el porcentaje de vida útil restante para cada componente clave como filtros de aire, de diesel, de aceite, trampas de WK,
       aceite del motor, entre otros. Estos cálculos permiten a los administradores y técnicos de mantenimiento entender mejor cuándo se
       requiere mantenimiento preventivo, optimizando la gestión y mantenimiento de la flota.
-     
+
       @param int $id El ID de la unidad para la que se realiza el cálculo de mantenimiento.
 
       Devuelve la vista 'GtArea.infoMantenimiento', pasando los datos calculados y los detalles de la unidad para su visualización.
@@ -1103,14 +1103,14 @@ class controladorGtArea extends Controller
     public function reporteEnc(Request $req){
 
         $idEncargado = $req->encargado;
-        
+
         $encargado = User::where('id',$idEncargado)->first();
         $solicitudes = Requisiciones::where('usuario_id',$idEncargado)->count();
         $completas = Requisiciones::where('estado','Entregado')->where('usuario_id',$idEncargado)->count();
         $Requisiciones = Requisiciones::where('usuario_id',$idEncargado)->get();
         $salidas = Salidas::select('salidas.id_salida','salidas.created_at','salidas.cantidad','requisiciones.unidad_id','almacen.nombre')
         ->join('almacen','salidas.refaccion_id','=','almacen.clave')
-        ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')    
+        ->join('requisiciones','salidas.requisicion_id','=','id_requisicion')
         ->where('requisiciones.usuario_id',$idEncargado)
         ->get();
 
@@ -1193,5 +1193,5 @@ class controladorGtArea extends Controller
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
         echo $pdfContent;
-    }    
+    }
 }
