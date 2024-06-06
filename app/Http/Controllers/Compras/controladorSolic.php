@@ -25,18 +25,18 @@ class controladorSolic extends Controller
 
     /*
      TODO: Método del controlador para mostrar la página de inicio del solicitante.
-     
+
       Este método recupera el número de requisiciones completas y pendientes
       para el usuario actualmente autenticado y las pasa a la vista para su visualización.
-      Las requisiciones completas son aquellas con un estado 'Comprado',mientras que las 
+      Las requisiciones completas son aquellas con un estado 'Comprado',mientras que las
       pendientes son todas las demás a excepcion de las rechazadas.
     */
     public function index(){
         // Cuenta el número de requisiciones completas (estado 'Comprado') para el usuario actual
-        $completas = Requisiciones::where('estado', 'Comprado')->where('usuario_id',session('loginId'))->count();
+        $completas = Requisiciones::where('estado', 'Finalizado')->where('usuario_id',session('loginId'))->count();
 
         // Cuenta el número de requisiciones pendientes (estado diferente de 'Comprado') para el usuario actual
-        $pendiente = Requisiciones::where('estado','!=', 'Comprado')
+        $pendiente = Requisiciones::where('estado','!=', 'Finalizado')
         ->where('estado','!=', 'Rechazado')
         ->where('usuario_id',session('loginId'))
         ->count();
@@ -49,12 +49,12 @@ class controladorSolic extends Controller
 
     /*
      TODO: Método del controlador para recuperar las requisiciones y su información relacionada para el usuario autenticado.
-     
+
       Este método realiza una consulta a la base de datos para obtener las requisiciones del usuario autenticado,
       uniéndolas (LEFT JOIN) con las tablas 'comentarios' y 'users' para obtener detalles adicionales
       sobre los comentarios hechos en cada requisición y la información del rol del usuario que hizo el comentario.
       Las requisiciones son ordenadas de manera descendente por su fecha de creación.
-     
+
       Retorna la vista 'Solicitante.requisiciones' con las solicitudes (requisiciones y su información relacionada) obtenidas.
     */
     public function tableRequisicion(){
@@ -65,6 +65,7 @@ class controladorSolic extends Controller
         ->leftJoin('users','users.id','=','comentarios.usuario_id')
         ->select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf', 'comentarios.detalles','users.rol','comentarios.created_at as fechaCom')
         ->orderBy('requisiciones.created_at','desc') //* Ordena las requisiciones por fecha de creación de manera descendente
+        ->groupBy('requisiciones.id_requisicion')
         ->get();
 
         // Retorna la vista 'Solicitante.requisiciones', pasando las solicitudes obtenidas
@@ -73,12 +74,12 @@ class controladorSolic extends Controller
 
     /*
      TODO: Método del controlador para mostrar la vista de creación de una nueva solicitud.
-     
+
       Este método recupera cualquier dato previamente almacenado en la sesión bajo la clave 'datos',
       permitiendo reutilizar información en caso de que el usuario regrese a esta vista sin completar una solicitud.
       Adicionalmente, consulta y recupera todas las unidades activas con estatus '1' de la base de datos,
       lo cual es necesario para que el usuario pueda seleccionar una unidad al crear una solicitud.
-     
+
       Retorna la vista 'Solicitante.crearSolicitud', pasando las unidades activas y los datos de sesión (si los hay) a la vista.
     */
     public function createSolicitud(){
@@ -96,12 +97,12 @@ class controladorSolic extends Controller
 
     /*
      TODO: Agrega los datos de una solicitud a un array en la sesión y redirige al usuario a la página anterior.
-     
+
       Este método recibe datos de un formulario a través de la petición HTTP, especificamente la cantidad, unidad,
       y descripción de un item solicitado. Opcionalmente, puede recibir notas adicionales sobre la solicitud.
       Los datos recibidos son agregados a un array 'datos' almacenado en la sesión, permitiendo la persistencia
       temporal de la información durante la sesión del usuario.
-     
+
       @param $req  La petición HTTP entrante con los datos del formulario.
 
       Redirige al usuario a la página anterior, manteniendo la información de la solicitud en la sesión.
@@ -116,7 +117,7 @@ class controladorSolic extends Controller
             $unidad = $req->input('otro');
         } else {
             $unidad = $req->input('Unidad');
-        }        
+        }
         $descripcion = $req->input('Descripcion');
 
         // Agrega los nuevos datos del formulario al array de 'datos' en la sesión
@@ -135,11 +136,11 @@ class controladorSolic extends Controller
 
     /*
      TODO: Actualiza un elemento específico dentro de un array de 'datos' almacenado en la sesión.
-     
+
       Este método permite editar los detalles de una solicitud específica, identificada por un índice,
       con los nuevos valores proporcionados a través del formulario. Después de actualizar estos valores en el array de sesión,
       el método redirige al usuario a la página anterior.
-     
+
       @param  $req   La petición HTTP entrante con los datos del formulario editado.
       @param  $index El índice del elemento en el array de 'datos' que se va a actualizar.
 
@@ -148,12 +149,12 @@ class controladorSolic extends Controller
     public function editArray(Request $req, $index){
         // Recupera el array de 'datos' de la sesión, o inicializa uno nuevo si no existe
         $datos = session()->get('datos', []);
-    
+
         // Extrae los valores editados de los campos del formulario de la petición HTTP
         $cantidadEditada = $req->input('editCantidad');
         $unidadEditada = $req->input('editUnidad');
         $descripcionEditada = $req->input('editDescripcion');
-    
+
         // Verifica si el índice especificado existe en el array de 'datos'
         if (isset($datos[$index])) {
             // Actualiza los valores del elemento en el índice especificado con los nuevos datos
@@ -164,22 +165,22 @@ class controladorSolic extends Controller
 
         // Almacena el array actualizado de 'datos' en la sesión
         session()->put('datos', $datos);
-    
+
         // Redirige al usuario a la página anterior
         return back();
     }
-    
+
     /*
       TODO: Elimina un elemento específico del array 'datos' almacenado en la sesión.
-     
+
       Este método se encarga de eliminar un elemento del array de 'datos' basado en el índice proporcionado.
       El índice representa la posición del elemento en el array que se desea eliminar. Si el elemento existe,
       es eliminado del array. Después de realizar la eliminación, los datos actualizados se almacenan de nuevo
       en la sesión para reflejar los cambios. Finalmente, el usuario es redirigido a la página anterior,
       permitiendo una experiencia de usuario fluida y continua.
-     
+
       @param  int  $index El índice del elemento en el array 'datos' que se desea eliminar.
-      
+
       Redirige al usuario a la página anterior después de eliminar el elemento de la sesión.
     */
     public function deleteArray($index){
@@ -201,7 +202,7 @@ class controladorSolic extends Controller
 
     /*
       TODO: Procesa la creación de una nueva requisición basada en los datos proporcionados por el usuario y almacenados en la sesión.
-     
+
       Este método primero verifica si hay datos de requisición almacenados en la sesión. Si no hay datos, redirige
       al usuario a la página anterior con un mensaje indicando que no hay datos. Si hay datos, procede a procesar
       estos datos para crear una nueva requisición. Los pasos incluyen:
@@ -212,8 +213,8 @@ class controladorSolic extends Controller
       - Crear un PDF para la requisición utilizando los datos proporcionados.
       - Insertar la nueva requisición en la base de datos.
       - Agregar los artículos detallados en la sesión a la base de datos como parte de la nueva requisición.
-      - Limpiar los datos de la sesión relacionados con la requisición para evitar duplicaciones.      
-     
+      - Limpiar los datos de la sesión relacionados con la requisición para evitar duplicaciones.
+
       @param  \Illuminate\Http\Request  $req La petición HTTP entrante con los datos necesarios para la requisición.
 
       Finalmente, redirige al usuario a una página de confirmación de la solicitud.
@@ -265,8 +266,8 @@ class controladorSolic extends Controller
             // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
             ob_start(); //* Iniciar el búfer de salida para pasar las variables al PDF
             include(public_path('/pdf/TCPDF-main/examples/Requisicion.php'));
-            ob_end_clean();    
-            
+            ob_end_clean();
+
             // Creación de la nueva requisición en la base de datos validando el departamento para así agregar o ignorar unidad
             if(session('departamento') === "Mantenimiento"){
                 DB::table('requisiciones')->insert([
@@ -274,7 +275,7 @@ class controladorSolic extends Controller
                     "usuario_id"=>session('loginId'),
                     "unidad_id" => $req->input('unidad'),
                     "pdf" => $rutaDescargas,
-                    "notas" => $Nota,                    
+                    "notas" => $Nota,
                     "estado"=> "Solicitado",
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
@@ -319,13 +320,13 @@ class controladorSolic extends Controller
 
     /*
       TODO: Carga la vista de edición para una requisición específica, incluyendo datos relevantes para su modificación.
-     
+
       Este método realiza varias consultas a la base de datos para obtener todos los artículos asociados a la requisición
       identificada por el ID proporcionado. Luego, recupera los detalles de la unidad asociada a la requisición, incluyendo
-      su ID, marca, modelo, y notas, si la requisición está vinculada a una unidad específica. Adicionalmente, recopila un 
-      listado de todas las unidades que están actualmente activas (estado 'Activo' y estatus '1') para ofrecer opciones 
+      su ID, marca, modelo, y notas, si la requisición está vinculada a una unidad específica. Adicionalmente, recopila un
+      listado de todas las unidades que están actualmente activas (estado 'Activo' y estatus '1') para ofrecer opciones
       de selección en el formulario de edición.
-     
+
       @param  int  $id  El ID de la requisición que se va a editar.
 
       Retorna la vista 'Solicitante.editRequisicion', pasando los artículos, las unidades disponibles, los detalles de la
@@ -341,7 +342,7 @@ class controladorSolic extends Controller
         ->where('requisiciones.id_requisicion',$id)
         ->first();
 
-        // Recuperación de todas las unidades activas  
+        // Recuperación de todas las unidades activas
         $unidades = Unidades::where('estado','Activo')->where('estatus','1')->get();
 
         // Carga de la vista de edición con los datos recopilados
@@ -350,15 +351,15 @@ class controladorSolic extends Controller
 
     /*
       TODO: Añade un nuevo artículo a una requisición específica.
-     
+
       Este método maneja la inserción de un nuevo artículo en la base de datos, asociado a una requisición específica.
       Los datos del artículo, incluyendo la cantidad, la unidad (con la opción de especificar una unidad diferente en
       un campo 'otro'), y la descripción, son recogidos de un formulario enviado por el usuario. Dependiendo de si el usuario
       ha seleccionado 'Otro' como unidad y ha especificado un valor diferente, este valor es utilizado; de lo contrario,
       se utiliza el valor de la unidad seleccionada en el formulario.
-     
+
       @param int $id El ID de la requisición a la cual se añadirá el nuevo artículo.
-     
+
       Redirige al usuario a la página anterior tras la inserción exitosa del artículo.
     */
     public function createArt(Request $req, $id){
@@ -367,7 +368,7 @@ class controladorSolic extends Controller
             $unidad = $req->input('otro');
         } else {
             $unidad = $req->input('Unidad');
-        }        
+        }
 
         // Crea el nuevo artículo con los datos proporcionados
         Articulos::create([
@@ -385,16 +386,16 @@ class controladorSolic extends Controller
 
     /*
       TODO: Actualiza la información de un artículo específico basado en los datos proporcionados por el usuario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
       los detalles de un artículo específico en la base de datos. Los campos actualizables incluyen la cantidad,
       unidad y descripción del artículo. Además, se actualiza el campo 'updated_at' para reflejar el momento
       de la actualización.
-     
+
       @param  int  $id  El ID del artículo que se va a actualizar.
 
       Redirige al usuario a la página anterior tras la actualización exitosa del artículo.
-    */  
+    */
     public function updateArt (Request $req, $id){
         // Actualiza el registro del artículo específico con los datos proporcionados
         Articulos::where('id',$id)->update([
@@ -410,11 +411,11 @@ class controladorSolic extends Controller
 
     /*
      TODO:Elimina un artículo específico de la base de datos.
-     
+
       Este método se encarga de eliminar de forma permanente un registro de artículo específico,
       identificado por su ID, de la base de datos. Es útil en situaciones donde un artículo ha sido rechazado
       o ya no es necesario en una solicitud o requisición, permitiendo así mantener la base de datos limpia
-      y actualizada. 
+      y actualizada.
 
       @param  int  $id  El ID del artículo que se va a eliminar.
 
@@ -441,13 +442,13 @@ class controladorSolic extends Controller
 
     /*
       Actualiza la información de una solicitud específica y regenera su documento PDF asociado.
-     
+
       Este método es responsable de verificar si la solicitud especificada contiene artículos. Si no hay artículos,
       retorna al usuario a la página anterior con un mensaje de error. Si hay artículos, procede a regenerar el PDF
-      de la solicitud con la información actualizada, elimina el PDF anterior si existe, y actualiza la base de datos 
+      de la solicitud con la información actualizada, elimina el PDF anterior si existe, y actualiza la base de datos
       con los nuevos detalles de la solicitud, incluyendo notas y el estado 'Solicitado'. Finalmente, redirige al usuario
       a una página con un mensaje de éxito.
-     
+
       @param int $id El ID de la requisición que se está actualizando.
 
      * Devuelve una redirección al usuario a la página de la solicitud con una notificación que indica si la operación fue exitosa o no.
@@ -470,7 +471,7 @@ class controladorSolic extends Controller
             // Eliminar el archivo PDF anterior si existe
             $fileToDelete = public_path($datos->pdf);
 
-            //Si existe el archivo lo elimina 
+            //Si existe el archivo lo elimina
             if (file_exists($fileToDelete)) {
                 unlink($fileToDelete);
             }
@@ -490,7 +491,7 @@ class controladorSolic extends Controller
             // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
             ob_start(); // Iniciar el búfer de salida
             include(public_path('/pdf/TCPDF-main/examples/RequisicionEditada.php'));
-            ob_end_clean();    
+            ob_end_clean();
 
             // Actualización del estado de la requisición a 'Solicitado'
             Requisiciones::where('id_requisicion',$id)->update([
@@ -502,17 +503,17 @@ class controladorSolic extends Controller
 
             // Redirección al usuario con mensaje de éxito
             return redirect('solicitud')->with('editado','editado');
-        }        
+        }
     }
 
     /*
       TODO: Elimina una solicitud específica de la base de datos.
-     
+
       Este método busca una requisición por su ID único y la elimina de la base de datos.
       Es útil para permitir que los usuarios eliminen solicitudes que ya no son necesarias o fueron creadas por error.
       Después de eliminar la solicitud, el método redirige al usuario a la página anterior con un mensaje
       de confirmación para indicar que la acción se ha completado con éxito.
-     
+
       @param  int  $id  El ID de la requisición que se desea eliminar.
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la solicitud ha sido eliminada.
@@ -522,17 +523,17 @@ class controladorSolic extends Controller
         Requisiciones::where('id_requisicion',$id)->delete();
 
         // Redirige al usuario a la página anterior con un mensaje de confirmación
-        return back()->with('eliminado','eliminado');  
+        return back()->with('eliminado','eliminado');
     }
 
     /*
       Recupera y muestra una lista detallada de todos los pagos fijos y servicios asociados al usuario actual.
-     
+
       Este método consulta la base de datos para obtener un listado completo de los pagos fijos que están registrados bajo el ID
       del usuario que ha iniciado sesión. Los datos incluyen detalles del pago, información del servicio asociado y el proveedor
       correspondiente. Además, se recuperan los servicios activos asociados al mismo usuario, proporcionando una vista comprensiva
       de los compromisos financieros y las obligaciones de servicio del usuario.
-     
+
       Devuelve la vista 'Solicitante.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización.
     */
     public function pagosFijos(){
@@ -563,12 +564,12 @@ class controladorSolic extends Controller
 
     /*
       Prepara y muestra la vista para la creación de un nuevo pago.
-     
+
       Este método recupera todos los servicios activos y sus proveedores correspondientes para que los usuarios puedan seleccionar
       de una lista al momento de crear un nuevo pago fijo. La selección de servicios y proveedores solo incluye aquellos que están activos,
       asegurando que los datos presentados estén actualizados y sean relevantes. Estos datos se utilizan para llenar los campos en el formulario
       de creación de pago, simplificando el proceso de entrada de datos por parte del usuario.
-     
+
       Devuelve la vista 'Solicitante.crearPago', pasando las listas de servicios y proveedores activos para su visualización y selección.
     */
     public function crearPago(){
@@ -590,12 +591,12 @@ class controladorSolic extends Controller
 
     /*
       Crea un nuevo servicio y lo asocia con un proveedor específico y el usuario actual.
-     
+
       Este método recoge datos desde un formulario enviado a través de una solicitud HTTP, incluyendo el nombre del servicio,
       el ID del proveedor asociado y asocia automáticamente el servicio con el ID del usuario actual en sesión.
       El servicio se marca como activo ('estatus' = 1) y se registra la fecha y hora de creación y actualización. Tras registrar
       el servicio correctamente, el usuario es redirigido a la página anterior con una notificación de éxito.
-     
+
       Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido creado exitosamente.
     */
     public function createServicio(Request $req){
@@ -615,11 +616,11 @@ class controladorSolic extends Controller
 
     /*
       Actualiza los detalles de un servicio existente basado en la entrada del usuario.
-     
+
       Este método recibe datos a través de una solicitud HTTP, que incluyen el nuevo nombre del servicio y el ID del proveedor asociado.
-      Utiliza estos datos para actualizar el registro correspondiente del servicio en la base de datos. El método también registra 
+      Utiliza estos datos para actualizar el registro correspondiente del servicio en la base de datos. El método también registra
       la fecha y hora de la actualización.
-     
+
       @param int $id El ID del servicio que se está editando.
 
       Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido editado exitosamente.
@@ -638,12 +639,12 @@ class controladorSolic extends Controller
 
     /*
       Desactiva un servicio existente cambiando su estado a inactivo.
-     
+
       Este método actualiza el estatus de un servicio específico a "0", lo cual se utiliza para indicar que el servicio está
       desactivado o inactivo. Este enfoque mantiene la integridad de los datos al evitar la eliminación completa de registros,
       lo que puede ser útil para mantener un historial o para posibles activaciones futuras. La fecha de la última actualización
       también se registra automáticamente.
-     
+
       @param int $id El ID del servicio que se va a desactivar.
 
       Redirige al usuario a la página anterior con una notificación que indica que el servicio ha sido desactivado exitosamente.
@@ -698,7 +699,7 @@ class controladorSolic extends Controller
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start(); //* Iniciar el búfer de salida para pasar las variables al PDF
         include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
-        ob_end_clean();  
+        ob_end_clean();
 
         Pagos_Fijos::create([
             "id_pago"=>$idcorresponde,
@@ -715,7 +716,7 @@ class controladorSolic extends Controller
         return redirect()->route('pagos')->with('pago','pago');
     }
 
-    public function updatePago(Request $req, $id){        
+    public function updatePago(Request $req, $id){
         $servicio_id = $req->input('servicio');
         $Nota = $req->input('Notas');
         $importe = $req->input('importe');
@@ -742,7 +743,7 @@ class controladorSolic extends Controller
         //Guarda la ruta del archivo PDF de la requisicion
         $fileToDelete = public_path($pdf->pdf);
 
-        //Si existe el archivo lo elimina 
+        //Si existe el archivo lo elimina
         if (file_exists($fileToDelete)) {
             unlink($fileToDelete);
         }
@@ -759,7 +760,7 @@ class controladorSolic extends Controller
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start(); //* Iniciar el búfer de salida para pasar las variables al PDF
         include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
-        ob_end_clean();  
+        ob_end_clean();
 
         Pagos_Fijos::where('id_pago',$id)->update([
             "servicio_id"=>$servicio_id,
@@ -783,13 +784,13 @@ class controladorSolic extends Controller
 
     /*
       TODO: Recupera todas las refacciones disponibles en el almacén y las muestra en la vista.
-     
+
       Este método consulta la base de datos para obtener todos los registros de la tabla 'Almacen',
       que representa las refacciones o artículos disponibles en el almacén. Una vez obtenidos estos datos,
       los pasa a la vista 'Solicitante.almacen' para que puedan ser visualizados por el usuario.
       Es útil para proporcionar una lista completa de los artículos disponibles en el almacén
       y permitir que los usuarios vean lo que hay en stock.
-     
+
       Retorna la vista 'Solicitante.almacen', pasando los datos de las refacciones disponibles.
     */
     public function almacen(){
@@ -802,11 +803,11 @@ class controladorSolic extends Controller
 
     /*
       Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
       (estatus '1'), excluyendo la unidad con ID '1' por razones específicas de negocio o de la aplicación. Además, las unidades
       activas se ordenan en orden ascendente por su ID para facilitar su visualización y gestión.
-     
+
       Retorna la vista 'Solicitanteunidad', pasando el listado de unidades activas para su visualización.
     */
     public function unidades(){
@@ -822,11 +823,11 @@ class controladorSolic extends Controller
 
     /*
       Muestra la vista para la creación de una nueva unidad.
-     
+
       Este método se encarga de cargar y presentar la vista que contiene el formulario utilizado para la creación
       de nuevas unidades dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
       esencial de la nueva unidad.
-          
+
       Retorna la vista 'SolicitantecrearUnidad', que contiene el formulario para la creación de una nueva unidad.
     */
     public function CreateUnidad(){
@@ -836,15 +837,15 @@ class controladorSolic extends Controller
 
     /*
       Inserta una nueva unidad en la base de datos con la información proporcionada a través de un formulario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
       año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
-      crear una nueva entrada en la base de datos para la unidad, asignándole un estatus '1' para marcarla como activa.      
-     
+      crear una nueva entrada en la base de datos para la unidad, asignándole un estatus '1' para marcarla como activa.
+
       @param  \Illuminate\Http\Request  $req La petición HTTP que contiene los datos del formulario.
 
       Redirige al usuario a la lista de unidades con una sesión flash que indica que la nueva unidad ha sido registrada exitosamente.
-    */    
+    */
     public function insertUnidad(Request $req){
         // Crea la nueva unidad con los datos proporcionados
         Unidades::create([
@@ -868,14 +869,14 @@ class controladorSolic extends Controller
 
     /*
       Muestra la vista para editar los detalles de una unidad específica.
-     
+
       Este método se encarga de recuperar los detalles de una unidad específica, identificada por su ID, de la base de datos.
       La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
       de la unidad, permitiendo así que los administradores o los usuarios con los permisos adecuados realicen cambios en la información
-      de la unidad como tipo, estado, año, marca, modelo, características, número de serie, y número de permiso. 
-     
+      de la unidad como tipo, estado, año, marca, modelo, características, número de serie, y número de permiso.
+
       @param  int  $id  El ID de la unidad cuyos detalles se van a editar.
-      
+
       Retorna la vista 'SolicitanteeditarUnidad', pasando los detalles de la unidad específica para su edición.
     */
     public function editUnidad($id, $from){
@@ -891,11 +892,11 @@ class controladorSolic extends Controller
 
     /*
       Actualiza los detalles de una unidad específica en la base de datos con la información proporcionada por el formulario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
       año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
-      actualizar el registro de la unidad específica en la base de datos, identificado por el ID proporcionado. 
-     
+      actualizar el registro de la unidad específica en la base de datos, identificado por el ID proporcionado.
+
       @param  int  $id  El ID de la unidad que se va a actualizar.
 
       Redirige al usuario a la lista de unidades con una sesión flash que indica que la unidad ha sido actualizada exitosamente.
@@ -912,7 +913,7 @@ class controladorSolic extends Controller
             "caracteristicas"=>$req->input('caracteristicas'),
             "n_de_serie"=>$req->input('serie'),
             "n_de_permiso"=>$req->input('permiso'),
-            "estatus"=>"1",        
+            "estatus"=>"1",
             "updated_at"=>Carbon::now()
         ]);
 
@@ -929,18 +930,18 @@ class controladorSolic extends Controller
 
     /*
       Desactiva una unidad específica marcándola como inactiva en la base de datos.
-     
+
       En lugar de eliminar el registro de la unidad, este método actualiza el campo 'estatus' a 0,
       indicando que la unidad está inactiva. Esta operación es crucial para mantener la integridad de los datos
       y permite la recuperación del registro en el futuro si es necesario. Además, se actualiza el campo 'updated_at'
       para reflejar el momento de la desactivación.
-     
+
       @param  int  $id  El ID de la unidad que se va a desactivar.
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido desactivada exitosamente.
     */
-    public function deleteUnidad($id){ 
-        // Actualiza el registro de la unidad específica para marcarla como inactiva       
+    public function deleteUnidad($id){
+        // Actualiza el registro de la unidad específica para marcarla como inactiva
         Unidades::where('id_unidad',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now()
@@ -952,18 +953,18 @@ class controladorSolic extends Controller
 
     /*
       Marca una unidad específica como inactiva en la base de datos.
-     
+
       Este método actualiza el estado de una unidad específica, identificada por su ID, a "Inactivo", lo que indica
       que la unidad ya no está en uso activo dentro del sistema. La fecha de la última actualización también se registra mediante el campo
-      'updated_at'. 
-     
+      'updated_at'.
+
       @param  int  $id  El ID de la unidad que se va a marcar como inactiva.
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la unidad ha sido marcada como inactiva exitosamente.
     */
-    public function bajaUnidad($id){        
+    public function bajaUnidad($id){
         // Actualiza el registro de la unidad específica para marcarla como inactiva
-        Unidades::where('id_unidad',$id)->update([            
+        Unidades::where('id_unidad',$id)->update([
             "estado"=>"Inactivo",
             "updated_at"=>Carbon::now()
         ]);
@@ -973,11 +974,11 @@ class controladorSolic extends Controller
 
     /*
       Recupera y muestra todas las unidades inactivas para su potencial activación.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las unidades que actualmente están marcadas
       como "Inactivo". La intención es proporcionar a los administradores una visión general de las unidades que no están
       en uso activo pero que pueden ser reactivadas según sea necesario.
-     
+
       Retorna la vista 'SolicitanteactivaUnidad', pasando el listado de unidades inactivas para su visualización y potencial activación.
     */
     public function activarUnidad(){
@@ -990,10 +991,10 @@ class controladorSolic extends Controller
 
     /*
       Reactiva una unidad específica cambiando su estado a "Activo".
-     
+
       Este método actualiza el estado de una unidad específica, identificada por su ID, a "Activo" en la base de datos.
        La fecha de la última actualización también se registra para mantener un seguimiento adecuado de las modificaciones.
-     
+
       @param  int  $id  El ID de la unidad que se va a reactivar.
 
       Redirige al usuario a la lista de unidades con una sesión flash que indica que la unidad ha sido activada exitosamente.
@@ -1003,7 +1004,7 @@ class controladorSolic extends Controller
         Unidades::where('id_unidad',$id)->update([
             "estado"=>"Activo",
             "updated_at"=>Carbon::now()
-        ]); 
+        ]);
 
         // Redirige al usuario a la lista de unidades con un mensaje de confirmación
         return redirect()->route('unidadesSoli')->with('activado','activado');
