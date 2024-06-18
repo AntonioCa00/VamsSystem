@@ -130,20 +130,20 @@ $pdf->Cell(0, 10, "Registro de ordenes de compra pendientes", 0, 1, 'A');
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(18, 7, 'Id Compra', 1, 0, 'C', 1);
+$pdf->Cell(15, 7, 'Folio', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Solicitante', 1, 0, 'C', 1);
 $pdf->Cell(35, 7, 'Fecha', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Requisicion', 1, 0, 'C', 1);
-$pdf->Cell(55, 7, 'Proveedor', 1, 0, 'C', 1);
+$pdf->Cell(70, 7, 'Proveedor', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Costo ', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($datosGastosPendientes as $gasto) {
-    $pdf->Cell(18, 7, $gasto['id_orden'], 1, 0, 'C',0);
+    $pdf->Cell(15, 7, $gasto['id_orden'], 1, 0, 'C',0);
     $pdf->Cell(20, 7, $gasto['nombres'], 1, 0, 'C',0); 
 	$pdf->Cell(35, 7, $gasto['created_at'], 1, 0, 'C',0);
 	$pdf->Cell(20, 7, $gasto['id_requisicion'], 1, 0, 'C',0);
-	$pdf->Cell(55, 7, $gasto['nombre'], 1, 0, 'C',0);     
+	$pdf->Cell(70, 7, $gasto['nombre'], 1, 0, 'C',0);     
     $pdf->Cell(20, 7, '$' . number_format($gasto['costo_total'], 2), 1, 1, 'R');
 }
 
@@ -153,8 +153,8 @@ $totalGastos = array_sum(array_column($datosGastosArray, 'costo_total'));
 
 // Imprimir el total de gastos
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(143, 7, 'Total de Gastos:', 1);
-$pdf->Cell(25, 7, '$' . number_format($totalGastos, 2), 1, 1, 'R');
+$pdf->Cell(135, 7, 'Total de Gastos:', 1);
+$pdf->Cell(45, 7, '$' . number_format($totalGastos, 2), 1, 1, 'R');
 
 $pdf->Ln(4); // Salto de línea antes de la tabla
 
@@ -164,20 +164,20 @@ $pdf->Cell(0, 10, "Registro de ordenes de compra completados", 0, 1, 'A');
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(18, 7, 'Id Compra', 1, 0, 'C', 1);
+$pdf->Cell(15, 7, 'Folio', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Solicitante', 1, 0, 'C', 1);
 $pdf->Cell(35, 7, 'Fecha', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Requisicion', 1, 0, 'C', 1);
-$pdf->Cell(55, 7, 'Proveedor', 1, 0, 'C', 1);
+$pdf->Cell(70, 7, 'Proveedor', 1, 0, 'C', 1);
 $pdf->Cell(20, 7, 'Costo ', 1, 1, 'C', 1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($datosGastosFinalizados as $gasto) {
-    $pdf->Cell(18, 7, $gasto['id_orden'], 1, 0, 'C',0);
+    $pdf->Cell(15, 7, $gasto['id_orden'], 1, 0, 'C',0);
     $pdf->Cell(20, 7, $gasto['nombres'], 1, 0, 'C',0); 
 	$pdf->Cell(35, 7, $gasto['created_at'], 1, 0, 'C',0);
 	$pdf->Cell(20, 7, $gasto['id_requisicion'], 1, 0, 'C',0);
-	$pdf->Cell(55, 7, $gasto['nombre'], 1, 0, 'C',0);     
+	$pdf->Cell(70, 7, $gasto['nombre'], 1, 0, 'C',0);     
     $pdf->Cell(20, 7, '$' . number_format($gasto['costo_total'], 2), 1, 1, 'R');
 }
 
@@ -187,8 +187,8 @@ $totalGastos = array_sum(array_column($datosGastosArray, 'costo_total'));
 
 // Imprimir el total de gastos
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(143, 7, 'Total de Gastos:', 1);
-$pdf->Cell(25, 7, '$' . number_format($totalGastos, 2), 1, 1, 'R');
+$pdf->Cell(135, 7, 'Total de Gastos:', 1);
+$pdf->Cell(45, 7, '$' . number_format($totalGastos, 2), 1, 1, 'R');
 // Generar el PDF
 
 $pdf->Output('reporte_mensual.pdf', 'I');

@@ -1427,6 +1427,7 @@ class controladorCompras extends Controller
 
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
                 ->join('users','requisiciones.usuario_id','=','users.id')
+                ->orderBy('id_requisicion','asc')
                 ->get();
 
                 break;
@@ -1482,7 +1483,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.estado','=',null)
                 ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
                 ->get();
 
@@ -1492,7 +1493,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.estado','=','Pagado')
                 ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
                 ->get();
 
@@ -1506,7 +1507,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.estado','=',null)
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();
 
@@ -1516,7 +1517,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.estado','=','Pagado')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
                 ->get();
 
@@ -1531,7 +1532,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.estado','=',null)
                 ->where('orden_compras.created_at', '>=', $inicioDelAnio)
                 ->get();
                 //Recuperar las ordenes de compra que se han finalizado (pagado)
@@ -1540,7 +1541,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.estado','=','Pagado')
                 ->where('orden_compras.created_at', '>=', $inicioDelAnio)
                 ->get();
 
@@ -1554,7 +1555,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
+                ->where('orden_compras.estado','=',null)
                 ->get();
 
                 //No se realizan excepciones y consulta todas las ordenes de compras pagadas
@@ -1563,7 +1564,7 @@ class controladorCompras extends Controller
                 ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
+                ->where('orden_compras.estado','=','Pagado')
                 ->get();
 
             break;
