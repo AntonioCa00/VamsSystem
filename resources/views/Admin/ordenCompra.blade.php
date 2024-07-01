@@ -6,7 +6,7 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">ORDEN DE COMPRA</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -14,7 +14,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered text-center" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Requisicion:</th>
@@ -22,17 +22,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr> 
+                        <tr>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
-                                </a>    
-                            </th>                            
+                                </a>
+                            </th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
-                            </th>               
+                            </th>
                         </tr>
                     </tbody>
                 </table>
@@ -69,16 +69,16 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer py-3">                    
+            <div class="card-footer py-3">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA</label>
                         <select name="Proveedor" id="proveedor" class="form-control" required>
                             <option value="" selected disabled>Selecciona el proveedor de este articulo:</option>
-                            @foreach ($proveedores as $proveedor)                            
+                            @foreach ($proveedores as $proveedor)
                                 <option value="{{$proveedor->id_proveedor}}">{{$proveedor->nombre}}</option>
                             @endforeach
                         </select>
-                    </div>                    
+                    </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Condiciones de pago:</label>
                         <select name="condiciones" id="condicionPago" class="form-control" required>
@@ -89,8 +89,8 @@
                     </div>
                     <div id="datosBancarios" style="display: none;">
                         <label for="banco">Días de credito acordado:</label>
-                        <input type="text" class="form-control" style="width: 60%" id="banco" name="dias"><br>                      
-                    </div>             
+                        <input type="text" class="form-control" style="width: 60%" id="banco" name="dias"><br>
+                    </div>
                     <div class="form-group mt-4">
                         <label for="exampleFormControlInput1">Notas:</label>
                         <input name="Notas" type="text" class="form-control" value="" placeholder="Agrega notas si necesario">
@@ -141,11 +141,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-  
+
     document.getElementById('condicionPago').addEventListener('change', function() {
     var valor = this.value;
     var datosBancarios = document.getElementById('datosBancarios');
-    
+
     if (valor == 'Credito') {
         datosBancarios.style.display = 'block';
     } else {

@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('vacio'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'error',
@@ -11,14 +11,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -26,7 +26,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Cantidad:</th>
@@ -41,11 +41,11 @@
                         <tr>
                             <th>{{ $dato['cantidad'] }}</th>
                             <th>{{ $dato['unidad'] }}</th>
-                            <th>{{ $dato['descripcion'] }}</th>                            
+                            <th>{{ $dato['descripcion'] }}</th>
                             <th>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $index }}">
                                     Editar
-                                </button>                                
+                                </button>
                             </th>
                             <th>
                                 <form action="{{ route('eliminarElemento', ['index' => $index]) }}" method="post">
@@ -97,7 +97,7 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
                     <input name="Descripcion" type="text" maxlength="47" class="form-control" placeholder="Describe el articulo" required>
-                </div>                
+                </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Unidad de medidad:</label>
                     <select class="form-control" name="Unidad" id="Unidad" required>
@@ -107,10 +107,10 @@
                         <option>Litros</option>
                         <option>Kilos</option>
                         <option>Cubetas</option>
-                        <option>Garrafas</option>                     
-                        <option>Tambo</option>   
+                        <option>Garrafas</option>
+                        <option>Tambo</option>
                         <option>Metros</option>
-                        <option>Tramo</option>                        
+                        <option>Tramo</option>
                         <option>Juegos</option>
                         <option>Kits</option>
                         <option>Paquetes</option>
@@ -122,30 +122,30 @@
                 <div class="form-group" id="otro" style="display: none;">
                     <label for="exampleFormControlInput1">Otra unidad de medida</label>
                     <input name="otro" id="otraUnidad" type="text" class="form-control" placeholder="Escribe la unidad de medida">
-                </div>  
+                </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Cantidad:</label>
                     <input name="Cantidad" type="number" class="form-control" placeholder="Cantidad necesaria del articulo" required>
-                </div>              
+                </div>
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
         </div>
         <div class="card-footer py-3 text-center">
             <form action="{{route('requisicion')}}" method="post">
-                @csrf                
+                @csrf
                 @if(session('departamento')=== "Mantenimiento")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         <select name="unidad" class="form-control" required>
                             <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
-                            @foreach ($unidades as $unidad)                            
+                            @foreach ($unidades as $unidad)
                             @if ($unidad->tipo != "AUTOMOVIL")
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_permiso}} {{$unidad->marca}} {{$unidad->modelo}}</option>
-                            @else 
+                            @else
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             @endif
                             @endforeach
-                        </select>                        
+                        </select>
                     </div>
                 @endif
                 <div class="form-group">

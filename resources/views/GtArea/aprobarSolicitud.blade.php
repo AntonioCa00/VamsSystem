@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('vacio'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'error',
@@ -11,14 +11,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -26,7 +26,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Cantidad:</th>
@@ -42,7 +42,7 @@
                             <th>{{ $articulo->cantidad }}</th>
                             <th>{{ $articulo->unidad}}</th>
                             <th>{{ $articulo->descripcion}}</th>
-                            <th>                                
+                            <th>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $articulo->id }}">
                                     Editar
                                 </button>
@@ -68,7 +68,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <form action="{{ route('editarArt', $articulo->id) }}" method="post">
-                                            {!!method_field('PUT')!!}   
+                                            {!!method_field('PUT')!!}
                                             @csrf
                                             <div class="form-group">
                                                 <label>Cantidad:</label>

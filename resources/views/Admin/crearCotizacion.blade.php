@@ -3,7 +3,7 @@
 @section('Contenido')
 
 @if(session()->has('error'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'error',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('eliminado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,14 +23,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">COTIZACIONES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -38,7 +38,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr class="text-center">
                             <th>No. cotizacion:</th>
@@ -54,7 +54,7 @@
                             <th>
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img class="imagen-container"  src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
-                                </a>    
+                                </a>
                             </th>
                             <th>
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
@@ -64,9 +64,9 @@
                             <th>
                                 <form action="{{ route('deleteCotiza', ['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->id_requisicion]) }}" method="POST">
                                     @csrf
-                                    {!!method_field('DELETE')!!}                            
+                                    {!!method_field('DELETE')!!}
                                     <button type="submit" class="btn btn-primary">Eliminar</button>
-                                </form>                                
+                                </form>
                             </th>
                         </tr>
                         @endforeach
@@ -82,7 +82,7 @@
                         <label for="exampleFormControlInput1">Archivo de cotización:</label>
                         <input name="archivo" type="file" class="form-control" required>
                     </div>
-    
+
                     <button type="submit" class="btn btn-primary">Registrar cotizacion</button>
                 </form>
             </div>
