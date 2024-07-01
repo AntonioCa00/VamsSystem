@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('pagado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if ($errors->any())
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'warning',
@@ -23,14 +23,14 @@
         showConfirmButton: false,
         timer: 1500
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">ORDENES DE COMPRAS</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -38,7 +38,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID orden:</th>
@@ -65,7 +65,7 @@
                                 </a>
                             </th>
                             <th>{{$orden->created_at}}</th>
-                            <th>                        
+                            <th>
                                 @if($orden->estadoComp === null)
                                     <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
                                         Registrar pago
@@ -84,7 +84,7 @@
                                                 <div class="modal-body">
                                                     <form action="{{route('FinalizarC',$orden->id_orden)}}" method="POST" enctype="multipart/form-data">
                                                         @csrf
-                                                        {!!method_field('PUT')!!}   
+                                                        {!!method_field('PUT')!!}
                                                         <div class="form-group">
                                                             <label>Favor de cargar su comprobante de pago:</label>
                                                             <input name="comprobante_pago" type="file" class="form-control">
@@ -94,15 +94,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>                            
+                                    </div>
                                 @else
                                     @if(empty($orden->comprobante_pago))
                                     Sin comprobante
-                                @else 
+                                @else
                                     <a href="{{ asset($orden->comprobante_pago)}}" target="_blank">
                                         Comprobante pago
                                     </a>
-                                @endif                               
+                                @endif
                                 @endif
                             </th>
                         </tr>

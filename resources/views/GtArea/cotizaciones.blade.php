@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('error'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'danger',
@@ -11,14 +11,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">COTIZACIONES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -26,11 +26,11 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Encargado que cotizó:</th>
-                            <th>Requisición:</th>                            
+                            <th>Requisición:</th>
                             <th>Cotización:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -42,8 +42,8 @@
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
-                                </a>    
-                            </th>                            
+                                </a>
+                            </th>
                             <th class="text-center">
                                 <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
@@ -67,9 +67,9 @@
                                             <div class="modal-body">Selecciona confirmar para validar unicamente esta cotización</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('selectCotiza',['id' => $cotizacion->id_cotizacion, 'sid' => $cotizacion->requisicion_id])}}" method="POST">                                                
+                                                <form action="{{route('selectCotiza',['id' => $cotizacion->id_cotizacion, 'sid' => $cotizacion->requisicion_id])}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('PUT')!!}    
+                                                    {!!method_field('PUT')!!}
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
@@ -93,21 +93,21 @@
                                             <div class="modal-body">Selecciona confirmar para eliminar esta cotización</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteCotizacion',['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->requisicion_id])}}" method="POST">                                                
+                                                <form action="{{route('deleteCotizacion',['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->requisicion_id])}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('DELETE')!!}    
+                                                    {!!method_field('DELETE')!!}
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                </div> 
+                                </div>
                             </th>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-            </div>        
+            </div>
         </div>
     </div>
 </div>
