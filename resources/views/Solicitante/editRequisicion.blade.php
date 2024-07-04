@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('error'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'error',
@@ -11,14 +11,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -42,7 +42,7 @@
                             <th>{{ $articulo->cantidad }}</th>
                             <th>{{ $articulo->unidad}}</th>
                             <th>{{ $articulo->descripcion}}</th>
-                            <th>                                
+                            <th>
                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editarModal{{ $articulo->id }}">
                                     Editar
                                 </button>
@@ -68,7 +68,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <form action="{{ route('updateArt', $articulo->id) }}" method="post">
-                                            {!!method_field('PUT')!!}   
+                                            {!!method_field('PUT')!!}
                                             @csrf
                                             <div class="form-group">
                                                 <label>Cantidad:</label>
@@ -98,7 +98,7 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Descripcion:</label>
                     <input name="Descripcion" type="text" maxlength="47" class="form-control" placeholder="Describe el articulo" required>
-                </div>                
+                </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Unidad de medidad:</label>
                     <select class="form-control" name="Unidad" id="Unidad" required>
@@ -108,10 +108,10 @@
                         <option>Litros</option>
                         <option>Kilos</option>
                         <option>Cubetas</option>
-                        <option>Garrafas</option>                     
-                        <option>Tambo</option>   
+                        <option>Garrafas</option>
+                        <option>Tambo</option>
                         <option>Metros</option>
-                        <option>Tramo</option>                        
+                        <option>Tramo</option>
                         <option>Juegos</option>
                         <option>Kits</option>
                         <option>Paquetes</option>
@@ -123,11 +123,11 @@
                 <div class="form-group" id="otro" style="display: none;">
                     <label for="exampleFormControlInput1">Otra unidad de medida:</label>
                     <input name="otro" id="otraUnidad" type="text" class="form-control" placeholder="Escribe la unidad de medida">
-                </div>  
+                </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Cantidad:</label>
                     <input name="Cantidad" type="number" class="form-control" placeholder="Cantidad necesaria del articulo" required>
-                </div>              
+                </div>
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
         </div>
@@ -145,7 +145,7 @@
                         <select name="unidad" class="form-control" required>
                             <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             <option disabled>Selecciona una unidad en caso de cambiar de unidad la requisicion</option>
-                            @foreach ($unidades as $unidad)                            
+                            @foreach ($unidades as $unidad)
                                 <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             @endforeach
                         </select>
