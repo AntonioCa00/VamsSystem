@@ -40,7 +40,7 @@
 
             <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th><input checked type="checkbox" id="checkTodos"/> Seleccionar:</th>
