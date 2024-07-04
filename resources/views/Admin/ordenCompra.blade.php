@@ -40,7 +40,7 @@
 
             <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th><input checked type="checkbox" id="checkTodos"/> Seleccionar:</th>
@@ -63,7 +63,7 @@
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
                             <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
 
-                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}"></th>
+                            <th><input class="form-control" type="number" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" step="0.01"></th>
                         </tr>
                         @endforeach
                     </tbody>
