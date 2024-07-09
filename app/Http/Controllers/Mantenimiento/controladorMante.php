@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mantenimiento;
 
 use App\Http\Controllers\Controller;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Http\Request;
 use App\Models\Unidades;
 use App\Models\unidadServicio;
@@ -320,18 +321,19 @@ class controladorMante extends Controller
         $highestColumn = $sheet->getHighestDataColumn();
 
         // Iterar sobre las filas y leer los datos
-        for ($row = 1; $row <= $highestRow; $row++) {
+        for ($row = 31; $row <= $highestRow; $row++) {
             // Obtener los datos de la celda A (id_unidad) y G (kilometraje) de cada fila
             $id_unidad = $sheet->getCell('A' . $row)->getValue();
-            $kilometraje = $sheet->getCell('G' . $row)->getValue();
+            $kilometraje = $sheet->getCell('J' . $row)->getValue();
 
             // Verificar si la unidad existe en la base de datos
-            $unidad = Unidades::where('id_unidad', $id_unidad)->first();
+            $unidad = Unidades::where('n_de_permiso', $id_unidad)->orWhere('id_unidad',$id_unidad)->first();
 
             if ($unidad) {
                 // Si la unidad existe, actualizar el kilometraje
+                $kilometrajeFinal = $unidad->kilometraje+$kilometraje;
                 Unidades::where('id_unidad',$unidad->id_unidad)->update([
-                    "kilometraje" => $kilometraje,
+                    "kilometraje" => $kilometrajeFinal,
                     "updated_at" => Carbon::now(),
                 ]);
             }

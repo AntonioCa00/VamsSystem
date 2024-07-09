@@ -30,7 +30,7 @@ Route::middleware(['authcheck'])->group(function () {
 
     Route::middleware(['check.role:Gerencia General'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-    
+
         //RUTAS GERENCIA GENERAL
         Route::get('inicio/GerenciaGeneral',[controladorGerenciaGen::class,'index'])->name('indexGerenciaGen');
         Route::get('usuarios', [controladorGerenciaGen::class, 'tableEncargado'])->name('encargados');
@@ -52,10 +52,10 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('reportesGerencia/Requisiciones',[controladorGerenciaGen::class,'reporteReq'])->name('reportesReqGer');
         Route::post('reportesGerencia/OrdenesCompra',[controladorGerenciaGen::class,'reporteOrd'])->name('reportesOrdGer');
     });
-    
+
     Route::middleware(['check.role:Compras'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-    
+
         //RUTAS ADMIN-COMPRAS
         Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index');
         Route::get('graficas', [controladorCompras::class, 'charts'])->name('charts');
@@ -77,9 +77,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('pagosFijos/Compras',[controladorCompras::class,'pagosFijos'])->name('pagosFijos');
         Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
-        
+
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
-    
+
         //RUTAS ADMIN-COMPRAS
         Route::post('insert-unidad',[controladorCompras::class,'insertUnidad'])->name('insertUnidad');
         Route::put('update-unidad/{id}',[controladorCompras::class, 'updateUnidad'])->name('updateUnidad');
@@ -96,7 +96,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('deleteOrd/{id}/{sid}',[controladorCompras::class,'deleteOrd'])->name('deleteOrd');
         Route::post('array-ordenCom',[controladorCompras::class,'ArrayOrdenComp'])->name('arrayOrdenCom');
         Route::delete('delete-arrayOrden/{index}',[controladorCompras::class,'deleteArray'])->name('eliminarElemOrden');
-        Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');        
+        Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
         Route::put('finalizarRequisicion/{id}',[controladorCompras::class,'FinalizarReq'])->name('FinalizarReq');
         Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
         Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
@@ -104,13 +104,13 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
         Route::post('solicitudes/Compras/{filt}',[controladorCompras::class,'filtrarSolicitudes'])->name('filtrarSolic');
     });
-    
+
     Route::middleware(['check.role:Gerente Area'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-    
-        //RUTAS GERENTES DE AREA  
+
+        //RUTAS GERENTES DE AREA
         Route::get('inicio/GtArea',[controladorGtArea::class,'index'])->name('indexDir');
-        Route::get('unidades/GtArea', [controladorGtArea::class, 'tableUnidad'])->name('unidadesDir');        
+        Route::get('unidades/GtArea', [controladorGtArea::class, 'tableUnidad'])->name('unidadesDir');
         Route::get('entradas/GtArea',[controladorGtArea::class,'tableEntradas'])->name('entradasDir');
         Route::get('salidas/GtArea', [controladorGtArea::class, 'tableSalidas'])->name('salidasDir');
         Route::get('proveedores/GtArea',[controladorGtArea::class,'tableProveedores'])->name('proveedoresDir');
@@ -118,7 +118,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('almacen/GtArea', [controladorGtArea::class, 'tableRefaccion'])->name('refaccionesDir');
         Route::get('solicitudes/GtArea',[controladorGtArea::class,'tableSolicitud'])->name('solicitudesDir');
         Route::get('pagos/GtArea',[controladorGtArea::class,'tablePagos'])->name('pagosDir');
-        Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');        
+        Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
         Route::get('ordenesCompras/GtArea',[controladorGtArea::class,'ordenesCompras'])->name('ordenesComprasDir');
@@ -126,15 +126,15 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento/GtArea',[controladorGtArea::class,'mantenimiento'])->name('manteni');
         Route::get('mantenimiento/informacion/{id}',[controladorGtArea::class,'infoMantenimiento'])->name('infoMantenimiento');
-    
+
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
-    
+
         //RUTAS GERENTES DE AREA
         Route::put('update-proveedorD/{id}',[controladorGtArea::class,'updateProveedor'])->name('updateProveedorDir');
-        Route::put('delete-proveedorD/{id}',[controladorGtArea::class,'deleteProveedor'])->name('deleteProveedorDir');        
+        Route::put('delete-proveedorD/{id}',[controladorGtArea::class,'deleteProveedor'])->name('deleteProveedorDir');
         Route::put('deleteReq/{id}',[controladorGtArea::class, 'deleteReq'])->name('deleteReq');
         Route::put('validar/{id}',[controladorGtArea::class,'validarRequisicion'])->name('validar');
-        Route::put('select-cotiza/{id}/{sid}',[controladorGtArea::class,'selectCotiza'])->name('selectCotiza');    
+        Route::put('select-cotiza/{id}/{sid}',[controladorGtArea::class,'selectCotiza'])->name('selectCotiza');
         Route::post('reporteEnc',[controladorGtArea::class,'reporteEnc'])->name('reporteEncargado');
         Route::post('reporteUni',[controladorGtArea::class,'reporteUnid'])->name('reporteUnidad');
         Route::get('reporteGen',[controladorGtArea::class,'reporteGen'])->name('reporteGeneral');
@@ -142,16 +142,16 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('rechazarArticulo/{id}',[controladorGtArea::class,'rechazaArt'])->name('rechazaArt');
         Route::put('aprobarArt/{rid}',[controladorGtArea::class,'aprobar'])->name('aprobar');
         Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
-        Route::delete('delete-cotizacion/{id}/{rid}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');        
+        Route::delete('delete-cotizacion/{id}/{rid}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');
         Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
         Route::put('delete-pago/{id}',[controladorGtArea::class,'deletePago'])->name('deletePago');
         Route::put('finalizarCompra/{id}',[controladorGtArea::class,'finalizarC'])->name('FinalizarC');
-        
+
     });
-    
+
     Route::middleware(['check.role:Almacen'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-    
+
         //RUTAS ALMACEN
         Route::get('inicio/Almacen',[controladorAlm::class,'index'])->name('indexAlm');
         Route::get('solicitudes/Almacen',[controladorAlm::class,'requisiciones'])->name('requisicionesAlm');
@@ -163,10 +163,10 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('salidas/Almacen',[controladorAlm::class, 'salidas'])->name('salidasAlm');
         Route::get('crearSalida/{id}',[controladorAlm::class,'crearSalida'])->name('crearSalida');
         Route::get('solicitudesAlm/Almacen',[controladorAlm::class,'requisicionesAlm'])->name('requisicionesAlma');
-        Route::get('crearSalidaAlm/{id}',[controladorAlm::class,'crearSalidaAlm'])->name('crearSalidaAlm'); 
-    
+        Route::get('crearSalidaAlm/{id}',[controladorAlm::class,'crearSalidaAlm'])->name('crearSalidaAlm');
+
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
-    
+
         //RUTAS ALMACEN
         Route::post('insert-refaccion',[controladorAlm::class,'insertRefaccion'])->name('insertRefaccion');
         Route::put('update-refaccion/{id}',[controladorAlm::class,'updateRefaccion'])->name('updateRefaccion');
@@ -184,7 +184,7 @@ Route::middleware(['authcheck'])->group(function () {
 
     Route::middleware(['check.role:General'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
-    
+
         Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
         Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
         // Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
@@ -204,8 +204,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
         Route::get('mantenimiento/informacion/{id}',[controladorMante::class,'infoMantenimiento'])->name('infoMantenimiento');
         Route::get('calendario', [controladorMante::class, 'calendario'])->name('calendar');
-        Route::get('calendario/programacion', [controladorMante::class, 'getEvents'])->name('programa');  
-    
+        Route::get('calendario/programacion', [controladorMante::class, 'getEvents'])->name('programa');
+
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
         Route::post('array-solicitud',[controladorSolic::class,'ArraySolicitud'])->name('arraySoli');
         Route::post('edit-array/{index}',[controladorSolic::class,'editArray'])->name('editArray');
@@ -221,7 +221,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-servicio/{id}',[controladorSolic::class,'deleteServicio'])->name('deleteServicio');
         Route::post('pago',[controladorSolic::class,'createPago'])->name('createPago');
         Route::put('update-pago/{id}',[controladorSolic::class,'updatePago'])->name('updatePago');
-        Route::delete('delete-pago/{id}',[controladorSolic::class,'deletePago'])->name('deletePago');
+        // Route::delete('delete-pago/{id}',[controladorSolic::class,'deletePago'])->name('deletePago');
         Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
