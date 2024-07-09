@@ -302,6 +302,8 @@ class controladorMante extends Controller
     */
     public function actualizarkms(Request $request)
     {
+
+        ini_set('memory_limit','512M');
         // Validar que se haya subido un archivo
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
