@@ -11487,7 +11487,7 @@
 				 *      } );
 				 *    } );
 				 */
-				"sPrevious": "Previous"
+				"sPrevious": "Anterior"
 			},
 
 			/**
@@ -11510,7 +11510,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sEmptyTable": "AUN NO AGREGAR REGISTROS",
+			"sEmptyTable": "AUN NO SE AGREGAN REGISTROS",
 
 
 			/**
