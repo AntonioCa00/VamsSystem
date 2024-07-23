@@ -322,7 +322,7 @@ class controladorMante extends Controller
 
         // Iterar sobre las filas y leer los datos
         for ($row = 31; $row <= $highestRow; $row++) {
-            // Obtener los datos de la celda A (id_unidad) y G (kilometraje) de cada fila
+            // Obtener los datos de la celda A (id_unidad/permiso) y J (kilometraje recorrido) de cada fila
             $id_unidad = $sheet->getCell('A' . $row)->getValue();
             $kilometraje = $sheet->getCell('J' . $row)->getValue();
 

@@ -11,6 +11,7 @@ use App\Models\Cotizaciones;
 use App\Models\Pagos_Fijos;
 use App\Models\Servicios;
 use App\Models\Proveedores;
+use App\Models\Logs;
 Use Carbon\Carbon;
 use DB;
 
@@ -20,12 +21,12 @@ class controladorGerenciaGen extends Controller
 {
     /*
       TODO: Recopila datos para la visualización de informes de gestión en el área correspondiente.
-     
+
       Este método se encarga de compilar datos detallados de operaciones de compra por mes y totales anuales,
       así como el conteo de requisiciones completas y pendientes. Utiliza la clase Orden_compras para sumar los costos totales
       de las compras realizadas en cada mes del año actual y calcula los totales de compras para el mes y año en curso.
       Además, cuenta las requisiciones en estado 'Comprado' y las requisiciones pendientes que no están 'Compradas' ni 'Rechazadas'.
-     
+
       Retorna la vista 'GtArea.index' con los datos compilados para informes de gestión.
     */
     public function index(){
@@ -168,17 +169,17 @@ class controladorGerenciaGen extends Controller
         $DiciembrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
-            ->where('estado','Pagado')  
+            ->where('estado','Pagado')
             ->first();
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
             ->where('estado','Pagado')
             ->first();
-        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;            
+        $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;
 
         // Suma total de costos para el mes actual
-        $mesActual = now()->format('m'); 
+        $mesActual = now()->format('m');
         $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
         $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->where('estado','Pagado')->sum('costo_total');
         $TotalMes = $totalRequisicionesMes + $totalPagosMes;
@@ -219,22 +220,22 @@ class controladorGerenciaGen extends Controller
             'octubre'    => $Octubre,
             'noviembre'  => $Noviembre,
             'diciembre'  => $Diciembre,]);
-    }  
+    }
 
     /*
       TODO: Recupera y muestra una lista de todas las solicitudes junto con información relacionada para su visualización.
-     
+
       Este método realiza una consulta compleja a la base de datos para obtener un listado detallado de todas las solicitudes
       (requisiciones) existentes. Para cada solicitud, se recopila información como el ID de la requisición, el nombre del usuario
       que la creó, el ID de la unidad asociada, el archivo PDF de la requisición, el estado de la solicitud, el PDF de la orden de
       compra relacionada (si existe), y la fecha de creación de la solicitud. Estos datos se obtienen mediante uniones (joins) con
       las tablas 'users', 'cotizaciones', y 'orden_compras' para recopilar la información necesaria de múltiples fuentes.
-     
+
       Retorna la vista 'Gerencia General.solicitudes', pasando el listado de solicitudes recopiladas para su visualización.
     */
     public function tableSolicitud(){
         // Recupera las solicitudes de la base de datos
-        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado','orden_compras.pdf as ordenCompra', 'requisiciones.created_at as fecha_creacion')
+        $solicitudes = Requisiciones::select('requisiciones.id_requisicion', 'users.nombres','users.departamento', 'requisiciones.unidad_id', 'requisiciones.pdf', 'requisiciones.estado','orden_compras.pdf as ordenCompra', 'requisiciones.created_at as fecha_creacion')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
         ->leftJoin('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->leftJoin('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
@@ -246,13 +247,108 @@ class controladorGerenciaGen extends Controller
     }
 
     /*
+      TODO: Recupera y muestra todas las cotizaciones activas asociadas a una requisición específica.
+
+      Este método consulta la base de datos para obtener un listado de cotizaciones activas (estatus '1')
+      que están asociadas a una requisición específica, identificada por su ID. Para cada cotización, se recopilan
+      detalles como el ID de la cotización, el ID de la requisición asociada, el nombre del usuario que realizó
+      la cotización, y las rutas a los archivos PDF de la requisición y de la cotización.
+
+      @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
+
+      Retorna la vista 'GtArea.cotizaciones', pasando el listado de cotizaciones y el ID de la requisición.
+    */
+    public function cotizacionesFin($id){
+        //Recupera las cotizaciones basandose en el estatus 1 y segun la requisicion
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+        ->join('users','cotizaciones.usuario_id', '=', 'users.id')
+        ->where('requisicion_id', $id)
+        ->where('cotizaciones.estatus','1')->get();
+
+        // Redirige al usuario a la página para visualizar las cotizaciones
+        return view('Gerencia General.validCotizacion',compact('cotizaciones','id'));
+    }
+
+    /*
+      TODO: Selecciona y pre-valida una cotización específica para una solicitud, actualizando el estado de la solicitud y las cotizaciones relacionadas.
+
+      Este método primero verifica el estado actual de la solicitud: si ya está "Pre Validado", actualiza su estado a "Validado".
+      Si no, actualiza todas las cotizaciones relacionadas con la solicitud, excepto la seleccionada, marcándolas como inactivas (estatus "0"),
+      y cambia el estado de la solicitud a "Pre Validado". Este proceso es crucial para gestionar adecuadamente las etapas de validación
+      de las cotizaciones y asegurar que solo una cotización sea seleccionada y avanzada en el proceso de aprobación de la solicitud.
+
+      @param int $id  El ID de la cotización que se selecciona y pre-valida.
+      @param int $sid El ID de la solicitud asociada a la cotización.
+
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada.
+    */
+    public function selectCotizaF($id,$sid){
+            // Marcar todas las cotizaciones relacionadas, excepto la seleccionada, como inactivas
+            Cotizaciones::where('id_cotizacion', '!=', $id)
+                ->where('requisicion_id', $sid)
+                ->update([
+                "estatus" => "0",
+                "updated_at" => Carbon::now()
+            ]);
+
+            // Actualizar el estado de la solicitud a "Pre Validado"
+            Requisiciones::where('id_requisicion',$sid)->update([
+                "estado" => "Pre Validado",
+                "updated_at" => Carbon::now()
+            ]);
+
+            // Registrar la acción en el log
+            Logs::create([
+                "user_id"=>session('loginId'),
+                "table_name"=>"Solicitudes",
+                "requisicion_id"=>$sid,
+                "action"=>"Se ha pre validado una cotizacion de la solicitud: ".$sid,
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+
+        // Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada o validada.
+        return redirect('solicitud/GerenciaGen')->with('validacion','validacion');
+    }
+
+    /*
+      TODO: Elimina una cotización específica de la base de datos.
+
+      Este método permite a los usuarios con los permisos adecuados eliminar una cotización específica,
+      identificada por su ID, de la base de datos. La eliminación de una cotización puede ser necesaria
+      en varias circunstancias, como cuando una cotización ha sido ingresada por error, ya no es relevante,
+      o ha sido reemplazada por otra más actualizada.
+
+      @param int $id El ID de la cotización que se va a eliminar.
+
+      Redirige al usuario a la página anterior con una sesión flash que indica que la cotización ha sido eliminada exitosamente.
+    */
+    public function deleteCotizaF($id, $rid){
+        // Elimina la cotización específica por su ID
+        Cotizaciones::where('id_cotizacion', $id)->delete();
+
+        $n_cotizaciones = Cotizaciones::where('requisicion_id',$rid)->count();
+
+        if ($n_cotizaciones == 0){
+            Requisiciones::where('id_requisicion',$rid)->update([
+                "estado"=>"Aprobado",
+                "updated_at"=>Carbon::now(),
+            ]);
+        }
+
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
+        return back()->with('eliminado','eliminado');
+    }
+
+    /*
       TODO: Recupera y muestra una lista de usuarios activos (encargados) ordenados por sus nombres.
-     
+
       Este método consulta la base de datos para obtener un listado de todos los usuarios que tienen un estatus activo (estatus '1').
       La intención es identificar a los usuarios que están actualmente habilitados para asumir responsabilidades o roles específicos
       dentro de la organización. Los usuarios recuperados son ordenados alfabéticamente por sus nombres para facilitar su visualización
       y gestión.
-     
+
       Retorna la vista 'Gerencia General.encargado', pasando el listado de usuarios activos (encargados) para su visualización.
     */
     public function tableEncargado(){
@@ -265,11 +361,11 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Muestra la vista para la creación de un nuevo usuario.
-     
+
       Este método se encarga de cargar y mostrar la vista que contiene el formulario utilizado para la creación
       de nuevos usuarios dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
       del nuevo usuario.
-     
+
       Retorna la vista 'Gerencia General.crearUser', que contiene el formulario para la creación de un nuevo usuario.
     */
     public function createUser(){
@@ -279,7 +375,7 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Inserta un nuevo usuario en la base de datos con los datos proporcionados a través de un formulario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el nombre, apellidos,
       teléfono, correo electrónico, rol, y departamento del nuevo usuario. Se genera una contraseña aleatoria para
       el usuario utilizando un método auxiliar. Dependiendo del rol seleccionado ('Otro', 'Gerente Area', o cualquier otro),
@@ -334,7 +430,7 @@ class controladorGerenciaGen extends Controller
                 "estatus"=>'1',
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
-            ]); 
+            ]);
         }
         //Redirige al usuario a la página d usuarios para visualizar la actualización
         return redirect()->route('encargados')->with('creado','creado');
@@ -342,12 +438,12 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Muestra la vista para editar los detalles de un usuario específico.
-     
+
       Este método se encarga de recuperar los detalles de un usuario específico, identificado por su ID, de la base de datos.
       La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
       del usuario, permitiendo así que los administradores o los usuarios con los permisos adecuados realicen cambios en la información
-      del usuario como nombre, teléfono, correo electrónico, rol, entre otros. 
-     
+      del usuario como nombre, teléfono, correo electrónico, rol, entre otros.
+
       @param  int  $id  El ID del usuario cuyos detalles se van a editar.
 
       Retorna la vista 'Gerencia General.editarUser', pasando los detalles del usuario específico para su edición.
@@ -362,11 +458,11 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODOS: Actualiza los detalles de un usuario específico en la base de datos con la información proporcionada por el formulario.
-     
+
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el nombre, apellidos,
       teléfono, correo electrónico, contraseña, rol, y estatus del usuario. Utiliza estos datos para actualizar
-      el registro del usuario específico en la base de datos, identificado por el ID proporcionado. 
-     
+      el registro del usuario específico en la base de datos, identificado por el ID proporcionado.
+
       @param  int  $id  El ID del usuario que se va a actualizar.
 
       Redirige al usuario a la lista de encargados con una sesión flash que indica que el usuario ha sido editado exitosamente.
@@ -391,11 +487,11 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Desactiva un usuario específico marcándolo como inactivo en la base de datos.
-     
+
       En lugar de eliminar el registro del usuario, este método actualiza el campo 'estatus' a 0,
       indicando que el usuario está inactivo. Esta operación es crucial para mantener la integridad de los datos
-      y permite la recuperación del registro en el futuro si es necesario. 
-     
+      y permite la recuperación del registro en el futuro si es necesario.
+
       @param  int  $id  El ID del usuario que se va a desactivar.
 
       Redirige al usuario a la lista de encargados con una sesión flash que indica que el usuario ha sido desactivado exitosamente.
@@ -410,14 +506,14 @@ class controladorGerenciaGen extends Controller
         // Redirige al usuario a la lista de encargados con un mensaje de confirmación
         return redirect()->route('encargados')->with('eliminado','eliminado');
     }
-    
+
     /*
       TODO: Recupera y muestra una lista de unidades activas para la Gerencia General, excluyendo una unidad específica por su ID.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las unidades que tienen un estatus '1',
       lo que indica que están activas, y excluye la unidad con ID '1' de este listado. Las unidades son ordenadas
       en orden ascendente por su ID para facilitar su visualización y gestión.
-     
+
       Retorna la vista 'Gerencia General.unidad', pasando el listado de unidades activas para su visualización.
     */
     public function unidadesGerGen(){
@@ -426,38 +522,38 @@ class controladorGerenciaGen extends Controller
         ->where('id_unidad','!=','1')
         ->where('estado','Activo')
         ->orderBy('id_unidad','asc')->get();
-        
+
         // Redirecciona a la vista para mostrar las unidades
         return view('Gerencia General.unidad',compact('unidades'));
     }
 
     /*
       TODO: Elimina una solicitud específica de la base de datos.
-     
+
       Este método permite a los usuarios con los permisos adecuados eliminar una solicitud específica,
       identificada por su ID, de la base de datos. La eliminación de una solicitud puede ser necesaria
       en varias circunstancias, como cuando una solicitud ha sido ingresada por error, ya no es relevante,
       o ha sido reemplazada por otra más actualizada.
-     
+
       @param  int  $id  El ID de la solicitud que se va a eliminar.
 
       Redirige al usuario a la página anterior con una sesión flash que indica que la solicitud ha sido eliminada exitosamente.
-    */    
+    */
     public function deleteSolicitud($id){
         // Elimina la solicitud específica por su ID
         Requisiciones::where('id_requisicion',$id)->delete();
 
         // Redirige al usuario a la página anterior con un mensaje de confirmación
-        return back()->with('eliminado','eliminado');  
+        return back()->with('eliminado','eliminado');
     }
 
     /*
       TODO: Recupera y muestra todas las cotizaciones asociadas a una solicitud específica.
-     
+
       Este método consulta la base de datos para obtener un listado de todas las cotizaciones que están asociadas
       a una solicitud específica, identificada por su ID. Para cada cotización, se recopilan detalles como el ID de la cotización,
-      el ID de la requisición asociada, y las rutas a los archivos PDF de la requisición y de la cotización. 
-     
+      el ID de la requisición asociada, y las rutas a los archivos PDF de la requisición y de la cotización.
+
       @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
 
       Retorna la vista 'Gerencia General.cotizaciones', pasando el listado de cotizaciones recopiladas para su visualización.
@@ -475,12 +571,12 @@ class controladorGerenciaGen extends Controller
 
     /*
       Recupera y muestra una lista detallada de todas las órdenes de compra que no están asociadas a requisiciones rechazadas.
-     
+
       Este método consulta la base de datos para obtener información completa sobre cada orden de compra en el sistema,
       excluyendo aquellas relacionadas con requisiciones que han sido rechazadas. Los datos recopilados incluyen el ID de la orden,
-      detalles de la requisición asociada, información del administrador que manejó la orden, datos del proveedor, PDFs de las 
-      cotizaciones, y otros documentos relevantes como comprobantes de pago. 
-     
+      detalles de la requisición asociada, información del administrador que manejó la orden, datos del proveedor, PDFs de las
+      cotizaciones, y otros documentos relevantes como comprobantes de pago.
+
       Devuelve la vista 'Gerencia General.ordenesCompras', pasando los datos de las órdenes de compra para su visualización.
     */
     public function compras(){
@@ -500,12 +596,12 @@ class controladorGerenciaGen extends Controller
 
     /*
       Recupera y muestra información detallada sobre los pagos fijos, junto con los servicios y proveedores asociados.
-     
-      Este método se encarga de obtener un listado de todos los pagos fijos registrados en el sistema, incluyendo detalles 
+
+      Este método se encarga de obtener un listado de todos los pagos fijos registrados en el sistema, incluyendo detalles
       completos como el ID del pago, el servicio asociado, el nombre del proveedor, y los comprobantes de pago. Adicionalmente,
-      se recupera información sobre todos los servicios activos y sus proveedores asociados, que es esencial para facilitar 
+      se recupera información sobre todos los servicios activos y sus proveedores asociados, que es esencial para facilitar
       la gestión y revisión de pagos.
-     
+
       Devuelve la vista 'Gerencia General.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización.
     */
     public function pagos(){
@@ -534,11 +630,11 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Muestra la vista de reportes
-     
+
       Este método se encarga de cargar y presentar la vista que contiene las herramientas y opciones de reporte
-      disponibles para la Gerencia General. Al proporcionar una interfaz dedicada a los reportes, este método facilita a los 
+      disponibles para la Gerencia General. Al proporcionar una interfaz dedicada a los reportes, este método facilita a los
       usuarios autorizados el acceso rápido y eficiente a la información necesaria para la toma de decisiones y la planificación estratégica.
-     
+
       Retorna la vista 'Gerencia General.reportes', que contiene las opciones y herramientas de reporte disponibles.
     */
     public function reportes() {
@@ -548,13 +644,13 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Genera y muestra un reporte de requisiciones basado en el tipo de reporte seleccionado.
-     
+
       Este método recibe una petición HTTP que contiene el tipo de reporte solicitado (semanal, mensual, anual, o todas).
       Dependiendo del tipo de reporte, realiza una consulta a la base de datos para recuperar las requisiciones dentro
       del periodo de tiempo especificado, junto con información relevante de los usuarios que las crearon.
       Los datos recopilados se serializan y almacenan en un archivo, luego se genera un PDF del reporte utilizando una
       plantilla específica. Finalmente, el contenido del PDF se envía al navegador para su visualización o descarga.
-     
+
       @return void
     */
     public function reporteReq(Request $req){
@@ -570,46 +666,46 @@ class controladorGerenciaGen extends Controller
 
         //Variable que define los rangos de reportes
         $tipoReporte = $req->input('tipoReport');
-    
+
         //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
-        switch ($tipoReporte){            
+        switch ($tipoReporte){
             case "semanal":
                 //Unicamente las requisiciones realizadas 7 días atrás hasta el día actual
                 $unaSemanaAtras = Carbon::now()->subWeek();
-                
+
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
                 ->join('users','requisiciones.usuario_id','=','users.id')
                 ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
-                ->get();    
-                
+                ->get();
+
                 break;
             case "mensual":
                 //Unicamente las requisiciones realizadas dentro del mes en curso
                 $inicioDelMes = Carbon::now()->startOfMonth();
-                
+
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
                 ->join('users','requisiciones.usuario_id','=','users.id')
                 ->where('requisiciones.created_at', '>=', $inicioDelMes)
-                ->get();    
+                ->get();
 
                 break;
             case "anual":
                 //Unicamente las requisiciones realizadas dentro del año en curso
                 $inicioDelAnio = Carbon::now()->startOfYear();
-                
+
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
                 ->join('users','requisiciones.usuario_id','=','users.id')
                 ->where('requisiciones.created_at', '>=', $inicioDelAnio)
-                ->get();  
+                ->get();
 
                 break;
             case "todas":
                 //No se realizan excepciones y consulta todas las requisiciones
-                $inicioDelAnio = Carbon::now()->startOfYear(); 
-                
+                $inicioDelAnio = Carbon::now()->startOfYear();
+
                 $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
                 ->join('users','requisiciones.usuario_id','=','users.id')
-                ->get();  
+                ->get();
 
                 break;
         }
@@ -630,13 +726,13 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Genera y muestra un reporte de ordenes de compra basado en el tipo de reporte seleccionado.
-     
+
       Este método recibe una petición HTTP que contiene el tipo de reporte solicitado (semanal, mensual, anual, o todas).
       Dependiendo del tipo de reporte, realiza una consulta a la base de datos para recuperar las ordenes de compra dentro
       del periodo de tiempo especificado, junto con información relevante de los usuarios que las crearon.
       Los datos recopilados se serializan y almacenan en un archivo, luego se genera un PDF del reporte utilizando una
       plantilla específica. Finalmente, el contenido del PDF se envía al navegador para su visualización o descarga.
-     
+
       @return void
     */
     public function reporteOrd(Request $req){
@@ -665,7 +761,7 @@ class controladorGerenciaGen extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','!=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
                 ->get();
 
                 //Unicamente las ordenes de compra pagadas y que hayan sido realizadas 7 días atrás hasta el día actual
@@ -675,9 +771,9 @@ class controladorGerenciaGen extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)            
+                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
                 ->get();
-                
+
                 break;
             case "mensual":
                 //Si es mensual, //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en cursodefinir el mes actual al momento del reporte con la librería Carbon
@@ -691,7 +787,7 @@ class controladorGerenciaGen extends Controller
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','!=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();    
+                ->get();
 
                 //Unicamente las ordenes de compra pagadas y que hayan sido realizadas dentro del mes en curso
                 $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
@@ -701,7 +797,7 @@ class controladorGerenciaGen extends Controller
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','=','Finalizado')
                 ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();    
+                ->get();
 
                 break;
             case "anual":
@@ -738,7 +834,7 @@ class controladorGerenciaGen extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','!=','Finalizado')
-                ->get();         
+                ->get();
 
                 //Recuperar las ordenes de compra que se han finalizado (pagado)
                 $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
@@ -747,7 +843,7 @@ class controladorGerenciaGen extends Controller
                 ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                 ->join('users','requisiciones.usuario_id','users.id')
                 ->where('orden_compras.estado','=','Finalizado')
-                ->get();         
+                ->get();
 
             break;
         }
@@ -767,25 +863,25 @@ class controladorGerenciaGen extends Controller
 
     /*
       TODO: Genera una contraseña aleatoria de 6 caracteres utilizando letras mayúsculas y minúsculas.
-     
+
       Este método crea una contraseña segura y aleatoria seleccionando caracteres de un conjunto definido
       que incluye todas las letras del alfabeto en mayúsculas y minúsculas. Utiliza la función `random_int`
       para asegurar una selección aleatoria criptográficamente segura de los caracteres. La longitud de la
       contraseña generada es fija en 6 caracteres, equilibrando la simplicidad y la seguridad para propósitos
       generales de autenticación.
-     
+
       @return string La contraseña aleatoria generada.
     */
     public function generateRandomPassword() {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';// Conjunto de caracteres elegibles
         $password = ''; // Inicialización de la variable de contraseña
-    
+
         // Bucle para seleccionar 6 caracteres aleatorios del conjunto definido
         for ($i = 0; $i < 6; $i++) {
             $index = random_int(0, strlen($characters) - 1); // Selección aleatoria de un índice
             $password .= $characters[$index]; // Concatenación del carácter seleccionado a la contraseña
         }
-    
+
         return $password; // Devolución de la contraseña generada
     }
 }

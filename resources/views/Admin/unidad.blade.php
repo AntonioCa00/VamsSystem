@@ -3,7 +3,7 @@
 @section('Contenido')
 
 @if(session()->has('regis'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('update'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,11 +23,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('eliminado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -35,11 +35,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('activado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -47,11 +47,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('baja'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -59,14 +59,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">UNIDADES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -98,7 +98,7 @@
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
-                            <th>{{$unidad->modelo}}</th>                            
+                            <th>{{$unidad->modelo}}</th>
                             <th>{{$unidad->caracteristicas  }}</th>
                             <th>{{$unidad->n_de_serie}}</th>
                             <th>{{$unidad->n_de_permiso}}</th>
@@ -121,14 +121,14 @@
                                             <div class="modal-body">Selecciona que hacer con esta unidad</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteUnidad',$unidad->id_unidad)}}" method="POST">
+                                                <form action="{{route('deleteUnid',$unidad->id_unidad)}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('PUT')!!}    
+                                                    {!!method_field('PUT')!!}
                                                     <button type="submit" class="btn btn-primary">Eliminar</button>
                                                 </form>
                                                 <form action="{{route('bajaUnidad',$unidad->id_unidad)}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('PUT')!!}    
+                                                    {!!method_field('PUT')!!}
                                                     <button type="submit" class="btn btn-primary">Inactivar</button>
                                                 </form>
                                             </div>
