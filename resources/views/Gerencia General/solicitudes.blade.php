@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('eliminado'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,14 +11,26 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
+@endif
+
+@if(session()->has('validacion'))
+    <script type="text/javascript">
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Cotizacion validada!',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -29,7 +41,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID requisicion</th>            
+                            <th>ID requisicion</th>
                             <th>Encargado:</th>
                             <th>Fecha solicitud:</th>
                             <th>Estado:</th>
@@ -51,9 +63,9 @@
                                 <th>Sin unidad</th>
                             @elseif ($solicitudes->unidad_id == "1")
                                 <th>No asignada</th>
-                            @else 
+                            @else
                                 <th>{{$solicitudes->unidad_id}}</th>
-                            @endif                         
+                            @endif
                             <th>
                                 <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
@@ -63,7 +75,7 @@
                                 <th>
                                     <a href="{{route('verCotizaciones',$solicitudes->id_requisicion)}}" class="btn btn-primary">Consultar</a>
                                 </th>
-                            @else 
+                            @else
                                 <th>Sin cotizar</th>
                             @endif
                             @if (empty($solicitudes->ordenCompra))
@@ -76,6 +88,12 @@
                             </th>
                             @endif
                             <th>
+                                @if ($solicitudes->estado === "Cotizado" && $solicitudes->departamento === "Finanzas")
+                                    <a class="btn btn-info" href="{{route('verCotizaF', $solicitudes->id_requisicion)}}">
+                                        Revisar Cotizaciones
+                                    </a>
+
+                                @endif
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarReq{{$solicitudes->id_requisicion}}">
                                     Eliminar
                                 </a>
@@ -95,13 +113,13 @@
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                 <form action="{{route('deleteSolicitudGG',$solicitudes->id_requisicion)}}" method="POST">
                                                     @csrf
-                                                    {!!method_field('DELETE')!!}    
+                                                    {!!method_field('DELETE')!!}
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                </div>                              
+                                </div>
                             </th>
                         </tr>
                         @endforeach

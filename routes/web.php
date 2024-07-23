@@ -37,6 +37,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('form-user',[controladorGerenciaGen::class,'createUser'])->name('createUser');
         Route::get('edit-user/{id}', [controladorGerenciaGen::class, 'editUser'])->name('editUser');
         Route::get('solicitud/GerenciaGen', [controladorGerenciaGen::class, 'tableSolicitud'])->name('solicitudesGerGen');
+        Route::get('cotizaciones/Finanzas/{id}',[controladorGerenciaGen::class,'cotizacionesFin'])->name('verCotizaF');
         Route::get('unidades/GerenciaGen',[controladorGerenciaGen::class,'unidadesGerGen'])->name('unidadesGerGen');
         Route::get('consulta/Cotizaciones/{id}',[controladorGerenciaGen::class,'cotizaciones'])->name('verCotizaciones');
         Route::get('reportesGerencia',[controladorGerenciaGen::class,'reportes'])->name('reportes');
@@ -45,6 +46,8 @@ Route::middleware(['authcheck'])->group(function () {
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
+        Route::put('select-cotizaF/{id}/{sid}',[controladorGerenciaGen::class,'selectCotizaF'])->name('selectCotizaF');
+        Route::delete('delete-cotizacionF/{id}/{rid}',[controladorGtArea::class,'deleteCotizaF'])->name('deleteCotizacionF');
         Route::post('insert-User',[controladorGerenciaGen::class,'insertUser'])->name('insertUser');
         Route::put('update-user/{id}', [controladorGerenciaGen::class, 'updateUser'])->name('updateUser');
         Route::put('delete-user/{id}',[controladorGerenciaGen::class,'deleteUser'])->name('deleteUser');
