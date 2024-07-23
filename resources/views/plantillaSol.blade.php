@@ -96,7 +96,7 @@
                 </li>
             @endif
 
-            @if (session('departamento') == "Mantenimiento")
+            @if (session('departamento') == "Mantenimiento" && session('loginNombres') == "Jose Angel")
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 

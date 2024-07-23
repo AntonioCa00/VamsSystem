@@ -226,11 +226,11 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
         Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
-        Route::post('insert-unidad',[controladorSolic::class,'insertUnidad'])->name('insertUnidadSoli');
-        Route::put('update-unidad/{id}',[controladorSolic::class, 'updateUnidad'])->name('updateUnidadSoli');
+        Route::post('insert-unidadSol',[controladorSolic::class,'insertUnidad'])->name('insertUnidadSoli');
+        Route::put('update-unidadSol/{id}',[controladorSolic::class, 'updateUnidad'])->name('updateUnidadSoli');
         Route::put('delete-UnidadSol/{id}',[controladorSolic::class,'deleteUnidad'])->name('deleteUnidadSoli');
         Route::put('baja-Unidad/{id}',[controladorSolic::class,'bajaUnidad'])->name('bajaUnidadSoli');
-        Route::put('activ-unidad/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
+        Route::put('activ-unidadSoli/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
 
         //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
         Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');
