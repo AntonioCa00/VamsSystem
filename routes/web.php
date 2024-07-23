@@ -86,8 +86,8 @@ Route::middleware(['authcheck'])->group(function () {
         //RUTAS ADMIN-COMPRAS
         Route::post('insert-unidad',[controladorCompras::class,'insertUnidad'])->name('insertUnidad');
         Route::put('update-unidad/{id}',[controladorCompras::class, 'updateUnidad'])->name('updateUnidad');
-        Route::put('delete-Unidad/{id}',[controladorCompras::class,'deleteUnidad'])->name('deleteUnid');
-        Route::put('baja-Unidad/{id}',[controladorCompras::class,'bajaUnidad'])->name('bajaUnidad');
+        Route::put('delete-unidad/{id}',[controladorCompras::class,'deleteUnidad'])->name('deleteUnidad');
+        Route::put('baja-unidad/{id}',[controladorCompras::class,'bajaUnidad'])->name('bajaUnidad');
         Route::put('activ-unidad/{id}',[controladorCompras::class,'activateUnidad'])->name('activateUnidad');
         Route::put('validar-soli/{id}',[controladorCompras::class,'validarSoli'])->name('validSoli');
         Route::post('insert-compra',[controladorCompras::class,'insertCompra'])->name('insertCompra');
@@ -231,7 +231,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('requisicion-Alm',[controladorSolic::class,'requisicionAlm'])->name('requisicionAlm');
         Route::post('insert-unidad',[controladorSolic::class,'insertUnidad'])->name('insertUnidadSoli');
         Route::put('update-unidad/{id}',[controladorSolic::class, 'updateUnidad'])->name('updateUnidadSoli');
-        Route::put('delete-Unidad/{id}',[controladorSolic::class,'deleteUnidad'])->name('deleteUnidadSoli');
+        Route::put('delete-UnidadSol/{id}',[controladorSolic::class,'deleteUnidad'])->name('deleteUnidadSoli');
         Route::put('baja-Unidad/{id}',[controladorSolic::class,'bajaUnidad'])->name('bajaUnidadSoli');
         Route::put('activ-unidad/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
 
