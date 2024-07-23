@@ -139,9 +139,6 @@
                                     <th>
                                         <!-- Ver Cotizaciones -->
                                         @if ($solicitudes->estado === "Cotizado" && session('departamento') === $solicitudes->departamento)
-                                            <a class="btn btn-primary" href="{{route('verCotiza', $solicitudes->id_requisicion)}}">
-                                                Revisar cotizaciones
-                                            </a>
                                         @elseif ($solicitudes->estado === "Pre Validado" && session('rol')==="Gerente Area" && session('departamento')==="Finanzas")
                                             <a class="btn btn-info" href="{{route('aprobCotiza', $solicitudes->id_requisicion)}}">
                                                 Confirmar validación
