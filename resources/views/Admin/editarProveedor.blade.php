@@ -40,7 +40,7 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Telefono secundario:</label>
                     <input maxlength="10" name="telefono2" type="text" class="form-control"
-                        placeholder="No° telefonico secundarop del proveedor" value="{{$proveedor->telefono2}}"required>
+                        placeholder="No° telefonico secundarop del proveedor" value="{{$proveedor->telefono2}}">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Nombre del contacto:<span style="color: red;">*</span></label>
