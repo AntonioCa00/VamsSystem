@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('entra'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,7 +11,7 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
@@ -19,8 +19,8 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Panel de Gastos</h1>
-        <a href="{{route('reportes')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-            class="fas fa-download fa-sm text-white-50"></i> Reporte General</a>
+        <a href="{{route('reportes')}}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
+            class="fas fa-download fa-sm text-white-50"></i> REPORTES GENERALES</a>
     </div>
 
     <!-- Content Row -->
@@ -115,12 +115,12 @@
                 <!-- Card Header - Dropdown -->
                 <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Resumen de Gastos</h6>                    
+                    <h6 class="m-0 font-weight-bold text-primary">Resumen de Gastos</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>                        
+                        </a>
                     </div>
                 </div>
                 <!-- Card Body -->
@@ -143,7 +143,7 @@
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>                        
+                        </a>
                     </div>
                 </div>
                 <!-- Card Body -->

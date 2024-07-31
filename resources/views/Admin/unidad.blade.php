@@ -65,7 +65,11 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">UNIDADES</h1>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">UNIDADES</h1>
+        <a href="{{ route('reporteUnidadesCom') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
+                class="fas fa-download fa-sm text-white-50"></i> Exportar en PDF lista de unidades</a>
+    </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -121,7 +125,7 @@
                                             <div class="modal-body">Selecciona que hacer con esta unidad</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('deleteUnid',$unidad->id_unidad)}}" method="POST">
+                                                <form action="{{route('deleteUnidad',$unidad->id_unidad)}}" method="POST">
                                                     @csrf
                                                     {!!method_field('PUT')!!}
                                                     <button type="submit" class="btn btn-primary">Eliminar</button>

@@ -1376,67 +1376,42 @@ class controladorCompras extends Controller
       Sirve un archivo PDF generado directamente al navegador del usuario.
     */
     public function reporteReq(Request $req){
-        // Recopilar datos del empleado solicitante
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombres' => session('loginNombres'),
-            'apellidoP' => session('loginApepat'),
-            'apellidoM' => session('loginApemat'),
-            'rol' => session('rol'),
-            'dpto' =>session('departamento')
+
+        // Validar los datos recibidos
+        $req->validate([
+            'inicio' => 'required|date',
+            'fin' => 'required|date|after_or_equal:inicio',
+        ]);
+
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio');
+        $fFin = $req->input('fin');
+
+        //Da formato a la fechas obtenidas
+        $fechaInicio = date('d/m/Y', strtotime($fInicio));
+        $fechaFin = date('d/m/Y', strtotime($fFin));
+
+        //Almacen las fechas en un arreglo para mostrar en el PDF los rangos consultados
+        $fechas = [
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin
         ];
 
-        //Variable que define los rangos de reportes
-        $tipoReporte = $req->input('tipoReport');
+        // Obtener los departamentos seleccionados (si se ha implementado)
+        $departamentos = $req->input('departamentos', []);
 
-        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
-        switch ($tipoReporte){
-            case "semanal":
-                //Unicamente las requisiciones realizadas 7 días atrás hasta el día actual
-                $unaSemanaAtras = Carbon::now()->subWeek();
+        // Construir la consulta con INNER JOIN
+        $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
+                            ->select('requisiciones.*','users.nombres','users.apellidoP', 'users.departamento as departamento_nombre')
+                            ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
-                ->get();
-
-                break;
-            case "mensual":
-                //Unicamente las requisiciones realizadas dentro del mes en curso
-                $inicioDelMes = Carbon::now()->startOfMonth();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                break;
-            case "anual":
-                //Unicamente las requisiciones realizadas dentro del año en curso
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelAnio)
-                ->get();
-
-                break;
-            case "todas":
-                //No se realizan excepciones y consulta todas las requisiciones
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->orderBy('id_requisicion','asc')
-                ->get();
-
-                break;
+        // Si se han seleccionado departamentos, filtrar por ellos
+        if (!empty($departamentos)) {
+            $query->whereIn('users.departamento', $departamentos);
         }
 
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
+        // Ejecutar la consulta y obtener los resultados
+        $datosRequisicion = $query->get();
 
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start();
@@ -1458,128 +1433,78 @@ class controladorCompras extends Controller
       Sirve un archivo PDF generado directamente al navegador del usuario.
     */
     public function reporteOrd(Request $req){
-        //Recopilación de datos del usuario en sesión
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombres' => session('loginNombres'),
-            'apellidoP' => session('loginApepat'),
-            'apellidoM' => session('loginApemat'),
-            'rol' => session('rol'),
-            'dpto' =>session('departamento')
+
+        // Validar los datos recibidos
+        $req->validate([
+            'inicio' => 'required|date',
+            'fin' => 'required|date|after_or_equal:inicio',
+        ]);
+
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio');
+        $fFin = $req->input('fin');
+
+        //Da formato a la fechas obtenidas
+        $fechaInicio = date('d/m/Y', strtotime($fInicio));
+        $fechaFin = date('d/m/Y', strtotime($fFin));
+
+        //Almacen las fechas en un arreglo para mostrar en el PDF los rangos consultados
+        $fechas = [
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin
         ];
 
-        // Determinar el intervalo de tiempo para el reporte
-        $tipoReporte = $req->input('tipoReport');
+        // Obtener los departamentos seleccionados (si se ha implementado)
+        $departamentos = $req->input('departamentos', []);
 
-        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
-        switch ($tipoReporte){
-            case "semanal":
-                //Si es semanal, define el tiempo con la librería Carbon
-                $unaSemanaAtras = Carbon::now()->subWeek();
+        // Construir la consulta con INNER JOIN
+        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->join('users','requisiciones.usuario_id','users.id')
+                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
+                            ->where('orden_compras.estado','=',null);
 
-                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas 7 días atrás hasta el día actual
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=',null)
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();
+        // Construir la consulta con INNER JOIN
+        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->join('users','requisiciones.usuario_id','users.id')
+                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
+                            ->where('orden_compras.estado','=','Pagado');
 
-                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas 7 días atrás hasta el día actual
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Pagado')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();
-
-                break;
-            case "mensual":
-                //Si es mensual, definir el mes actual al momento del reporte con la librería Carbon
-                $inicioDelMes = Carbon::now()->startOfMonth();
-                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en curso
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=',null)
-                ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas dentro del mes en curso
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Pagado')
-                ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                break;
-            case "anual":
-                //Si es anual, definir el año actual al momento del reporte con la librería Carbon
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                //Unicamente las ordenes de compra pendientes que hayan sido realizadas dentro del año en curso
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=',null)
-                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
-                ->get();
-                //Recuperar las ordenes de compra que se han finalizado (pagado)
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Pagado')
-                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
-                ->get();
-
-                break;
-            case "todas":
-                //Al ser todas, no define rangos de tiempo.
-
-                //No se realizan excepciones y consulta todas las ordenes de compras pendientes
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=',null)
-                ->get();
-
-                //No se realizan excepciones y consulta todas las ordenes de compras pagadas
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Pagado')
-                ->get();
-
-            break;
+        // Si se han seleccionado departamentos, filtrar por ellos
+        if (!empty($departamentos)) {
+            $queryPendientes->whereIn('users.departamento', $departamentos);
+            $queryPagados->whereIn('users.departamento', $departamentos);
         }
 
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
+        // Ejecutar la consulta y obtener los resultados
+        $datosGastosFinalizados = $queryPagados->get();
+        $datosGastosPendientes = $queryPendientes->get();
 
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        // Incluir el archivo Reporte_Ordenes.php y pasar la ruta del archivo como una variable
         ob_start();
         include(public_path('/pdf/TCPDF-main/examples/Reporte_Ordenes.php'));
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
         echo $pdfContent;
+    }
+
+    public function reporteUnidades(){
+
+        $unidades = Unidades::where('estatus',1)
+        ->orderBY('n_de_permiso','asc')
+        ->get();
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_Unidades.php'));
+        $pdfContent = ob_get_clean();
+        header('Content-Type: application/pdf');
+        echo $pdfContent;
+
     }
 }

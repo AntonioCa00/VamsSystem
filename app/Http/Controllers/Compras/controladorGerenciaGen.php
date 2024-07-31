@@ -645,219 +645,155 @@ class controladorGerenciaGen extends Controller
     /*
       TODO: Genera y muestra un reporte de requisiciones basado en el tipo de reporte seleccionado.
 
-      Este método recibe una petición HTTP que contiene el tipo de reporte solicitado (semanal, mensual, anual, o todas).
+      Este método recibe una petición HTTP que contiene el tipo de reporte solicitado (fechas especificas y filtro de dptos).
       Dependiendo del tipo de reporte, realiza una consulta a la base de datos para recuperar las requisiciones dentro
-      del periodo de tiempo especificado, junto con información relevante de los usuarios que las crearon.
+      del periodo de tiempo especificado, junto con información de los departamentos seleccionados.
       Los datos recopilados se serializan y almacenan en un archivo, luego se genera un PDF del reporte utilizando una
       plantilla específica. Finalmente, el contenido del PDF se envía al navegador para su visualización o descarga.
 
       @return void
     */
     public function reporteReq(Request $req){
-        // Recopilación de información del empleado para incluirla en el reporte
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombres' => session('loginNombres'),
-            'apellidoP' => session('loginApepat'),
-            'apellidoM' => session('loginApemat'),
-            'rol' => session('rol'),
-            'dpto' =>session('departamento')
+
+        // Validar los datos recibidos
+        $req->validate([
+            'inicio' => 'required|date',
+            'fin' => 'required|date|after_or_equal:inicio',
+        ]);
+
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio');
+        $fFin = $req->input('fin');
+
+        //Da formato a la fechas obtenidas
+        $fechaInicio = date('d/m/Y', strtotime($fInicio));
+        $fechaFin = date('d/m/Y', strtotime($fFin));
+
+        //Almacen las fechas en un arreglo para mostrar en el PDF los rangos consultados
+        $fechas = [
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin
         ];
 
-        //Variable que define los rangos de reportes
-        $tipoReporte = $req->input('tipoReport');
+        // Obtener los departamentos seleccionados (si se ha implementado)
+        $departamentos = $req->input('departamentos', []);
 
-        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
-        switch ($tipoReporte){
-            case "semanal":
-                //Unicamente las requisiciones realizadas 7 días atrás hasta el día actual
-                $unaSemanaAtras = Carbon::now()->subWeek();
+        // Construir la consulta con INNER JOIN
+        $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
+                            ->select('requisiciones.*','users.nombres','users.apellidoP', 'users.departamento as departamento_nombre')
+                            ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $unaSemanaAtras)
-                ->get();
-
-                break;
-            case "mensual":
-                //Unicamente las requisiciones realizadas dentro del mes en curso
-                $inicioDelMes = Carbon::now()->startOfMonth();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                break;
-            case "anual":
-                //Unicamente las requisiciones realizadas dentro del año en curso
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->where('requisiciones.created_at', '>=', $inicioDelAnio)
-                ->get();
-
-                break;
-            case "todas":
-                //No se realizan excepciones y consulta todas las requisiciones
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                $datosRequisicion = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','requisiciones.created_at','requisiciones.estado','requisiciones.unidad_id')
-                ->join('users','requisiciones.usuario_id','=','users.id')
-                ->get();
-
-                break;
+        // Si se han seleccionado departamentos, filtrar por ellos
+        if (!empty($departamentos)) {
+            $query->whereIn('users.departamento', $departamentos);
         }
 
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
+        // Ejecutar la consulta y obtener los resultados
+        $datosRequisicion = $query->get();
 
-        // Incluir el archivo Reporte_Requisiciones.php y pasar la ruta del archivo como una variable
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
         ob_start();
         include(public_path('/pdf/TCPDF-main/examples/Reporte_Requisiciones.php'));
-        // Generación del PDF del reporte y envío del contenido al navegador
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
         echo $pdfContent;
     }
 
     /*
-      TODO: Genera y muestra un reporte de ordenes de compra basado en el tipo de reporte seleccionado.
+      Genera y sirve un reporte en formato PDF de las órdenes de compra basado en el intervalo de tiempo especificado.
 
-      Este método recibe una petición HTTP que contiene el tipo de reporte solicitado (semanal, mensual, anual, o todas).
-      Dependiendo del tipo de reporte, realiza una consulta a la base de datos para recuperar las ordenes de compra dentro
-      del periodo de tiempo especificado, junto con información relevante de los usuarios que las crearon.
-      Los datos recopilados se serializan y almacenan en un archivo, luego se genera un PDF del reporte utilizando una
-      plantilla específica. Finalmente, el contenido del PDF se envía al navegador para su visualización o descarga.
+      Este método maneja la solicitud de generación de reportes de órdenes de compra. Según el tipo de reporte solicitado
+      (fechas especificas y filtro de dptos), recupera las órdenes de compra correspondientes de la base de datos,
+      diferenciando entre órdenes pendientes y finalizadas. Finalmente, el método genera un PDF utilizando estos datos,
+      que luego es enviado directamente al cliente para su descarga o visualización.
 
-      @return void
+      Sirve un archivo PDF generado directamente al navegador del usuario.
     */
     public function reporteOrd(Request $req){
-        //Recopilación de datos del usuario en sesión
-        $datosEmpleado[] = [
-            'idEmpleado' => session('loginId'),
-            'nombres' => session('loginNombres'),
-            'apellidoP' => session('loginApepat'),
-            'apellidoM' => session('loginApemat'),
-            'rol' => session('rol'),
-            'dpto' =>session('departamento')
+
+        // Validar los datos recibidos
+        $req->validate([
+            'inicio' => 'required|date',
+            'fin' => 'required|date|after_or_equal:inicio',
+        ]);
+
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio');
+        $fFin = $req->input('fin');
+
+        //Da formato a la fechas obtenidas
+        $fechaInicio = date('d/m/Y', strtotime($fInicio));
+        $fechaFin = date('d/m/Y', strtotime($fFin));
+
+        //Almacen las fechas en un arreglo para mostrar en el PDF los rangos consultados
+        $fechas = [
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin
         ];
 
-        // Determinar el intervalo de tiempo para el reporte
-        $tipoReporte = $req->input('tipoReport');
+        // Obtener los departamentos seleccionados (si se ha implementado)
+        $departamentos = $req->input('departamentos', []);
 
-        //Dependiendo del tipo de reporte son los registros que se van a consultar y guadar dentro de la variable para el PDF
-        switch ($tipoReporte){
-            case "semanal":
-                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas 7 días atrás hasta el día actual
-                $unaSemanaAtras = Carbon::now()->subWeek();
+        // Construir la consulta con INNER JOIN
+        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->join('users','requisiciones.usuario_id','users.id')
+                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
+                            ->where('orden_compras.estado','=',null);
 
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();
+        // Construir la consulta con INNER JOIN
+        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->join('users','requisiciones.usuario_id','users.id')
+                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
+                            ->where('orden_compras.estado','=','Pagado');
 
-                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas 7 días atrás hasta el día actual
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $unaSemanaAtras)
-                ->get();
-
-                break;
-            case "mensual":
-                //Si es mensual, //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en cursodefinir el mes actual al momento del reporte con la librería Carbon
-                $inicioDelMes = Carbon::now()->startOfMonth();
-
-                //Unicamente las ordenes de compra pendientes y que hayan sido realizadas dentro del mes en curso
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                //Unicamente las ordenes de compra pagadas y que hayan sido realizadas dentro del mes en curso
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $inicioDelMes)
-                ->get();
-
-                break;
-            case "anual":
-                //Si es anual, definir el año actual al momento del reporte con la librería Carbon
-                $inicioDelAnio = Carbon::now()->startOfYear();
-
-                //Recuperar las ordenes de compra que no se han finalizado (pagado)
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
-                ->get();
-
-                //Recuperar las ordenes de compra que se han finalizado (pagado)
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
-                ->where('orden_compras.created_at', '>=', $inicioDelAnio)
-                ->get();
-
-                break;
-            case "todas":
-                //Al ser todas, no define rangos de tiempo.
-                //No se realizan excepciones y consulta todas las ordenes de compras pendientes
-                $datosGastosPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','!=','Finalizado')
-                ->get();
-
-                //Recuperar las ordenes de compra que se han finalizado (pagado)
-                $datosGastosFinalizados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
-                ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->where('orden_compras.estado','=','Finalizado')
-                ->get();
-
-            break;
+        // Si se han seleccionado departamentos, filtrar por ellos
+        if (!empty($departamentos)) {
+            $queryPendientes->whereIn('users.departamento', $departamentos);
+            $queryPagados->whereIn('users.departamento', $departamentos);
         }
 
-        // Serializar los datos del empleado y almacenarlos en un archivo
-        $datosSerializados = serialize($datosEmpleado);
-        $rutaArchivo = storage_path('app/datos_empleados.txt');
-        file_put_contents($rutaArchivo, $datosSerializados);
+        // Ejecutar la consulta y obtener los resultados
+        $datosGastosFinalizados = $queryPagados->get();
+        $datosGastosPendientes = $queryPendientes->get();
 
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        // Incluir el archivo Reporte_Ordenes.php y pasar la ruta del archivo como una variable
         ob_start();
         include(public_path('/pdf/TCPDF-main/examples/Reporte_Ordenes.php'));
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
+        echo $pdfContent;
+    }
+
+    /*
+      Genera y muestra un reporte en PDF de todas las unidades activas.
+
+      Este método obtiene todas las unidades activas (con estatus 1) de la base de datos, ordenadas por su número de permiso
+      en orden ascendente. Luego, incluye un archivo PHP que genera un PDF con los datos obtenidos y lo muestra al usuario.
+      El contenido del PDF se genera utilizando la biblioteca TCPDF.
+
+      Muestra el contenido del PDF generado directamente en el navegador.
+    */
+    public function reporteUnidades(){
+        // Obtener todas las unidades activas, ordenadas por número de permiso en orden ascendente
+        $unidades = Unidades::where('estatus', 1)
+            ->orderBY('n_de_permiso', 'asc')
+            ->get();
+
+        // Incluir el archivo que genera el PDF y pasar la ruta del archivo como una variable
+        ob_start(); // Iniciar el búfer de salida para capturar el contenido del PDF
+        include(public_path('/pdf/TCPDF-main/examples/Reporte_Unidades.php'));
+        $pdfContent = ob_get_clean(); // Obtener el contenido del búfer y limpiarlo
+
+        // Establecer la cabecera para el tipo de contenido como PDF
+        header('Content-Type: application/pdf');
+
+        // Mostrar el contenido del PDF en el navegador
         echo $pdfContent;
     }
 
