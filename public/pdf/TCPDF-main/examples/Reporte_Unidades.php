@@ -1,7 +1,7 @@
 <?php
 require_once('tcpdf_include.php');
 // create new PDF document
-$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf = new TCPDF('L', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 // set document information
 $pdf->setCreator(PDF_CREATOR);
@@ -11,7 +11,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' General de gastos anual ', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' reporte de unidades ', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -53,55 +53,41 @@ $currentYear = date('Y');
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, 'Reporte de requisiciones', 0, 1, 'C');
+$pdf->Cell(0, 10, 'Reporte de Unidades', 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 
-$pdf->Ln(6); // Salto de línea antes de la tabla
-
-$pdf->Cell(0, 10, 'Periodo del reporte', 0, 1, 'A');
+$pdf->Ln(2); // Salto de línea antes de la tabla
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 10);
-
-// Encabezados de la tabla
-$pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(87.5, 5, 'Fecha Inicial:', 1, 0, 'C', 1);
-$pdf->Cell(87.5, 5, 'Fecha Final:', 1, 1, 'C', 1);
-
-$pdf->Cell(87.5, 5, $fechas['fecha_inicio'], 1, 0, 'C',0);
-$pdf->Cell(87.5, 5, $fechas['fecha_fin'], 1, 1, 'C');
-$pdf->SetFont('helvetica', 'B', 12);
 
 $pdf->Ln(4); // Salto de línea antes de la tabla
 
 $pdf->SetFont('helvetica', 'B', 12);
 // Imprimir el subtutitulo
-$pdf->Cell(0, 10, "Registro de solicitudes creadas ", 0, 1, 'A');
+$pdf->Cell(0, 10, "Registro actual de unidades activas ", 0, 1, 'A');
 //  ID requisicion	Encargado:	Fecha solicitud:	Estado:	Unidad:	Requisicion	Orden Compra:
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 9);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(15, 7, 'Folio', 1, 0, 'C', 1);
-$pdf->Cell(50, 7, 'Solicitante', 1, 0, 'C', 1);
-$pdf->Cell(25, 7, 'Departamento', 1, 0, 'C', 1);
-$pdf->Cell(35, 7, 'Fecha solicitud', 1, 0, 'C', 1);
-$pdf->Cell(25, 7, 'Estado', 1, 0, 'C', 1);
-$pdf->Cell(25, 7, 'Unidad', 1, 1, 'C', 1);
-
+$pdf->Cell(30, 7, 'Placas', 1, 0, 'C', 1);
+$pdf->Cell(30, 7, 'N° Permiso', 1, 0, 'C', 1);
+$pdf->Cell(55, 7, 'Numero de serie', 1, 0, 'C', 1);
+$pdf->Cell(30, 7, 'Tipo', 1, 0, 'C', 1);
+$pdf->Cell(15, 7, 'Año', 1, 0, 'C', 1);
+$pdf->Cell(50, 7, 'Marca / Modelo', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Caracteristica', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Kilometraje', 1, 1, 'C',1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
-foreach ($datosRequisicion as $req) {
-    $pdf->Cell(15, 7, $req['id_requisicion'], 1, 0, 'C',0);
-    $pdf->Cell(50, 7, $req['nombres'].' '.$req['apellidoP'], 1, 0, 'C',0);
-    $pdf->Cell(25, 7, $req['departamento_nombre'], 1, 0, 'C',0);
-	$pdf->Cell(35, 7, $req['created_at'], 1, 0, 'C',0);
-	$pdf->Cell(25, 7, $req['estado'], 1, 0, 'C',0);
-	if(empty($req['unidad_id'])){
-        $pdf->Cell(25, 7, 'Sin unidad', 1, 1, 'C',0);
-    } elseif ($req['unidad_id'] == 1){
-        $pdf->Cell(25, 7, 'No asignada', 1, 1, 'C',0);
-    } else{
-        $pdf->Cell(25, 7, $req['unidad_id'], 1, 1, 'C',0);
-    }
+foreach ($unidades as $unidad) {
+    $pdf->Cell(30, 7, $unidad['id_unidad'], 1, 0, 'C',0);
+    $pdf->Cell(30, 7, $unidad['n_de_permiso'], 1, 0, 'C',0);
+	$pdf->Cell(55, 7, $unidad['n_de_serie'], 1, 0, 'C',0);
+    $pdf->Cell(30, 7, $unidad['tipo'], 1, 0, 'C',0);
+    $pdf->Cell(15, 7, $unidad['anio_unidad'], 1, 0, 'C',0);
+    $pdf->Cell(50, 7, $unidad['marca'].' '.$unidad['modelo'], 1, 0, 'C',0);
+	$pdf->Cell(25, 7, $unidad['caracteristicas'], 1, 0, 'C',0);
+    $pdf->Cell(25, 7, $unidad['kilometraje'], 1, 1, 'C',0);
 }
 // Generar el PDF
 
