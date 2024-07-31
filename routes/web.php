@@ -43,6 +43,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('reportesGerencia',[controladorGerenciaGen::class,'reportes'])->name('reportes');
         Route::get('compras/GerenciaGen',[controladorGerenciaGen::class,'compras'])->name('comprasGerGen');
         Route::get('pagos/GerenciaGen',[controladorGerenciaGen::class,'pagos'])->name('pagosGerGen');
+        Route::get('reportesGerencia/Unidades',[controladorGerenciaGen::class,'reporteUnidades'])->name('reporteUnidadesGer');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -80,6 +81,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('pagosFijos/Compras',[controladorCompras::class,'pagosFijos'])->name('pagosFijos');
         Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
+        Route::get('reportesCompras/Unidades',[controladorCompras::class,'reporteUnidades'])->name('reporteUnidadesCom');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
