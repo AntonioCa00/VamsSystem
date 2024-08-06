@@ -143,7 +143,7 @@
                                     <label for="exampleFormControlSelect1">ORDENES DE COMPRA:</label>
                                     <a class="btn btn-primary" href="#" data-toggle="modal"
                                         data-target="#ReportesCompras">
-                                        Reporte de ordenes de compra
+                                        Reporte de ordenes
                                     </a>
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="ReportesCompras" tabindex="-1" role="dialog"

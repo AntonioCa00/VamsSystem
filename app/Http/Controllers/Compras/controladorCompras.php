@@ -480,14 +480,9 @@ class controladorCompras extends Controller
         ->leftJoin('users as us','us.id','=','comentarios.usuario_id')
         ->select('requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf','requisiciones.created_at as fecha_creacion', DB::raw('MAX(comentarios.detalles) as detalles'),'us.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->where(function($query) {
-            $query->where('requisiciones.estado', '=', 'Aprobado')
-                  ->orWhere('requisiciones.estado', '=', 'Cotizado')
-                  ->orWhere('requisiciones.estado', '=', 'Validado')
-                  ->orWhere('requisiciones.estado', '=', 'Comprado');
-        })
         ->orderBy('requisiciones.created_at','desc')
         ->groupBy('requisiciones.id_requisicion')
+        ->where('requisiciones.estado','!=','Finalizado')
         ->get();
 
         // Recuperación de información agrupada por departamento
