@@ -1391,8 +1391,8 @@ class controladorCompras extends Controller
         ]);
 
         // Obtener las fechas del formulario
-        $fInicio = $req->input('inicio');
-        $fFin = $req->input('fin');
+        $fInicio = $req->input('inicio').' 00:00:00';
+        $fFin = $req->input('fin').' 23:59:59';
 
         // Dar formato a las fechas obtenidas
         $fechaInicio = date('d/m/Y', strtotime($fInicio));
@@ -1423,6 +1423,9 @@ class controladorCompras extends Controller
         // Crear un nuevo archivo Excel para los datos de las requisiciones
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+
+        // Asignar nombre a la hoja
+        $sheet->setTitle('Requisiciones');
 
         // Añadir borde grueso a la celda A1
         $sheet->getStyle('A1:F1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
@@ -1480,10 +1483,10 @@ class controladorCompras extends Controller
         $rowNumber = 6;
         foreach ($datosRequisicion as $requisicion) {
             $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
-            if (empty($requisicion->unidad_id)) {
+            if (empty($requisicion->id_unidad)) {
                 $unidad = 'No aplica';
             }
-            elseif($requisicion->unidad_id === 1 || $requisicion->unidad_id === 2){
+            elseif($requisicion->id_unidad === 1 || $requisicion->id_unidad === 2){
                 $unidad = 'No asignada';
             }
             $sheet->setCellValue('A' . $rowNumber, $requisicion->id_requisicion);
@@ -1542,8 +1545,9 @@ class controladorCompras extends Controller
         ]);
 
         // Obtener las fechas del formulario
-        $fInicio = $req->input('inicio');
-        $fFin = $req->input('fin');
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio').' 00:00:00';
+        $fFin = $req->input('fin').' 23:59:59';
 
         //Da formato a la fechas obtenidas
         $fechaInicio = date('d/m/Y', strtotime($fInicio));
