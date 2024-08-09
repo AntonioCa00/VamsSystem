@@ -1409,7 +1409,8 @@ class controladorCompras extends Controller
 
         // Construir la consulta con INNER JOIN
         $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
-            ->select('requisiciones.*', 'users.nombres', 'users.apellidoP', 'users.departamento as departamento_nombre')
+            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
+            ->select('requisiciones.*','unidades.id_unidad','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
             ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
         // Si se han seleccionado departamentos, filtrar por ellos
@@ -1483,15 +1484,21 @@ class controladorCompras extends Controller
         $rowNumber = 6;
         foreach ($datosRequisicion as $requisicion) {
             $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
-            if (empty($requisicion->id_unidad)) {
-                $unidad = 'No aplica';
+            if (empty($requisicion->unidad_id)) {
+                $unidad = 'NA';
             }
-            elseif($requisicion->id_unidad === 1 || $requisicion->id_unidad === 2){
+            elseif($requisicion->unidad_id == 1 || $requisicion->unidad_id == 2){
                 $unidad = 'No asignada';
+            } else{
+                if($requisicion->tipo === "CAMIÓN" || $requisicion->tipo=== "CAMIONETA"){
+                    $unidad = $requisicion->n_de_permiso;
+                } else{
+                    $unidad = $requisicion->id_unidad;
+                }
             }
             $sheet->setCellValue('A' . $rowNumber, $requisicion->id_requisicion);
             $sheet->setCellValue('B' . $rowNumber, $nombreCompleto);
-            $sheet->setCellValue('C' . $rowNumber, $requisicion->departamento_nombre);
+            $sheet->setCellValue('C' . $rowNumber, $requisicion->departamento);
             $sheet->setCellValue('D' . $rowNumber, $requisicion->created_at);
             $sheet->setCellValue('E' . $rowNumber, $unidad);
             $sheet->setCellValue('F' . $rowNumber, $requisicion->estado);
@@ -1563,19 +1570,21 @@ class controladorCompras extends Controller
         $departamentos = $req->input('departamentos', []);
 
         // Construir la consulta con INNER JOIN
-        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
                             ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                             ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                             ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                             ->join('users','requisiciones.usuario_id','users.id')
+                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
                             ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
                             ->where('orden_compras.estado','=',null);
 
         // Construir la consulta con INNER JOIN
-        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
                             ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                             ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                             ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
                             ->join('users','requisiciones.usuario_id','users.id')
                             ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
                             ->where('orden_compras.estado','=','Pagado');
@@ -1637,25 +1646,26 @@ class controladorCompras extends Controller
         $sheet->getStyle('A5')->getFont()->setSize(16);
 
         // Escribir encabezados en el archivo Excel
-        $sheet->setCellValue('A7', 'Folio de compra');
-        $sheet->setCellValue('B7', 'Nombre Usuario');
-        $sheet->setCellValue('C7', 'Departamento');
-        $sheet->setCellValue('D7', 'Fecha Creación');
-        $sheet->setCellValue('E7', 'Requisicion');
+        $sheet->setCellValue('A7', 'Fecha de requisicion');
+        $sheet->setCellValue('B7', 'Área');
+        $sheet->setCellValue('C7', 'Solicitante');
+        $sheet->setCellValue('D7', 'Requisicion');
+        $sheet->setCellValue('E7', 'Orden compra');
         $sheet->setCellValue('F7', 'Proveedor');
         $sheet->setCellValue('G7', 'Costo');
+        $sheet->setCellValue('H7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet->getStyle('A7:G7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet->getStyle('A7:G7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet->getStyle('A7:G7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'G') as $columnID) {
+         foreach (range('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -1664,25 +1674,39 @@ class controladorCompras extends Controller
         foreach ($datosGastosPendientes as $orden) {
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
             $fecha = date('d/m/Y', strtotime($orden->created_at));
-            $sheet->setCellValue('A' . $rowNumber, $orden->id_orden);
-            $sheet->setCellValue('B' . $rowNumber, $nombreCompleto);
-            $sheet->setCellValue('C' . $rowNumber, $orden->departamento);
-            $sheet->setCellValue('D' . $rowNumber, $fecha);
-            $sheet->setCellValue('E' . $rowNumber, $orden->id_requisicion);
+            if (empty($orden->unidad_id)) {
+                $unidad = 'NA';
+            }
+            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                $unidad = 'No asignada';
+            } else{
+                if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    $unidad = $orden->n_de_permiso;
+                } else{
+                    $unidad = $orden->id_unidad;
+                }
+            }
+
+            $sheet->setCellValue('A' . $rowNumber, $fecha);
+            $sheet->setCellValue('B' . $rowNumber, $orden->departamento);
+            $sheet->setCellValue('C' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('D' . $rowNumber, $orden->id_requisicion);
+            $sheet->setCellValue('E' . $rowNumber, $orden->id_orden);
             $sheet->setCellValue('F' . $rowNumber, $orden->nombre);
             $sheet->setCellValue('G' . $rowNumber, $orden->costo_total);
+            $sheet->setCellValue('H' . $rowNumber, $unidad);
 
             // Centrar las celdas de la fila actual
-            $sheet->getStyle('A' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet->getStyle('A' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             $rowNumber++;
         }
 
         // Aplicar filtros a la tabla de datos
-        $sheet->setAutoFilter('A7:G7');
+        $sheet->setAutoFilter('A7:H7');
 
         // Calcular y escribir el total de los costos al final de la tabla
         $sheet->setCellValue('F' . $rowNumber, 'Total');
@@ -1704,10 +1728,10 @@ class controladorCompras extends Controller
         $spreadsheet->addSheet($sheet2);
 
         // Añadir borde grueso a la celda A1
-        $sheet2->getStyle('A1:G1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet2->getStyle('A1:H1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Combinar celdas de la fila 1 para el título
-        $sheet2->mergeCells('A1:G1');
+        $sheet2->mergeCells('A1:H1');
         $sheet2->setCellValue('A1', 'REPORTE GENERAL DE ORDENES DE COMPRA');
 
         // Establecer el color de fondo de la celda A1
@@ -1743,25 +1767,26 @@ class controladorCompras extends Controller
         $sheet2->getStyle('A5')->getFont()->setSize(16);
 
         // Escribir encabezados en el archivo Excel
-        $sheet2->setCellValue('A7', 'Folio de compra');
-        $sheet2->setCellValue('B7', 'Nombre Usuario');
-        $sheet2->setCellValue('C7', 'Departamento');
-        $sheet2->setCellValue('D7', 'Fecha Creación');
-        $sheet2->setCellValue('E7', 'Requisicion');
+        $sheet2->setCellValue('A7', 'Fecha de requisicion');
+        $sheet2->setCellValue('B7', 'Área');
+        $sheet2->setCellValue('C7', 'Solicitante');
+        $sheet2->setCellValue('D7', 'Requisicion');
+        $sheet2->setCellValue('E7', 'Orden compra');
         $sheet2->setCellValue('F7', 'Proveedor');
         $sheet2->setCellValue('G7', 'Costo');
+        $sheet2->setCellValue('H7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet2->getStyle('A7:G7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet2->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet2->getStyle('A7:G7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet2->getStyle('A7:G7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet2->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'G') as $columnID) {
+         foreach (range('A', 'H') as $columnID) {
             $sheet2->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -1771,26 +1796,40 @@ class controladorCompras extends Controller
         // Escribir los datos de las requisiciones en el archivo Excel
         $rowNumber = 8;
         foreach ($datosGastosFinalizados as $orden) {
-            $fecha = date('d/m/Y', strtotime($orden->created_at));
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
-            $sheet2->setCellValue('A' . $rowNumber, $orden->id_orden);
-            $sheet2->setCellValue('B' . $rowNumber, $nombreCompleto);
-            $sheet2->setCellValue('C' . $rowNumber, $orden->departamento);
-            $sheet2->setCellValue('D' . $rowNumber, $fecha);
-            $sheet2->setCellValue('E' . $rowNumber, $orden->id_requisicion);
+            $fecha = date('d/m/Y', strtotime($orden->created_at));
+            if (empty($orden->unidad_id)) {
+                $unidad = 'NA';
+            }
+            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                $unidad = 'No asignada';
+            } else{
+                if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    $unidad = $orden->n_de_permiso;
+                } else{
+                    $unidad = $orden->id_unidad;
+                }
+            }
+
+            $sheet2->setCellValue('A' . $rowNumber, $fecha);
+            $sheet2->setCellValue('B' . $rowNumber, $orden->departamento);
+            $sheet2->setCellValue('C' . $rowNumber, $nombreCompleto);
+            $sheet2->setCellValue('D' . $rowNumber, $orden->id_requisicion);
+            $sheet2->setCellValue('E' . $rowNumber, $orden->id_orden);
             $sheet2->setCellValue('F' . $rowNumber, $orden->nombre);
             $sheet2->setCellValue('G' . $rowNumber, $orden->costo_total);
+            $sheet2->setCellValue('H' . $rowNumber, $unidad);
 
             // Centrar las celdas de la fila actual
-            $sheet2->getStyle('A' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet2->getStyle('A' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             $rowNumber++;
         }
 
-        $sheet2->setAutoFilter('A7:G7');
+        $sheet2->setAutoFilter('A7:H7');
 
         // Calcular y escribir el total de los costos al final de la tabla
         $sheet2->setCellValue('F' . $rowNumber, 'Total');
@@ -1804,6 +1843,8 @@ class controladorCompras extends Controller
 
         // Añadir bordes gruesos a la fila del total
         $sheet2->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);$sheet2->setAutoFilter('A7:G7');
+
+        $spreadsheet->setActiveSheetIndex(0);
 
         // Configurar el archivo para descarga
         $fileName = 'reporte_ordenes_' . Carbon::now()->format('Ymd_His') . '.xlsx';
