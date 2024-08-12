@@ -96,7 +96,7 @@
                 </li>
             @endif
 
-            @if (session('departamento') == "Mantenimiento" && session('loginNombres') == "Jose Angel")
+            @if (session('departamento') == "Mantenimiento")
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 
@@ -104,7 +104,7 @@
                 <div class="sidebar-heading">
                     Modulo de mantenimiento
                 </div>
-                
+
                 <li class="nav-item active">
                     <a class="nav-link" href="{{route('manteniento')}}">
                         <i class="fas fa-fw fa-table"></i>
@@ -116,7 +116,7 @@
                         <i class="fas fa-fw fa-table"></i>
                         <span>Calendario</span></a>
                 </li>
-                    
+
             @endif
 
             <!-- Divider -->
@@ -164,7 +164,7 @@
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">                               
+                                aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Cerrar sesion
@@ -178,7 +178,7 @@
                 <!-- End of Topbar -->
 
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
-                @yield('contenido') 
+                @yield('contenido')
 
             </div>
             <!-- End of Main Content -->
@@ -188,7 +188,7 @@
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>Copyright &copy; <script>
-                            let date = new Date();                        
+                            let date = new Date();
                             let year = date.getFullYear();
                             document.write(year);
                         </script>

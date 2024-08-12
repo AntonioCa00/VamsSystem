@@ -384,54 +384,51 @@ class controladorGerenciaGen extends Controller
       Redirige al usuario a la lista de encargados con una sesión flash que indica que el nuevo usuario ha sido creado exitosamente.
     */
     public function insertUser(Request $req){
+
+        $departamento = null;
+         // Validación condicional basada en el valor del campo 'rol'
+        if ($req->rol === "Gerente Area") {
+            $req->validate([
+                'departamentos' => 'required|array|min:1', // Permite minimo un departamento
+            ]);
+
+            // Procesar los datos si son válidos
+            $departamentos = $req->input('departamentos');
+
+            // Concatenar los departamentos en una sola cadena
+            $departamento = implode(' / ', $departamentos);
+
+        } elseif($req->rol === "Otro") {
+            $req->validate([
+                'departamentos' => 'required|array|size:1', // Permite uno o más departamentos
+            ],
+            [
+                'departamentos.size' => 'El solicitante solo puede pertenecer a un departamento.',
+            ]);
+
+            // Procesar los datos si son válidos
+            $departamentos = $req->input('departamentos');
+
+            // Concatenar los departamentos en una sola cadena
+            $departamento = implode(' / ', $departamentos);
+            $req->rol = 'General';
+        }
+
         $password = $this->generateRandomPassword();// Genera una contraseña aleatoria
 
-        // Inserción del nuevo usuario en la base de datos con ajustes condicionales basados en el rol
-        if($req->rol === "Otro"){
-            // Caso específico para el rol 'Otro'
-            DB::table('users')->insert([
-                "nombres"=>$req->input('nombres'),
-                "apellidoP"=>$req->input('apepat'),
-                "apellidoM"=>$req->input('apemat'),
-                "telefono"=>$req->input('telefono'),
-                "correo"=>$req->input('correo'),
-                "password"=>$password,
-                "rol"=>'General',
-                "departamento"=>$req->input('departamento'),
-                "estatus"=>'1',
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
-        }elseif ($req->rol === "Gerente Area"){
-            // Caso específico para el rol 'Gerente Area'
-            DB::table('users')->insert([
-                "nombres"=>$req->input('nombres'),
-                "apellidoP"=>$req->input('apepat'),
-                "apellidoM"=>$req->input('apemat'),
-                "telefono"=>$req->input('telefono'),
-                "correo"=>$req->input('correo'),
-                "password"=>$password,
-                "rol"=>$req->input('rol'),
-                "departamento"=>$req->input('departamento'),
-                "estatus"=>'1',
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
-        } else {
-            // Caso general para otros roles
-            DB::table('users')->insert([
-                "nombres"=>$req->input('nombres'),
-                "apellidoP"=>$req->input('apepat'),
-                "apellidoM"=>$req->input('apemat'),
-                "telefono"=>$req->input('telefono'),
-                "correo"=>$req->input('correo'),
-                "password"=>$password,
-                "rol"=>$req->input('rol'),
-                "estatus"=>'1',
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
-        }
+        User::create([
+            "nombres"=>$req->input('nombres'),
+            "apellidoP"=>$req->input('apepat'),
+            "apellidoM"=>$req->input('apemat'),
+            "telefono"=>$req->input('telefono'),
+            "correo"=>$req->input('correo'),
+            "password"=>$password,
+            "rol"=>$req->input('rol'),
+            "departamento"=>$departamento,
+            "estatus"=>'1',
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
         //Redirige al usuario a la página d usuarios para visualizar la actualización
         return redirect()->route('encargados')->with('creado','creado');
     }
@@ -468,6 +465,36 @@ class controladorGerenciaGen extends Controller
       Redirige al usuario a la lista de encargados con una sesión flash que indica que el usuario ha sido editado exitosamente.
     */
     public function updateUser(Request $req, $id){
+
+        $departamento = null;
+         // Validación condicional basada en el valor del campo 'rol'
+        if ($req->rol === "Gerente Area") {
+            $req->validate([
+                'departamentos' => 'required|array|min:1', // Permite minimo un departamento
+            ]);
+
+            // Procesar los datos si son válidos
+            $departamentos = $req->input('departamentos');
+
+            // Concatenar los departamentos en una sola cadena
+            $departamento = implode(' / ', $departamentos);
+
+        } elseif($req->rol === "General") {
+            $req->validate([
+                'departamentos' => 'required|array|size:1', // Permite uno o más departamentos
+            ],
+            [
+                'departamentos.size' => 'El solicitante solo puede pertenecer a un departamento.',
+            ]);
+
+            // Procesar los datos si son válidos
+            $departamentos = $req->input('departamentos');
+
+            // Concatenar los departamentos en una sola cadena
+            $departamento = implode(' / ', $departamentos);
+            $req->rol = 'General';
+        }
+
         // Actualiza el registro del usuario específico con los datos proporcionados
         User::where('id',$id)->update([
             "nombres"=>$req->input('nombres'),
@@ -477,6 +504,7 @@ class controladorGerenciaGen extends Controller
             "correo"=>$req->input('correo'),
             "password"=>$req->input('password'),
             "rol"=>$req->input('rol'),
+            "departamento"=>$departamento,
             "estatus"=>'1',
             "updated_at"=>Carbon::now()
         ]);

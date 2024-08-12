@@ -6,7 +6,7 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">USUARIOS</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -15,7 +15,7 @@
         <div class="card-body">
             <h3 class="text-center">Datos de registro</h3>
             <form action="{{route('updateUser',$encargado->id)}}" method="POST">
-                {!!method_field('PUT')!!}    
+                {!!method_field('PUT')!!}
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Nombre(s):</label>
@@ -47,44 +47,47 @@
                     <select name="rol" class="form-control">
                         <option value="{{$encargado->rol}}"selected>{{$encargado->rol}}</option>
                         <option disabled value="">Selecciona el rol que tendrá el usuario</option>
-                        <option>Gerencia General</option>
-                        <option>Gerente Area</option>
-                        <option>Compras</option>
-                        <option>Otro</option>
+                        <option value="Gerencia General">Gerencia General</option>
+                        <option value="Gerente Area">Gerente Area</option>
+                        <option value="Compras">Compras</option>
+                        <option value="General">Solicitante</option>
                     </select>
                 </div>
 
-                @if ($encargado->rol === "Gerencia General" || $encargado->rol === "Compras")
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">¿A que departamento pertence?</label>
-                        <select name="dpto" class="form-control">
-                            <option value="{{$encargado->departamento}}"selected>{{$encargado->departamento}}</option>
-                            <option disabled value="">Selecciona el departamento al que pertenece el usuario</option>
-                            <option>Direccion</option>
-                            <option>Compras</option>
-                            <option>Finanzas</option>
-                            <option>Logística</option>
-                            <option>Mantenimiento</option>
-                            <option>RH</option>            
-                            <option>Ventas</option>
-                        </select>
+                <label for="exampleFormControlInput1">¿A que departamento pertence?</label>
+                    @if ($errors->has('departamentos'))
+                        <p class="text-danger fst-italic fw-bold">{{ $errors->first('departamentos') }}</p>
+                    @endif
+                    @php
+                        // Separar los departamentos en un array
+                        $departamentosSeleccionados = explode(' / ', $encargado->departamento);
+                    @endphp
+
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Finanzas" id="flexCheckDefault"
+                            {{ in_array('Finanzas', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckDefault">Finanzas</label>
                     </div>
-                @else 
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">¿A que departamento pertence?</label>
-                        <select name="dpto" class="form-control" required>
-                            <option value="{{$encargado->departamento}}"selected>{{$encargado->departamento}}</option>
-                            <option disabled value="">Selecciona el departamento al que pertenece el usuario</option>
-                            <option>Direccion</option>
-                            <option>Compras</option>
-                            <option>Finanzas</option>
-                            <option>Logística</option>
-                            <option>Mantenimiento</option>
-                            <option>RH</option>            
-                            <option>Ventas</option>
-                        </select>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Logistica" id="flexCheckChecked"
+                            {{ in_array('Logistica', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckChecked">Logistica</label>
                     </div>
-                @endif                
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Mantenimiento" id="flexCheckDefault"
+                            {{ in_array('Mantenimiento', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckDefault">Mantenimiento</label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="RH" id="flexCheckChecked"
+                            {{ in_array('RH', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckChecked">RH</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Ventas" id="flexCheckChecked"
+                            {{ in_array('Ventas', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckChecked">Ventas</label>
+                    </div>
                 <button type="submit" class="btn btn-primary">Editar usuario</button>
             </form>
         </div>
