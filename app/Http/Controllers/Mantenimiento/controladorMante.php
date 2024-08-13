@@ -420,9 +420,11 @@ class controladorMante extends Controller
 
         // Obtener la unidad proporcionada en la solicitud
         $unidad = $req->unidad;
+        $fecha = $req->date;
 
         // Buscar la programación activa o en reprogramación para la unidad especificada
         $programacion = programaciones::where('unidad_id',$unidad)
+        ->where('fecha_progra',$fecha)
         ->where(function($query) {
             $query->where('estatus', '1')
                 ->orWhere('estatus', '2');
@@ -440,14 +442,25 @@ class controladorMante extends Controller
                 'created_at'=>Carbon::now(),
                 'updated_at'=>Carbon::now()
             ]);
+
+            return back()->with('programado','programado');
         } else {
-            // Si ya existe una programación, actualizar la fecha programada
-            programaciones::where('id_programacion',$programacion->id_programacion)->update([
-                'fecha_progra'=>$req->date,
-                'updated_at'=>Carbon::now()
-            ]);
+            // Si ya existe una programación, validar que sea una fecha diferente a la que se planeó veces anteriores
+            if ($programacion->fecha_progra === $fecha){
+                return back()->with('error','error');
+            } else{
+                // Si no coincide la fecha, crea una nueva
+                programaciones::create([
+                    'fecha_progra'=>$req->date,
+                    'unidad_id'=>$unidad,
+                    'notas'=>$req->notas,
+                    'estatus'=>'1',
+                    'created_at'=>Carbon::now(),
+                    'updated_at'=>Carbon::now()
+                ]);
+
+                return back()->with('programado','programado');
+            }
         }
-        // Redirigir al usuario de regreso a la página anterior con un mensaje de éxito
-        return back()->with('programado','programado');
     }
 }
