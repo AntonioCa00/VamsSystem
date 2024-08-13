@@ -14,17 +14,29 @@
     </script>
 @endif
 
+@if (session()->has('error'))
+    <script type="text/javascript">
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Ya has programado un mantenimiento para esta unidad!',
+            showConfirmButton: false,
+            timer: 1000
+        })
+    </script>
+@endif
+
     <div class="container-fluid">
         <div class="py-1 d-flex justify-content-between align-items-center">
             <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">MANTENIMIENTO UNIDADES</h1>        
+            <h1 class="h3 mb-2 text-gray-800">MANTENIMIENTO UNIDADES</h1>
         </div>
 
         <div class="container-fluid">
             <!-- Page Heading -->
             <div class="card-body">
                 <div id='calendar'></div>
-            </div>            
+            </div>
 
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -40,14 +52,14 @@
                             <form action="{{route('programarC')}}" method="POST">
                                 @csrf
                                 <label>Seleccione la fecha en que realizará el siguiente mantenimiento:</label>
-                                <div class="form-group">                                                                
+                                <div class="form-group">
                                     <input name="date" type="date" class="form-control">
                                 </div>
                                 <label>¿Qué unidad se le realizará el manteniento?</label>
-                                <div class="form-group">  
+                                <div class="form-group">
                                     <select name="unidad" class="form-control" required>
                                         <option value="" selected disabled>Selecciona la unidad que se programará el mantenimiento:</option>
-                                        @foreach ($unidades as $unidad)            
+                                        @foreach ($unidades as $unidad)
                                             @if ($unidad->tipo != "AUTOMOVIL")
                                                 <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_permiso}} - {{$unidad->marca}} {{$unidad->modelo}}</option>
                                             @else
@@ -55,21 +67,21 @@
                                             @endif
                                         @endforeach
                                     </select>
-                                </div>                                
+                                </div>
                                 <label>Notas del mantenimiento:</label>
-                                <div class="form-group">                                                                                                                                
+                                <div class="form-group">
                                     <input name="notas" type="input" class="form-control">
                                 </div>
                                 <button type="submit" class="btn btn-primary">Programar mantenimiento</button>
                             </form>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     var calendarEl = document.getElementById('calendar');
-        
+
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         plugins: [ 'dayGrid', 'interaction' ],
                         header: {
@@ -114,10 +126,10 @@
                         }
                     }
                     });
-        
+
                     calendar.render();
                 });
-            </script>   
+            </script>
         </div> <!-- Fin de la clase container-fluid -->
     </div> <!-- Fin de la clase container-fluid -->
 @endsection
