@@ -48,7 +48,7 @@
                             <option value="Gerencia General" {{ old('rol') == 'Gerencia General' ? 'selected' : '' }}>Gerencia General</option>
                             <option value="Gerente Area" {{ old('rol') == 'Gerente Area' ? 'selected' : '' }}>Gerente Area</option>
                             <option value="Compras" {{ old('rol') == 'Compras' ? 'selected' : '' }}>Compras</option>
-                            <option value="General" {{ old('rol') == 'General' ? 'selected' : '' }}>Solicitante</option>
+                            <option value="Otro" {{ old('rol') == 'General' ? 'selected' : '' }}>Solicitante</option>
                         </select>
                     </div>
                     <label for="exampleFormControlInput1">¿A que departamento pertence?</label>
