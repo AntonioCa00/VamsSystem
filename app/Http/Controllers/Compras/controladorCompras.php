@@ -1484,6 +1484,7 @@ class controladorCompras extends Controller
         $rowNumber = 6;
         foreach ($datosRequisicion as $requisicion) {
             $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
+            $fechaformato = date('d/m/Y', strtotime($requisicion->created_at));
             if (empty($requisicion->unidad_id)) {
                 $unidad = 'NA';
             }
@@ -1499,7 +1500,7 @@ class controladorCompras extends Controller
             $sheet->setCellValue('A' . $rowNumber, $requisicion->id_requisicion);
             $sheet->setCellValue('B' . $rowNumber, $nombreCompleto);
             $sheet->setCellValue('C' . $rowNumber, $requisicion->departamento);
-            $sheet->setCellValue('D' . $rowNumber, $requisicion->created_at);
+            $sheet->setCellValue('D' . $rowNumber, $fechaformato);
             $sheet->setCellValue('E' . $rowNumber, $unidad);
             $sheet->setCellValue('F' . $rowNumber, $requisicion->estado);
 
