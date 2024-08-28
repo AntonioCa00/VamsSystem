@@ -12,6 +12,15 @@ use App\Models\Pagos_Fijos;
 use App\Models\Servicios;
 use App\Models\Proveedores;
 use App\Models\Logs;
+//-------PHPOFFICE---------
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 Use Carbon\Carbon;
 use DB;
 
@@ -681,8 +690,8 @@ class controladorGerenciaGen extends Controller
 
       @return void
     */
-    public function reporteReq(Request $req){
-
+    public function reporteReq(Request $req)
+    {
         // Validar los datos recibidos
         $req->validate([
             'inicio' => 'required|date',
@@ -690,14 +699,14 @@ class controladorGerenciaGen extends Controller
         ]);
 
         // Obtener las fechas del formulario
-        $fInicio = $req->input('inicio');
-        $fFin = $req->input('fin');
+        $fInicio = $req->input('inicio').' 00:00:00';
+        $fFin = $req->input('fin').' 23:59:59';
 
-        //Da formato a la fechas obtenidas
+        // Dar formato a las fechas obtenidas
         $fechaInicio = date('d/m/Y', strtotime($fInicio));
         $fechaFin = date('d/m/Y', strtotime($fFin));
 
-        //Almacen las fechas en un arreglo para mostrar en el PDF los rangos consultados
+        // Almacenar las fechas en un arreglo para mostrar en el Excel los rangos consultados
         $fechas = [
             'fecha_inicio' => $fechaInicio,
             'fecha_fin' => $fechaFin
@@ -708,8 +717,9 @@ class controladorGerenciaGen extends Controller
 
         // Construir la consulta con INNER JOIN
         $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
-                            ->select('requisiciones.*','users.nombres','users.apellidoP', 'users.departamento as departamento_nombre')
-                            ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
+            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
+            ->select('requisiciones.*','unidades.id_unidad','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
+            ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
         // Si se han seleccionado departamentos, filtrar por ellos
         if (!empty($departamentos)) {
@@ -719,12 +729,134 @@ class controladorGerenciaGen extends Controller
         // Ejecutar la consulta y obtener los resultados
         $datosRequisicion = $query->get();
 
-        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
-        ob_start();
-        include(public_path('/pdf/TCPDF-main/examples/Reporte_Requisiciones.php'));
-        $pdfContent = ob_get_clean();
-        header('Content-Type: application/pdf');
-        echo $pdfContent;
+        // Crear un nuevo archivo Excel para los datos de las requisiciones
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Asignar nombre a la hoja
+        $sheet->setTitle('Requisiciones');
+
+        // Añadir borde grueso a la celda A1
+        $sheet->getStyle('A1:F1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Combinar celdas de la fila 1 para el título
+        $sheet->mergeCells('A1:F1');
+        $sheet->setCellValue('A1', 'REPORTE GENERAL DE REQUISICIONES');
+
+        // Establecer el color de fondo de la celda A1
+        $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF69B0F3');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setSize(16);
+
+        $sheet->setCellValue('A3', 'Fecha Inicio:');
+        $sheet->setCellValue('B3', $fechas['fecha_inicio']);
+        $sheet->setCellValue('D3', 'Fecha Fin:');
+        $sheet->setCellValue('E3', $fechas['fecha_fin']);
+
+        // Centrar los encabezados de fechas
+        $sheet->getStyle('A3:F3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados de fecha
+        $sheet->getStyle('A3:B3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('D3:E3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Establecer el color de fondo de los encabezados de fecha
+        $sheet->getStyle('A3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('D3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Escribir encabezados en el archivo Excel
+        $sheet->setCellValue('A5', 'Folio');
+        $sheet->setCellValue('B5', 'Nombre Usuario');
+        $sheet->setCellValue('C5', 'Departamento');
+        $sheet->setCellValue('D5', 'Fecha Creación');
+        $sheet->setCellValue('E5', 'Unidad');
+        $sheet->setCellValue('F5', 'Estado');
+
+        // Establecer el color de fondo de los encabezados
+        $sheet->getStyle('A5:F5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Centrar los encabezados
+        $sheet->getStyle('A5:F5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados
+        $sheet->getStyle('A5:F5')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+         // Ajustar el tamaño de las columnas al contenido
+         foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Escribir los datos de las requisiciones en el archivo Excel
+        // Comienza a escribir los datos desde la fila 6
+        $rowNumber = 6;
+
+        // Para cada requsicion que obtenga en la consulta
+        foreach ($datosRequisicion as $requisicion) {
+
+            // Concatena el nombre del solicitante y su apellido paterno
+            $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
+
+            // Dar fomato a la fecha de cada requisición
+            $fechaformato = date('d/m/Y', strtotime($requisicion->created_at));
+            // Valida si la requisicion pertenece a una unidad
+            if (empty($requisicion->unidad_id)) {
+                //Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
+                $unidad = 'NA';
+            }
+
+            // Valida si la requisicion pertenece a la unidad 1 o 2
+            elseif($requisicion->unidad_id == 1 || $requisicion->unidad_id == 2){
+                // Si pertence, entonces el valor de unidad es 'No asignada'
+                $unidad = 'No asignada';
+
+                // Si tiene alguna otra unidad...
+            } else{
+                // Si el tipo es camión o camioneta
+                if($requisicion->tipo === "CAMIÓN" || $requisicion->tipo=== "CAMIONETA"){
+                    // Y unidad es su permiso
+                    $unidad = $requisicion->n_de_permiso;
+
+                } else{
+                    // Si no, son sus placas (unidad_id)
+                    $unidad = $requisicion->id_unidad;
+                }
+            }
+            $sheet->setCellValue('A' . $rowNumber, $requisicion->id_requisicion);
+            $sheet->setCellValue('B' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('C' . $rowNumber, $requisicion->departamento);
+            $sheet->setCellValue('D' . $rowNumber, $fechaformato);
+            $sheet->setCellValue('E' . $rowNumber, $unidad);
+            $sheet->setCellValue('F' . $rowNumber, $requisicion->estado);
+
+            // Centrar las celdas de la fila actual
+            $sheet->getStyle('A' . $rowNumber . ':F' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Añadir bordes normales a las celdas de los datos
+            $sheet->getStyle('A' . $rowNumber . ':F' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            $rowNumber++;
+        }
+
+        // Aplicar filtros a la tabla de datos
+        $sheet->setAutoFilter('A5:F5');
+
+        // Configurar el archivo para descarga
+        $fileName = 'reporte_requisiciones_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        // Crear una respuesta de transmisión para la descarga
+        $response = new StreamedResponse(function() use ($writer) {
+            $writer->save('php://output');
+        });
+
+        // Configurar los encabezados de la respuesta
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
     }
 
     /*
@@ -737,17 +869,17 @@ class controladorGerenciaGen extends Controller
 
       Sirve un archivo PDF generado directamente al navegador del usuario.
     */
-    public function reporteOrd(Request $req){
-
-        // Validar los datos recibidos
+    public function reporteOrd(Request $req)
+    {// Validar los datos recibidos
         $req->validate([
             'inicio' => 'required|date',
             'fin' => 'required|date|after_or_equal:inicio',
         ]);
 
         // Obtener las fechas del formulario
-        $fInicio = $req->input('inicio');
-        $fFin = $req->input('fin');
+        // Obtener las fechas del formulario
+        $fInicio = $req->input('inicio').' 00:00:00';
+        $fFin = $req->input('fin').' 23:59:59';
 
         //Da formato a la fechas obtenidas
         $fechaInicio = date('d/m/Y', strtotime($fInicio));
@@ -763,19 +895,21 @@ class controladorGerenciaGen extends Controller
         $departamentos = $req->input('departamentos', []);
 
         // Construir la consulta con INNER JOIN
-        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
                             ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                             ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                             ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
                             ->join('users','requisiciones.usuario_id','users.id')
+                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
                             ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
                             ->where('orden_compras.estado','=',null);
 
         // Construir la consulta con INNER JOIN
-        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at','orden_compras.estado','requisiciones.id_requisicion','proveedores.nombre','orden_compras.costo_total')
+        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
                             ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
                             ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
                             ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
                             ->join('users','requisiciones.usuario_id','users.id')
                             ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
                             ->where('orden_compras.estado','=','Pagado');
@@ -790,39 +924,332 @@ class controladorGerenciaGen extends Controller
         $datosGastosFinalizados = $queryPagados->get();
         $datosGastosPendientes = $queryPendientes->get();
 
-        // Incluir el archivo Reporte_Ordenes.php y pasar la ruta del archivo como una variable
-        ob_start();
-        include(public_path('/pdf/TCPDF-main/examples/Reporte_Ordenes.php'));
-        $pdfContent = ob_get_clean();
-        header('Content-Type: application/pdf');
-        echo $pdfContent;
+        // Crear un nuevo archivo Excel para los datos de las requisiciones
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Asignar nombre a la hoja
+        $sheet->setTitle('Ordenes Pendientes');
+
+        // Añadir borde grueso a la celda A1
+        $sheet->getStyle('A1:G1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Combinar celdas de la fila 1 para el título
+        $sheet->mergeCells('A1:G1');
+        $sheet->setCellValue('A1', 'REPORTE GENERAL DE ORDENES DE COMPRA');
+
+        // Establecer el color de fondo de la celda A1
+        $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF69B0F3');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setSize(18);
+
+        $sheet->setCellValue('B3', 'Fecha Inicio:');
+        $sheet->setCellValue('C3', $fechas['fecha_inicio']);
+        $sheet->setCellValue('E3', 'Fecha Fin:');
+        $sheet->setCellValue('F3', $fechas['fecha_fin']);
+
+        // Centrar los encabezados de fechas
+        $sheet->getStyle('A3:G3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados de fecha
+        $sheet->getStyle('B3:C3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('E3:F3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Establecer el color de fondo de los encabezados de fecha
+        $sheet->getStyle('B3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('E3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Combinar celdas de la fila 5 para clasificar requisiciones
+        $sheet->mergeCells('A5:C5');
+
+        $sheet->setCellValue('A5', 'Registro de ordenes de compra pendientes');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A5')->getFont()->setSize(16);
+
+        // Escribir encabezados en el archivo Excel
+        $sheet->setCellValue('A7', 'Fecha de requisicion');
+        $sheet->setCellValue('B7', 'Área');
+        $sheet->setCellValue('C7', 'Solicitante');
+        $sheet->setCellValue('D7', 'Requisicion');
+        $sheet->setCellValue('E7', 'Orden compra');
+        $sheet->setCellValue('F7', 'Proveedor');
+        $sheet->setCellValue('G7', 'Costo');
+        $sheet->setCellValue('H7', 'Unidad');
+
+        // Establecer el color de fondo de los encabezados
+        $sheet->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Centrar los encabezados
+        $sheet->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados
+        $sheet->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+         // Ajustar el tamaño de las columnas al contenido
+         foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Escribir los datos de las requisiciones en el archivo Excel
+        // Comienza a escribir los datos desde la fila 8
+        $rowNumber = 8;
+
+        // Para cada orden de compra que obtenga la consulta
+        foreach ($datosGastosPendientes as $orden) {
+
+            // Contatena el nombre completo del solicitante
+            $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
+
+            // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+            $fecha = date('d/m/Y', strtotime($orden->created_at));
+
+            // Valida si la requisición pertenece a una unidad
+            if (empty($orden->unidad_id)) {
+                // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
+                $unidad = 'NA';
+            }
+
+            // Valida si la requisición pertenece a la unidad 1 o 2
+            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                // Si pertenece, entonces el valor de unidad es 'No signada'
+                $unidad = 'No asignada';
+
+                //S tiene otra unidad...
+            } else{
+
+                //Valida si el tipo es camión o camioneta
+                if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    // Si su tipo es alguno de esos, unidad es su permiso
+                    $unidad = $orden->n_de_permiso;
+
+                } else{
+                    // Si no, son sus placas (unidad_id)
+                    $unidad = $orden->id_unidad;
+                }
+            }
+
+            $sheet->setCellValue('A' . $rowNumber, $fecha);
+            $sheet->setCellValue('B' . $rowNumber, $orden->departamento);
+            $sheet->setCellValue('C' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('D' . $rowNumber, $orden->id_requisicion);
+            $sheet->setCellValue('E' . $rowNumber, $orden->id_orden);
+            $sheet->setCellValue('F' . $rowNumber, $orden->nombre);
+            $sheet->setCellValue('G' . $rowNumber, $orden->costo_total);
+            $sheet->setCellValue('H' . $rowNumber, $unidad);
+
+            // Centrar las celdas de la fila actual
+            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Añadir bordes normales a las celdas de los datos
+            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            // Aumenta en 1 la fila.
+            $rowNumber++;
+        }
+
+        // Aplicar filtros a la tabla de datos
+        $sheet->setAutoFilter('A7:H7');
+
+        // Calcular y escribir el total de los costos al final de la tabla
+        $sheet->setCellValue('F' . $rowNumber, 'Total');
+        $sheet->setCellValue('G' . $rowNumber, '=SUM(G8:G' . ($rowNumber - 1) . ')');
+
+        // Formato de moneda para la celda del total
+        $sheet->getStyle('G' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+
+        // Centrar las celdas del total
+        $sheet->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a la fila del total
+        $sheet->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Crear segunda hoja
+        $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
+        $spreadsheet->addSheet($sheet2);
+
+        // Añadir borde grueso a la celda A1
+        $sheet2->getStyle('A1:H1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Combinar celdas de la fila 1 para el título
+        $sheet2->mergeCells('A1:H1');
+        $sheet2->setCellValue('A1', 'REPORTE GENERAL DE ORDENES DE COMPRA');
+
+        // Establecer el color de fondo de la celda A1
+        $sheet2->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF69B0F3');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet2->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('A1')->getFont()->setSize(18);
+
+        $sheet2->setCellValue('B3', 'Fecha Inicio:');
+        $sheet2->setCellValue('C3', $fechas['fecha_inicio']);
+        $sheet2->setCellValue('E3', 'Fecha Fin:');
+        $sheet2->setCellValue('F3', $fechas['fecha_fin']);
+
+        // Centrar los encabezados de fechas
+        $sheet2->getStyle('A3:G3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados de fecha
+        $sheet2->getStyle('B3:C3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet2->getStyle('E3:F3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Establecer el color de fondo de los encabezados de fecha
+        $sheet2->getStyle('B3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet2->getStyle('E3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Combinar celdas de la fila 5 para clasificar requisiciones
+        $sheet2->mergeCells('A5:C5');
+
+        $sheet2->setCellValue('A5', 'Registro de ordenes de compra pagados');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet2->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('A5')->getFont()->setSize(16);
+
+        // Escribir encabezados en el archivo Excel
+        $sheet2->setCellValue('A7', 'Fecha de requisicion');
+        $sheet2->setCellValue('B7', 'Área');
+        $sheet2->setCellValue('C7', 'Solicitante');
+        $sheet2->setCellValue('D7', 'Requisicion');
+        $sheet2->setCellValue('E7', 'Orden compra');
+        $sheet2->setCellValue('F7', 'Proveedor');
+        $sheet2->setCellValue('G7', 'Costo');
+        $sheet2->setCellValue('H7', 'Unidad');
+
+        // Establecer el color de fondo de los encabezados
+        $sheet2->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Centrar los encabezados
+        $sheet2->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados
+        $sheet2->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+         // Ajustar el tamaño de las columnas al contenido
+         foreach (range('A', 'H') as $columnID) {
+            $sheet2->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Calcular el total de costos pendientes
+        $totalPendientes = $datosGastosFinalizados->sum('costo_total');
+
+        // Escribir los datos de las requisiciones en el archivo Excel
+        // Comeinza a escribir los datos desde la fila 8
+        $rowNumber = 8;
+
+        // Para cada orden de compra que obtenga en la consulta
+        foreach ($datosGastosFinalizados as $orden) {
+
+            // Concatena el nombre del solicitante y su apellido paterno
+            $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
+
+            // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+            $fecha = date('d/m/Y', strtotime($orden->created_at));
+
+            // Valida si la requisicion pertence a una unidad
+            if (empty($orden->unidad_id)) {
+
+                // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
+                $unidad = 'NA';
+            }
+
+            // Valida si la requisicion pertenece a la unidad 1 o 2
+            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                // Si pertenece, entonces el valorde unidad es 'No asignada'
+                $unidad = 'No asignada';
+
+                // Si tiene alguna otra unidad...
+            } else{
+                // Valida si el tipo es camión o camioneta
+                if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    // Y unidad es su permiso
+                    $unidad = $orden->n_de_permiso;
+
+                    // Si no, son sus placas (unidad_id)
+                } else{
+                    $unidad = $orden->id_unidad;
+                }
+            }
+
+            $sheet2->setCellValue('A' . $rowNumber, $fecha);
+            $sheet2->setCellValue('B' . $rowNumber, $orden->departamento);
+            $sheet2->setCellValue('C' . $rowNumber, $nombreCompleto);
+            $sheet2->setCellValue('D' . $rowNumber, $orden->id_requisicion);
+            $sheet2->setCellValue('E' . $rowNumber, $orden->id_orden);
+            $sheet2->setCellValue('F' . $rowNumber, $orden->nombre);
+            $sheet2->setCellValue('G' . $rowNumber, $orden->costo_total);
+            $sheet2->setCellValue('H' . $rowNumber, $unidad);
+
+            // Centrar las celdas de la fila actual
+            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Añadir bordes normales a las celdas de los datos
+            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            $rowNumber++;
+        }
+
+        $sheet2->setAutoFilter('A7:H7');
+
+        // Calcular y escribir el total de los costos al final de la tabla
+        $sheet2->setCellValue('F' . $rowNumber, 'Total');
+        $sheet2->setCellValue('G' . $rowNumber, '=SUM(G8:G' . ($rowNumber - 1) . ')');
+
+        // Formato de moneda para la celda del total
+        $sheet2->getStyle('G' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+
+        // Centrar las celdas del total
+        $sheet2->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a la fila del total
+        $sheet2->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);$sheet2->setAutoFilter('A7:G7');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        // Configurar el archivo para descarga
+        $fileName = 'reporte_ordenes_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        // Crear una respuesta de transmisión para la descarga
+        $response = new StreamedResponse(function() use ($writer) {
+            $writer->save('php://output');
+        });
+
+        // Configurar los encabezados de la respuesta
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
     }
 
     /*
-      Genera y muestra un reporte en PDF de todas las unidades activas.
+      Genera y sirve un reporte en formato PDF de las unidades activas al momento.
 
-      Este método obtiene todas las unidades activas (con estatus 1) de la base de datos, ordenadas por su número de permiso
-      en orden ascendente. Luego, incluye un archivo PHP que genera un PDF con los datos obtenidos y lo muestra al usuario.
-      El contenido del PDF se genera utilizando la biblioteca TCPDF.
+      Este método maneja la solicitud de generación de reportes de unidades. Recupera las unidades activas
+      correspondientes de la base de datos. Finalmente, el método genera un archivo en PDF utilizando estos datos,
+      que luego es enviado directamente al cliente para su descarga.
 
-      Muestra el contenido del PDF generado directamente en el navegador.
+      Sirve un PDF generado directamente a la vista para que el usuario pueda visualizarlo y descargarlo.
     */
     public function reporteUnidades(){
-        // Obtener todas las unidades activas, ordenadas por número de permiso en orden ascendente
-        $unidades = Unidades::where('estatus', 1)
-            ->orderBY('n_de_permiso', 'asc')
-            ->get();
 
-        // Incluir el archivo que genera el PDF y pasar la ruta del archivo como una variable
-        ob_start(); // Iniciar el búfer de salida para capturar el contenido del PDF
+        // Consultar las unidades que se encuentren activas al momento
+        $unidades = Unidades::where('estatus',1)
+        ->orderBY('n_de_permiso','asc')
+        ->get();
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start();
         include(public_path('/pdf/TCPDF-main/examples/Reporte_Unidades.php'));
-        $pdfContent = ob_get_clean(); // Obtener el contenido del búfer y limpiarlo
-
-        // Establecer la cabecera para el tipo de contenido como PDF
+        $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
-
-        // Mostrar el contenido del PDF en el navegador
         echo $pdfContent;
+
     }
 
     /*

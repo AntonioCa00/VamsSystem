@@ -1488,6 +1488,8 @@ class controladorCompras extends Controller
 
             // Concatena el nombre del solicitante y su apellido paterno
             $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
+
+            // Dar fomato a la fecha de cada requisición
             $fechaformato = date('d/m/Y', strtotime($requisicion->created_at));
             // Valida si la requisicion pertenece a una unidad
             if (empty($requisicion->unidad_id)) {
