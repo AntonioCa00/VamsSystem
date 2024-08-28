@@ -346,7 +346,7 @@ class controladorCompras extends Controller
     */
     public function editUnidad($id){
         // Recupera los detalles de la unidad específica por su ID
-        $unidad= Unidades::where('id_unidad',$id)->first();
+        $unidad = Unidades::where('id_unidad',$id)->first();
 
         // Carga y muestra la vista con el formulario de edición de unidad, pasando los detalles de la unidad
         return view('Admin.editarUnidad',compact('unidad'));
@@ -465,7 +465,7 @@ class controladorCompras extends Controller
         return redirect()->route('unidades')->with('activado','activado');
     }
 
-    //! ESTA FUNCION NO ESTA SIRVIENDO ACTUALMENTE
+    //! ESTA FUNCION NO ESTA EN FUNCIONAMIENTO ACTUALMENTE
     public function tableSalidas(){
         $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombres','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
         ->join('almacen','salidas.refaccion_id','=','almacen.clave')
@@ -1373,14 +1373,13 @@ class controladorCompras extends Controller
     }
 
     /*
-      Genera y sirve un reporte en formato PDF de requisiciones basado en el intervalo de tiempo especificado.
+      Genera y sirve un reporte en archivo excel de requisiciones basado en el intervalo de tiempo especificado.
 
-      Este método maneja la solicitud de generación de reportes de requisiciones. Según el tipo de reporte solicitado
-      ('semanal', 'mensual', 'anual', 'todas'), recupera las requisiciones correspondientes de la base de datos.
-      Además, recopila y serializa información del empleado que realiza la solicitud del reporte para su registro o uso en el reporte.
-      Finalmente, el método genera un PDF utilizando estos datos, que luego es enviado directamente al cliente para su descarga o visualización.
+      Este método maneja la solicitud de generación de reportes de requisiciones. Según el rango de fechas del reporte, recupera las
+      requisiciones correspondientes de la base de datos. Finalmente, el método genera un archivo excel utilizando estos datos, que luego
+      es enviado directamente al cliente para su descarga.
 
-      Sirve un archivo PDF generado directamente al navegador del usuario.
+      Sirve un archivo excel generado directamente al navegador del usuario.
     */
     public function reporteReq(Request $req)
     {
@@ -1481,18 +1480,35 @@ class controladorCompras extends Controller
         }
 
         // Escribir los datos de las requisiciones en el archivo Excel
+        // Comienza a escribir los datos desde la fila 6
         $rowNumber = 6;
+
+        // Para cada requsicion que obtenga en la consulta
         foreach ($datosRequisicion as $requisicion) {
+
+            // Concatena el nombre del solicitante y su apellido paterno
             $nombreCompleto = $requisicion->nombres . ' ' . $requisicion->apellidoP;
+
+            // Valida si la requisicion pertenece a una unidad
             if (empty($requisicion->unidad_id)) {
+                //Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
+
+            // Valida si la requisicion pertenece a la unidad 1 o 2
             elseif($requisicion->unidad_id == 1 || $requisicion->unidad_id == 2){
+                // Si pertence, entonces el valor de unidad es 'No asignada'
                 $unidad = 'No asignada';
+
+                // Si tiene alguna otra unidad...
             } else{
+                // Si el tipo es camión o camioneta
                 if($requisicion->tipo === "CAMIÓN" || $requisicion->tipo=== "CAMIONETA"){
+                    // Y unidad es su permiso
                     $unidad = $requisicion->n_de_permiso;
+
                 } else{
+                    // Si no, son sus placas (unidad_id)
                     $unidad = $requisicion->id_unidad;
                 }
             }
@@ -1533,15 +1549,14 @@ class controladorCompras extends Controller
     }
 
     /*
-      Genera y sirve un reporte en formato PDF de las órdenes de compra basado en el intervalo de tiempo especificado.
+      Genera y sirve un reporte en archivo excel de las órdenes de compra basado en el intervalo de tiempo especificado.
 
-      Este método maneja la solicitud de generación de reportes de órdenes de compra. Según el tipo de reporte solicitado
-      ('semanal', 'mensual', 'anual', 'todas'), recupera las órdenes de compra correspondientes de la base de datos,
-      diferenciando entre órdenes pendientes y finalizadas. Además, recopila y serializa información del empleado que realiza
-      la solicitud del reporte para su registro o uso en el reporte. Finalmente, el método genera un PDF utilizando estos datos,
-      que luego es enviado directamente al cliente para su descarga o visualización.
+      Este método maneja la solicitud de generación de reportes de órdenes de compra. Según el rango de fechas del reporte
+      y los departamentos que se requiera consultar, recupera las órdenes de compra correspondientes de la base de datos,
+      diferenciando entre órdenes pendientes y finalizadas. Finalmente, el método genera un archivo de excel utilizando estos datos,
+      que luego es enviado directamente al cliente para su descarga.
 
-      Sirve un archivo PDF generado directamente al navegador del usuario.
+      Sirve un archivo excel generado directamente a los archivos del usuario.
     */
     public function reporteOrd(Request $req){
 
@@ -1670,19 +1685,39 @@ class controladorCompras extends Controller
         }
 
         // Escribir los datos de las requisiciones en el archivo Excel
+        // Comienza a escribir los datos desde la fila 8
         $rowNumber = 8;
+
+        // Para cada orden de compra que obtenga la consulta
         foreach ($datosGastosPendientes as $orden) {
+
+            // Contatena el nombre completo del solicitante
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
+
+            // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
             $fecha = date('d/m/Y', strtotime($orden->created_at));
+
+            // Valida si la requisición pertenece a una unidad
             if (empty($orden->unidad_id)) {
+                // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
+
+            // Valida si la requisición pertenece a la unidad 1 o 2
             elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
+
+                //S tiene otra unidad...
             } else{
+
+                //Valida si el tipo es camión o camioneta
                 if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    // Si su tipo es alguno de esos, unidad es su permiso
                     $unidad = $orden->n_de_permiso;
+
                 } else{
+                    // Si no, son sus placas (unidad_id)
                     $unidad = $orden->id_unidad;
                 }
             }
@@ -1702,6 +1737,7 @@ class controladorCompras extends Controller
             // Añadir bordes normales a las celdas de los datos
             $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
+            // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
@@ -1720,8 +1756,6 @@ class controladorCompras extends Controller
 
         // Añadir bordes gruesos a la fila del total
         $sheet->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
-
-
 
         // Crear segunda hoja
         $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
@@ -1794,18 +1828,38 @@ class controladorCompras extends Controller
         $totalPendientes = $datosGastosFinalizados->sum('costo_total');
 
         // Escribir los datos de las requisiciones en el archivo Excel
+        // Comeinza a escribir los datos desde la fila 8
         $rowNumber = 8;
+
+        // Para cada orden de compra que obtenga en la consulta
         foreach ($datosGastosFinalizados as $orden) {
+
+            // Concatena el nombre del solicitante y su apellido paterno
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
+
+            // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
             $fecha = date('d/m/Y', strtotime($orden->created_at));
+
+            // Valida si la requisicion pertence a una unidad
             if (empty($orden->unidad_id)) {
+
+                // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
+
+            // Valida si la requisicion pertenece a la unidad 1 o 2
             elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+                // Si pertenece, entonces el valorde unidad es 'No asignada'
                 $unidad = 'No asignada';
+
+                // Si tiene alguna otra unidad...
             } else{
+                // Valida si el tipo es camión o camioneta
                 if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    // Y unidad es su permiso
                     $unidad = $orden->n_de_permiso;
+
+                    // Si no, son sus placas (unidad_id)
                 } else{
                     $unidad = $orden->id_unidad;
                 }
@@ -1863,8 +1917,18 @@ class controladorCompras extends Controller
         return $response;
     }
 
+    /*
+      Genera y sirve un reporte en formato PDF de las unidades activas al momento.
+
+      Este método maneja la solicitud de generación de reportes de unidades. Recupera las unidades activas
+      correspondientes de la base de datos. Finalmente, el método genera un archivo en PDF utilizando estos datos,
+      que luego es enviado directamente al cliente para su descarga.
+
+      Sirve un PDF generado directamente a la vista para que el usuario pueda visualizarlo y descargarlo.
+    */
     public function reporteUnidades(){
 
+        // Consultar las unidades que se encuentren activas al momento
         $unidades = Unidades::where('estatus',1)
         ->orderBY('n_de_permiso','asc')
         ->get();
