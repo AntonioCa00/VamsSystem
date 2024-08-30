@@ -131,7 +131,7 @@
             </div>
 
             <!-- CARD REPORTE ORDENES DE COMPRA-->
-            <div class="col-xl-4 col-md-6 mb-4">
+            <div class="col-xl-5 col-md-6 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -140,7 +140,7 @@
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     <div>
-                                        <label for="exampleFormControlSelect1">ORDENES DE COMPRA:</label>
+                                        <label for="exampleFormControlSelect1">REQUISICIONES - ORDENES DE COMPRA:</label>
                                         <a class="btn btn-primary" href="#" data-toggle="modal"
                                             data-target="#ReportesCompras">
                                             Reporte de ordenes de compra
