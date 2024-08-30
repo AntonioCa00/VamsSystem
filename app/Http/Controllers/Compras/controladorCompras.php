@@ -43,7 +43,7 @@ class controladorCompras extends Controller
       de las compras realizadas en cada mes del año actual y calcula los totales de compras para el mes y año en curso.
       Además, cuenta las requisiciones en estado 'Comprado' y las requisiciones pendientes que no están 'Compradas' ni 'Rechazadas'.
 
-      Retorna la vista 'Admin.index' con los datos compilados para informes de gestión.
+      Retorna la vista 'Compras.index' con los datos compilados para informes de gestión.
     */
     public function index(){
         // Datos actuales y preparación de sumas de costos de orden de compra por mes y totales anuales
@@ -218,7 +218,7 @@ class controladorCompras extends Controller
         ->count();
 
         // Pasar los datos a la vista
-        return view("Admin.index",[
+        return view("Compras.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas,
             'TotalMes'=>$TotalMes,
@@ -246,14 +246,14 @@ class controladorCompras extends Controller
       indicando que están activas. La intención es proporcionar una visión general de las refacciones disponibles en el
       almacen para su gestión o asignación a tareas específicas.
 
-      Retorna la vista 'Admin.refaccion', pasando el listado de refacciones activas para su visualización.
+      Retorna la vista 'Compras.refaccion', pasando el listado de refacciones activas para su visualización.
     */
     public function tableRefaccion(){
         // Recupera todas las refacciones del almacen que están activas (estatus = 1)
         $refacciones = Almacen::get()->where("estatus",1);
 
         // Carga y muestra la vista con el listado de refacciones activas
-        return view('Admin.refaccion',compact('refacciones'));
+        return view('Compras.refaccion',compact('refacciones'));
     }
 
     //! ESTA FUNCION NO ESTA SIRVIENDO ACTUALMENTE
@@ -263,7 +263,7 @@ class controladorCompras extends Controller
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
         ->get();
-        return view('Admin.entradas',compact('entradas'));
+        return view('Compras.entradas',compact('entradas'));
     }
 
     /*
@@ -273,7 +273,7 @@ class controladorCompras extends Controller
       (estatus '1'), excluyendo la unidad con ID '1' por razones específicas de negocio o de la aplicación. Además, las unidades
       activas se ordenan en orden ascendente por su ID para facilitar su visualización y gestión.
 
-      Retorna la vista 'Admin.unidad', pasando el listado de unidades activas para su visualización.
+      Retorna la vista 'Compras.unidad', pasando el listado de unidades activas para su visualización.
     */
     public function tableUnidad(){
         // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
@@ -283,7 +283,7 @@ class controladorCompras extends Controller
         ->get();
 
         // Carga y muestra la vista con el listado de unidades activas
-        return view('Admin.unidad',compact('unidades'));
+        return view('Compras.unidad',compact('unidades'));
     }
 
     /*
@@ -293,11 +293,11 @@ class controladorCompras extends Controller
       de nuevas unidades dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
       esencial de la nueva unidad.
 
-      Retorna la vista 'Admin.crearUnidad', que contiene el formulario para la creación de una nueva unidad.
+      Retorna la vista 'Compras.crearUnidad', que contiene el formulario para la creación de una nueva unidad.
     */
     public function CreateUnidad(){
         // Cargar y mostrar la vista con el formulario de creación de unidad
-        return view('Admin.crearUnidad');
+        return view('Compras.crearUnidad');
     }
 
     /*
@@ -342,14 +342,14 @@ class controladorCompras extends Controller
 
       @param  int  $id  El ID de la unidad cuyos detalles se van a editar.
 
-      Retorna la vista 'Admin.editarUnidad', pasando los detalles de la unidad específica para su edición.
+      Retorna la vista 'Compras.editarUnidad', pasando los detalles de la unidad específica para su edición.
     */
     public function editUnidad($id){
         // Recupera los detalles de la unidad específica por su ID
         $unidad = Unidades::where('id_unidad',$id)->first();
 
         // Carga y muestra la vista con el formulario de edición de unidad, pasando los detalles de la unidad
-        return view('Admin.editarUnidad',compact('unidad'));
+        return view('Compras.editarUnidad',compact('unidad'));
     }
 
     /*
@@ -434,14 +434,14 @@ class controladorCompras extends Controller
       como "Inactivo". La intención es proporcionar a los administradores una visión general de las unidades que no están
       en uso activo pero que pueden ser reactivadas según sea necesario.
 
-      Retorna la vista 'Admin.activaUnidad', pasando el listado de unidades inactivas para su visualización y potencial activación.
+      Retorna la vista 'Compras.activaUnidad', pasando el listado de unidades inactivas para su visualización y potencial activación.
     */
     public function activarUnidad(){
         // Recupera las unidades marcadas como inactivas
         $unidades = Unidades::where("estado",'Inactivo')->get();
 
         // Carga y muestra la vista con el listado de unidades inactivas
-        return view('Admin.activaUnidad',compact('unidades'));
+        return view('Compras.activaUnidad',compact('unidades'));
     }
 
     /*
@@ -472,7 +472,7 @@ class controladorCompras extends Controller
         ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->get();
-        return view('Admin.salidas',compact('salidas'));
+        return view('Compras.salidas',compact('salidas'));
     }
 
     /*
@@ -483,7 +483,7 @@ class controladorCompras extends Controller
       cantidad de artículos asociados a cada solicitud que tienen un estatus '0'. También se recupera información agrupada por
       departamento y por estados específicos de las solicitudes para posibles filtros o visualizaciones en la vista.
 
-      Retorna la vista 'Admin.solicitudes', pasando el listado de solicitudes, departamentos, y estados de solicitudes para su visualización.
+      Retorna la vista 'Compras.solicitudes', pasando el listado de solicitudes, departamentos, y estados de solicitudes para su visualización.
     */
     public function tableSolicitud(){
         // Consulta de solicitudes que cumplen con los criterios de estado especificados y cálculo de cantidad de artículos inactivos.
@@ -514,7 +514,7 @@ class controladorCompras extends Controller
 
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
-        return view('Admin.solicitudes',compact('solicitudes','departamentos','estatus'));
+        return view('Compras.solicitudes',compact('solicitudes','departamentos','estatus'));
     }
 
     /*
@@ -528,7 +528,7 @@ class controladorCompras extends Controller
 
       @param  string $filt El criterio de filtro especificado ('departamento' o 'estado').
 
-      Retorna la vista 'Admin.solicitudes', pasando el listado filtrado de solicitudes, departamentos y estados para su visualización.
+      Retorna la vista 'Compras.solicitudes', pasando el listado filtrado de solicitudes, departamentos y estados para su visualización.
     */
     public function filtrarSolicitudes(Request $req,$filt){
 
@@ -601,7 +601,7 @@ class controladorCompras extends Controller
         }
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
-        return view('Admin.solicitudes',compact('solicitudes','departamentos','estatus'));
+        return view('Compras.solicitudes',compact('solicitudes','departamentos','estatus'));
     }
 
     /*
@@ -636,7 +636,7 @@ class controladorCompras extends Controller
 
       @param  int  $id El ID de la solicitud para la cual se crearán nuevas cotizaciones.
 
-      Retorna la vista 'Admin.crearCotizacion', pasando las cotizaciones existentes y el ID de la solicitud para su visualización.
+      Retorna la vista 'Compras.crearCotizacion', pasando las cotizaciones existentes y el ID de la solicitud para su visualización.
     */
     public function createCotiza($id){
         // Recupera las cotizaciones activas asociadas a la solicitud específica
@@ -645,7 +645,7 @@ class controladorCompras extends Controller
         ->where('cotizaciones.requisicion_id', $id)->where('cotizaciones.estatus','1')->get();
 
         // Carga y muestra la vista con los datos de las cotizaciones existentes
-        return view('Admin.crearCotizacion',compact('cotizaciones','id'));
+        return view('Compras.crearCotizacion',compact('cotizaciones','id'));
     }
 
     /*
@@ -740,14 +740,14 @@ class controladorCompras extends Controller
       mediante el estatus '1'. La intención es proporcionar a los administradores y usuarios autorizados una visión general
       de los proveedores disponibles para gestiones de compras, contrataciones o cualquier otro tipo de interacción comercial.
 
-      Retorna la vista 'Admin.proveedores', pasando el listado de proveedores activos para su visualización.
+      Retorna la vista 'Compras.proveedores', pasando el listado de proveedores activos para su visualización.
     */
     public function tableProveedor(){
         // Recupera todos los proveedores activos (estatus = 1)
         $proveedores = Proveedores::where('estatus',1)->get();
 
         // Carga y muestra la vista con el listado de proveedores activos
-        return view('Admin.proveedores',compact('proveedores'));
+        return view('Compras.proveedores',compact('proveedores'));
     }
 
     /*
@@ -760,11 +760,11 @@ class controladorCompras extends Controller
       permitiendo a los administradores o usuarios con los permisos adecuados añadir nuevos proveedores al sistema de manera
       sencilla y eficiente.
 
-      Retorna la vista 'Admin.crearProveedor', que contiene el formulario para la creación de un nuevo proveedor.
+      Retorna la vista 'Compras.crearProveedor', que contiene el formulario para la creación de un nuevo proveedor.
     */
     public function createProveedor(){
         // Cargar y mostrar la vista con el formulario de creación de proveedor
-        return view('Admin.crearProveedor');
+        return view('Compras.crearProveedor');
     }
 
     /*
@@ -869,14 +869,14 @@ class controladorCompras extends Controller
 
       @param  int  $id  El ID del proveedor cuyos detalles se van a editar.
 
-      Retorna la vista 'Admin.editarProveedor', pasando los detalles del proveedor específico para su edición.
+      Retorna la vista 'Compras.editarProveedor', pasando los detalles del proveedor específico para su edición.
     */
     public function editProveedor($id){
         // Recupera los detalles del proveedor específico por su ID
         $proveedor = Proveedores::where('id_proveedor',$id)->first();
 
         // Carga y muestra la vista con el formulario de edición de proveedor, pasando los detalles del proveedor
-        return view('Admin.editarProveedor',compact('proveedor'));
+        return view('Compras.editarProveedor',compact('proveedor'));
     }
 
     /*
@@ -1057,7 +1057,7 @@ class controladorCompras extends Controller
 
       @param  int  $id  El ID de la requisición para la cual se preparará la orden de compra.
 
-      Retorna la vista 'Admin.ordenCompra', pasando la cotización seleccionada, los proveedores activos, el ID de la requisición,
+      Retorna la vista 'Compras.ordenCompra', pasando la cotización seleccionada, los proveedores activos, el ID de la requisición,
       y los artículos pendientes para su visualización y gestión.
     */
     public function ordenCompra($id){
@@ -1078,7 +1078,7 @@ class controladorCompras extends Controller
         where('estatus',1)->orderBy('nombre','asc')->get();
 
         // Carga y muestra la vista con la información recopilada
-        return view('Admin.ordenCompra',compact('cotizacion','proveedores','id','articulos'));
+        return view('Compras.ordenCompra',compact('cotizacion','proveedores','id','articulos'));
     }
 
     /*
@@ -1241,7 +1241,7 @@ class controladorCompras extends Controller
       costo total, estado del pago y otros datos relevantes. Filtra cualquier orden relacionada con requisiciones que hayan
       sido rechazadas, centrándose en aquellas que están activas o en proceso.
 
-      Devuelve la vista 'Admin.ordenesCompras', pasando la lista de órdenes para su visualización.
+      Devuelve la vista 'Compras.ordenesCompras', pasando la lista de órdenes para su visualización.
     */
     public function ordenesCompras(){
         /* Obtención de información detallada para cada orden en donde se analizan la evolucion de la peticiónn
@@ -1256,7 +1256,7 @@ class controladorCompras extends Controller
         ->orderBy('orden_compras.created_at','desc')
         ->get();
         //Muentra la vista con la variable que contiene las ordenes de compra
-        return view ('Admin.ordenesCompras',compact('ordenes'));
+        return view ('Compras.ordenesCompras',compact('ordenes'));
     }
 
     /*
@@ -1334,7 +1334,7 @@ class controladorCompras extends Controller
       relevante como el nombre del servicio y del proveedor. Además, se recuperan listados de todos los servicios y proveedores
       activos que se utilizan para filtros o selecciones en la interfaz de usuario.
 
-      Devuelve la vista 'Admin.pagos', pasando los pagos fijos, servicios y proveedores para su visualización y gestión.
+      Devuelve la vista 'Compras.pagos', pasando los pagos fijos, servicios y proveedores para su visualización y gestión.
     */
     public function pagosFijos() {
         // Obtener los pagos fijos con detalles completos de servicios y proveedores
@@ -1357,7 +1357,7 @@ class controladorCompras extends Controller
         ->get();
 
         // Cargar y mostrar la vista con los datos necesarios
-        return view('Admin.pagos',compact('pagos','servicios','proveedores'));
+        return view('Compras.pagos',compact('pagos','servicios','proveedores'));
     }
 
     /*
@@ -1365,11 +1365,11 @@ class controladorCompras extends Controller
 
       Este método se encarga de mostrar la vista que contiene los formularios para solicitar los reportes.
 
-      Devuelve la vista 'Admin.reportes'.
+      Devuelve la vista 'Compras.reportes'.
     */
     public function reportes() {
         //Retorna la vista de reportes.
-        return view('Admin.reportes');
+        return view('Compras.reportes');
     }
 
     /*
@@ -1458,24 +1458,27 @@ class controladorCompras extends Controller
         $sheet->getStyle('D3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Escribir encabezados en el archivo Excel
-        $sheet->setCellValue('A5', 'Folio');
-        $sheet->setCellValue('B5', 'Nombre Usuario');
-        $sheet->setCellValue('C5', 'Departamento');
+        $sheet->setCellValue('A5', 'Mes');
+        $sheet->setCellValue('B5', 'Semana');
+        $sheet->setCellValue('C5', 'Rango');
         $sheet->setCellValue('D5', 'Fecha Creación');
-        $sheet->setCellValue('E5', 'Unidad');
-        $sheet->setCellValue('F5', 'Estado');
+        $sheet->setCellValue('E5', 'Folio');
+        $sheet->setCellValue('F5', 'Nombre Usuario');
+        $sheet->setCellValue('G5', 'Departamento');
+        $sheet->setCellValue('H5', 'Unidad');
+        $sheet->setCellValue('I5', 'Estado');
 
         // Establecer el color de fondo de los encabezados
-        $sheet->getStyle('A5:F5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A5:I5')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet->getStyle('A5:F5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A5:I5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet->getStyle('A5:F5')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A5:I5')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'F') as $columnID) {
+         foreach (range('A', 'I') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -1491,6 +1494,22 @@ class controladorCompras extends Controller
 
             // Dar fomato a la fecha de cada requisición
             $fechaformato = date('d/m/Y', strtotime($requisicion->created_at));
+
+            $fechaInput = $fechaformato; // Fecha en formato dd/mm/aaaa
+
+            // Convertir la fecha a un objeto Carbon
+            $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
+
+            // Obtener el mes en texto (en español)
+            $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
+
+            // Obtener el número de semana
+            $numeroSemana = $fechaConvert->weekOfYear;
+
+            // Obtener la fecha del lunes y viernes de esa semana
+            $lunes = $fechaConvert->startOfWeek(Carbon::MONDAY)->day;
+            $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
+
             // Valida si la requisicion pertenece a una unidad
             if (empty($requisicion->unidad_id)) {
                 //Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
@@ -1514,24 +1533,27 @@ class controladorCompras extends Controller
                     $unidad = $requisicion->id_unidad;
                 }
             }
-            $sheet->setCellValue('A' . $rowNumber, $requisicion->id_requisicion);
-            $sheet->setCellValue('B' . $rowNumber, $nombreCompleto);
-            $sheet->setCellValue('C' . $rowNumber, $requisicion->departamento);
+            $sheet->setCellValue('A' . $rowNumber, $nombreMes);
+            $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
+            $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
             $sheet->setCellValue('D' . $rowNumber, $fechaformato);
-            $sheet->setCellValue('E' . $rowNumber, $unidad);
-            $sheet->setCellValue('F' . $rowNumber, $requisicion->estado);
+            $sheet->setCellValue('E' . $rowNumber, $requisicion->id_requisicion);
+            $sheet->setCellValue('F' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('G' . $rowNumber, $requisicion->departamento);
+            $sheet->setCellValue('H' . $rowNumber, $unidad);
+            $sheet->setCellValue('I' . $rowNumber, $requisicion->estado);
 
             // Centrar las celdas de la fila actual
-            $sheet->getStyle('A' . $rowNumber . ':F' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':I' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet->getStyle('A' . $rowNumber . ':F' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':I' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             $rowNumber++;
         }
 
-        // Aplicar filtros a la tabla de datos
-        $sheet->setAutoFilter('A5:F5');
+        // Aplicar filtros a la taibla de datos
+        $sheet->setAutoFilter('A5:I5');
 
         // Configurar el archivo para descarga
         $fileName = 'reporte_requisiciones_' . Carbon::now()->format('Ymd_His') . '.xlsx';
@@ -1587,26 +1609,40 @@ class controladorCompras extends Controller
         $departamentos = $req->input('departamentos', []);
 
         // Construir la consulta con INNER JOIN
-        $queryPendientes = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
-                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                            ->join('users','requisiciones.usuario_id','users.id')
-                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
-                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
-                            ->where('orden_compras.estado','=',null);
+        $queryPendientes = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
+            'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
+            'users.nombres', 'users.apellidoP', 'users.departamento',
+            'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+            'proveedores.nombre')
+            ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
+            ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+            ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+            ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+            ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+            ->where(function ($query) use ($fInicio, $fFin) {
+                $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin])
+                    ->orWhere('orden_compras.created_at', null);
+            })
+            ->where('orden_compras.estado', '=', null);
 
         // Construir la consulta con INNER JOIN
-        $queryPagados = Orden_compras::select('orden_compras.id_orden','users.nombres','users.apellidoP','users.departamento','orden_compras.created_at as fecha_orden','orden_compras.estado as estadoOrd','requisiciones.*','unidades.*','proveedores.nombre','orden_compras.costo_total')
-                            ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
-                            ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-                            ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-                            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
-                            ->join('users','requisiciones.usuario_id','users.id')
-                            ->whereBetween('orden_compras.created_at', [$fInicio, $fFin])
-                            ->where('orden_compras.estado','=','Pagado');
+        $queryPagados= Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
+            'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
+            'users.nombres', 'users.apellidoP', 'users.departamento',
+            'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+            'proveedores.nombre')
+            ->leftJoin('cotizaciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+            ->leftJoin('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
+            ->leftJoin('proveedores','orden_compras.proveedor_id','proveedores.id_proveedor')
+            ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
+            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
+            ->where(function($query) use ($fInicio, $fFin) {
+                $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin])
+                    ->orWhere('orden_compras.created_at', null);
+            })
+            ->where('orden_compras.estado', '=', 'Pagado');
 
-        // Si se han seleccionado departamentos, filtrar por ellos
+            // Si se han seleccionado departamentos, filtrar por ellos
         if (!empty($departamentos)) {
             $queryPendientes->whereIn('users.departamento', $departamentos);
             $queryPagados->whereIn('users.departamento', $departamentos);
@@ -1663,26 +1699,30 @@ class controladorCompras extends Controller
         $sheet->getStyle('A5')->getFont()->setSize(16);
 
         // Escribir encabezados en el archivo Excel
-        $sheet->setCellValue('A7', 'Fecha de requisicion');
-        $sheet->setCellValue('B7', 'Área');
-        $sheet->setCellValue('C7', 'Solicitante');
-        $sheet->setCellValue('D7', 'Requisicion');
-        $sheet->setCellValue('E7', 'Orden compra');
-        $sheet->setCellValue('F7', 'Proveedor');
-        $sheet->setCellValue('G7', 'Costo');
-        $sheet->setCellValue('H7', 'Unidad');
+        $sheet->setCellValue('A7', 'Mes');
+        $sheet->setCellValue('B7', 'Semana');
+        $sheet->setCellValue('C7', 'Rango');
+        $sheet->setCellValue('D7', 'Fecha Requisicion');
+        $sheet->setCellValue('E7', 'Área');
+        $sheet->setCellValue('F7', 'Solicitante');
+        $sheet->setCellValue('G7', 'Requisicion');
+        $sheet->setCellValue('H7', 'Estado');
+        $sheet->setCellValue('I7', 'orden compra');
+        $sheet->setCellValue('J7', 'Proveedor');
+        $sheet->setCellValue('K7', 'Costo');
+        $sheet->setCellValue('L7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'H') as $columnID) {
+         foreach (range('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -1697,16 +1737,31 @@ class controladorCompras extends Controller
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
 
             // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
-            $fecha = date('d/m/Y', strtotime($orden->created_at));
+            $fecha = date('d/m/Y', strtotime($orden->fechaReq));
+
+            $fechaInput = $fecha; // Fecha en formato dd/mm/aaaa
+
+            // Convertir la fecha a un objeto Carbon
+            $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
+
+            // Obtener el mes en texto (en español)
+            $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
+
+            // Obtener el número de semana
+            $numeroSemana = $fechaConvert->weekOfYear;
+
+            // Obtener la fecha del lunes y viernes de esa semana
+            $lunes = $fechaConvert->startOfWeek(Carbon::MONDAY)->day;
+            $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->unidad_id)) {
+            if (empty($orden->id_unidad)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
+            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1724,40 +1779,44 @@ class controladorCompras extends Controller
                 }
             }
 
-            $sheet->setCellValue('A' . $rowNumber, $fecha);
-            $sheet->setCellValue('B' . $rowNumber, $orden->departamento);
-            $sheet->setCellValue('C' . $rowNumber, $nombreCompleto);
-            $sheet->setCellValue('D' . $rowNumber, $orden->id_requisicion);
-            $sheet->setCellValue('E' . $rowNumber, $orden->id_orden);
-            $sheet->setCellValue('F' . $rowNumber, $orden->nombre);
-            $sheet->setCellValue('G' . $rowNumber, $orden->costo_total);
-            $sheet->setCellValue('H' . $rowNumber, $unidad);
+            $sheet->setCellValue('A' . $rowNumber, $nombreMes);
+            $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
+            $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
+            $sheet->setCellValue('D' . $rowNumber, $fecha);
+            $sheet->setCellValue('E' . $rowNumber, $orden->departamento);
+            $sheet->setCellValue('F' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('G' . $rowNumber, $orden->id_requisicion);
+            $sheet->setCellValue('H' . $rowNumber, $orden->estadoReq);
+            $sheet->setCellValue('I' . $rowNumber, $orden->id_orden);
+            $sheet->setCellValue('J' . $rowNumber, $orden->nombre);
+            $sheet->setCellValue('K' . $rowNumber, $orden->costo_total);
+            $sheet->setCellValue('L' . $rowNumber, $unidad);
 
             // Centrar las celdas de la fila actual
-            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
         // Aplicar filtros a la tabla de datos
-        $sheet->setAutoFilter('A7:H7');
+        $sheet->setAutoFilter('A7:L7');
 
         // Calcular y escribir el total de los costos al final de la tabla
-        $sheet->setCellValue('F' . $rowNumber, 'Total');
-        $sheet->setCellValue('G' . $rowNumber, '=SUM(G8:G' . ($rowNumber - 1) . ')');
+        $sheet->setCellValue('J' . $rowNumber, 'Total');
+        $sheet->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
 
         // Formato de moneda para la celda del total
-        $sheet->getStyle('G' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Centrar las celdas del total
-        $sheet->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a la fila del total
-        $sheet->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Crear segunda hoja
         $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
@@ -1803,27 +1862,31 @@ class controladorCompras extends Controller
         $sheet2->getStyle('A5')->getFont()->setSize(16);
 
         // Escribir encabezados en el archivo Excel
-        $sheet2->setCellValue('A7', 'Fecha de requisicion');
-        $sheet2->setCellValue('B7', 'Área');
-        $sheet2->setCellValue('C7', 'Solicitante');
-        $sheet2->setCellValue('D7', 'Requisicion');
-        $sheet2->setCellValue('E7', 'Orden compra');
-        $sheet2->setCellValue('F7', 'Proveedor');
-        $sheet2->setCellValue('G7', 'Costo');
-        $sheet2->setCellValue('H7', 'Unidad');
+        $sheet->setCellValue('A7', 'Mes');
+        $sheet->setCellValue('B7', 'Semana');
+        $sheet->setCellValue('C7', 'Rango');
+        $sheet->setCellValue('D7', 'Fecha Requisicion');
+        $sheet->setCellValue('E7', 'Área');
+        $sheet->setCellValue('F7', 'Solicitante');
+        $sheet->setCellValue('G7', 'Requisicion');
+        $sheet->setCellValue('H7', 'Estado');
+        $sheet->setCellValue('I7', 'orden compra');
+        $sheet->setCellValue('J7', 'Proveedor');
+        $sheet->setCellValue('K7', 'Costo');
+        $sheet->setCellValue('L7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet2->getStyle('A7:H7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet2->getStyle('A7:H7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet2->getStyle('A7:H7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'H') as $columnID) {
-            $sheet2->getColumnDimension($columnID)->setAutoSize(true);
+         foreach (range('A', 'L') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         // Calcular el total de costos pendientes
@@ -1836,69 +1899,90 @@ class controladorCompras extends Controller
         // Para cada orden de compra que obtenga en la consulta
         foreach ($datosGastosFinalizados as $orden) {
 
-            // Concatena el nombre del solicitante y su apellido paterno
+            // Contatena el nombre completo del solicitante
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
 
             // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
-            $fecha = date('d/m/Y', strtotime($orden->created_at));
+            $fecha = date('d/m/Y', strtotime($orden->fechaReq));
 
-            // Valida si la requisicion pertence a una unidad
-            if (empty($orden->unidad_id)) {
+            $fechaInput = $fecha; // Fecha en formato dd/mm/aaaa
 
+            // Convertir la fecha a un objeto Carbon
+            $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
+
+            // Obtener el mes en texto (en español)
+            $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
+
+            // Obtener el número de semana
+            $numeroSemana = $fechaConvert->weekOfYear;
+
+            // Obtener la fecha del lunes y viernes de esa semana
+            $lunes = $fechaConvert->startOfWeek(Carbon::MONDAY)->day;
+            $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
+
+            // Valida si la requisición pertenece a una unidad
+            if (empty($orden->id_unidad)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
-            // Valida si la requisicion pertenece a la unidad 1 o 2
-            elseif($orden->unidad_id == 1 || $orden->unidad_id == 2){
-                // Si pertenece, entonces el valorde unidad es 'No asignada'
+            // Valida si la requisición pertenece a la unidad 1 o 2
+            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+                // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
-                // Si tiene alguna otra unidad...
+                //S tiene otra unidad...
             } else{
-                // Valida si el tipo es camión o camioneta
+
+                //Valida si el tipo es camión o camioneta
                 if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
-                    // Y unidad es su permiso
+                    // Si su tipo es alguno de esos, unidad es su permiso
                     $unidad = $orden->n_de_permiso;
 
-                    // Si no, son sus placas (unidad_id)
                 } else{
+                    // Si no, son sus placas (unidad_id)
                     $unidad = $orden->id_unidad;
                 }
             }
 
-            $sheet2->setCellValue('A' . $rowNumber, $fecha);
-            $sheet2->setCellValue('B' . $rowNumber, $orden->departamento);
-            $sheet2->setCellValue('C' . $rowNumber, $nombreCompleto);
-            $sheet2->setCellValue('D' . $rowNumber, $orden->id_requisicion);
-            $sheet2->setCellValue('E' . $rowNumber, $orden->id_orden);
-            $sheet2->setCellValue('F' . $rowNumber, $orden->nombre);
-            $sheet2->setCellValue('G' . $rowNumber, $orden->costo_total);
-            $sheet2->setCellValue('H' . $rowNumber, $unidad);
+            $sheet->setCellValue('A' . $rowNumber, $nombreMes);
+            $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
+            $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
+            $sheet->setCellValue('D' . $rowNumber, $fecha);
+            $sheet->setCellValue('E' . $rowNumber, $orden->departamento);
+            $sheet->setCellValue('F' . $rowNumber, $nombreCompleto);
+            $sheet->setCellValue('G' . $rowNumber, $orden->id_requisicion);
+            $sheet->setCellValue('H' . $rowNumber, $orden->estadoReq);
+            $sheet->setCellValue('I' . $rowNumber, $orden->id_orden);
+            $sheet->setCellValue('J' . $rowNumber, $orden->nombre);
+            $sheet->setCellValue('K' . $rowNumber, $orden->costo_total);
+            $sheet->setCellValue('L' . $rowNumber, $unidad);
 
             // Centrar las celdas de la fila actual
-            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet2->getStyle('A' . $rowNumber . ':H' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
+            // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
-        $sheet2->setAutoFilter('A7:H7');
+        // Aplicar filtros a la tabla de datos
+        $sheet->setAutoFilter('A7:L7');
 
         // Calcular y escribir el total de los costos al final de la tabla
-        $sheet2->setCellValue('F' . $rowNumber, 'Total');
-        $sheet2->setCellValue('G' . $rowNumber, '=SUM(G8:G' . ($rowNumber - 1) . ')');
+        $sheet->setCellValue('J' . $rowNumber, 'Total');
+        $sheet->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
 
         // Formato de moneda para la celda del total
-        $sheet2->getStyle('G' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Centrar las celdas del total
-        $sheet2->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a la fila del total
-        $sheet2->getStyle('F' . $rowNumber . ':G' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);$sheet2->setAutoFilter('A7:G7');
+        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         $spreadsheet->setActiveSheetIndex(0);
 
