@@ -1,5 +1,5 @@
-<?php 
-require_once('tcpdf_include.php'); 
+<?php
+require_once('tcpdf_include.php');
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -73,7 +73,7 @@ $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
 $pdf->Ln(10); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 12);
 
-// Imprimir el subtutitulo 
+// Imprimir el subtutitulo
 $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 10);
@@ -114,13 +114,13 @@ if(!empty($unidad)){
     $pdf->MultiCell(180, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 1 ,'C', 0 );
 }
 
-$pdf->Ln(10); // Salto de línea antes de la tabla   
+$pdf->Ln(10); // Salto de línea antes de la tabla
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
-// notas que agrega el solicitante 
+// notas que agrega el solicitante
 
 $pdf->MultiCell(180, 5, $Nota, 1, 1 ,'C', 0 );
 
@@ -188,7 +188,7 @@ $pdf->Cell(0, 10, '     Gerente de area                                 Aprueba 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
 
-//$rutaDescarga = 'D:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
+//$rutaDescarga = 'C:/laragon/www/VamsSystem/public/ordenesCompra/' . $nombreArchivo;
 $rutaDescarga = 'C:/wamp64/www/VamsSystem/public/ordenesCompra/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');
