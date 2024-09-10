@@ -934,7 +934,7 @@ class controladorGtArea extends Controller
 
       Devuelve la vista 'GtArea.ordenesCompras', pasando los datos de las órdenes de compra para su visualización.
     */
-    public function ordenesCompras(){
+    public function tableOrdenesCompras(){
         // Obtener las órdenes de compra con información relevante de varias tablas relacionadas
         $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF', 'orden_compras.created_at','orden_compras.comprobante_pago')
         ->join('users','orden_compras.admin_id','=','users.id')
