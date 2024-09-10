@@ -536,7 +536,7 @@ class controladorSolic extends Controller
 
       Devuelve la vista 'Solicitante.pagos', pasando los datos de los pagos, servicios y proveedores para su visualización.
     */
-    public function pagosFijos(){
+    public function tablePagosFijos(){
         // Obtener los pagos fijos y detalles asociados específicos del usuario logueado
         $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
         ->where('pagos_fijos.usuario_id',session('loginId'))
@@ -572,7 +572,7 @@ class controladorSolic extends Controller
 
       Devuelve la vista 'Solicitante.crearPago', pasando las listas de servicios y proveedores activos para su visualización y selección.
     */
-    public function crearPago(){
+    public function createPago(){
         // Obtener todos los servicios activos y sus proveedores
         $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
@@ -660,7 +660,7 @@ class controladorSolic extends Controller
         return back()->with('servDelete','servDelete');
     }
 
-    public function createPago (Request $req){
+    public function crearPago (Request $req){
         $servicio_id = $req->input('servicio');
         $Nota = $req->input('Notas');
         $importe = $req->input('importe');
@@ -810,7 +810,7 @@ class controladorSolic extends Controller
 
       Retorna la vista 'Solicitanteunidad', pasando el listado de unidades activas para su visualización.
     */
-    public function unidades(){
+    public function tableUnidades(){
         // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
         $unidades = Unidades::where('estatus','1')
         ->where('id_unidad','!=','1')
