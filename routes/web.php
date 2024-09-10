@@ -62,7 +62,6 @@ Route::middleware(['authcheck'])->group(function () {
 
         //RUTAS ADMIN-COMPRAS
         Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index');
-        Route::get('graficas', [controladorCompras::class, 'charts'])->name('charts');
         Route::get('almacen/Compras', [controladorCompras::class, 'tableRefaccion'])->name('refacciones');
         Route::get('entradas/Compras',[controladorCompras::class,'tableEntradas'])->name('entradas');
         Route::get('salidas/Compras', [controladorCompras::class, 'tableSalidas'])->name('salidas');
@@ -77,9 +76,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('edit-proveedor/{id}',[controladorCompras::class,'editProveedor'])->name('editProveedor');
         Route::get('form-compra',[controladorCompras::class,'createCompra'])->name('createCompra');
         Route::get('form/{id}/cotizar',[controladorCompras::class,'createCotiza'])->name('createCotiza');
-        Route::get('ordenCompra/{id}',[controladorCompras::class,'ordenCompra'])->name('ordenCompra');
-        Route::get('pagosFijos/Compras',[controladorCompras::class,'pagosFijos'])->name('pagosFijos');
-        Route::get('ordenesCompras',[controladorCompras::class,'ordenesCompras'])->name('ordenesCompras');
+        Route::get('ordenCompra/{id}',[controladorCompras::class,'createOrdenCompra'])->name('ordenCompra');
+        Route::get('pagosFijos/Compras',[controladorCompras::class,'tablePagosFijos'])->name('pagosFijos');
+        Route::get('ordenesCompras',[controladorCompras::class,'tableordenesCompras'])->name('ordenesCompras');
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
         Route::get('reportesCompras/Unidades',[controladorCompras::class,'reporteUnidades'])->name('reporteUnidadesCom');
 
@@ -126,7 +125,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');
         Route::get('cotizaciones/{id}',[controladorGtArea::class,'cotizaciones'])->name('verCotiza');
         Route::get('aprobarCotizacion/{id}',[controladorGtArea::class,'aprobCotiza'])->name('aprobCotiza');
-        Route::get('ordenesCompras/GtArea',[controladorGtArea::class,'ordenesCompras'])->name('ordenesComprasDir');
+        Route::get('ordenesCompras/GtArea',[controladorGtArea::class,'tableOrdenesCompras'])->name('ordenesComprasDir');
 
         //------------------------MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento/GtArea',[controladorGtArea::class,'mantenimiento'])->name('manteni');
@@ -191,16 +190,12 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
 
         Route::get('inicio',[controladorSolic::class,'index'])->name('indexSoli');
-        Route::get('graficasSoli', [controladorSolic::class, 'charts'])->name('chartsEnc');
-        // Route::get('almacen', [controladorSolic::class, 'almacen'])->name('almacenSoli');
-        Route::get('pagos',[controladorSolic::class,'pagosFijos'])->name('pagos');
-        Route::get('pagos/form',[controladorSolic::class,'crearPago'])->name('crearPagos');
-        Route::get('salidas', [controladorSolic::class, 'tableSalidas'])->name('salidasSoli');
+        Route::get('pagos',[controladorSolic::class,'tablePagosFijos'])->name('pagos');
+        Route::get('pagos/form',[controladorSolic::class,'createPago'])->name('crearPagos');
         Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
         Route::get('solicitud/edit/{id}',[controladorSolic::class,'editReq'])->name('editReq');
-        Route::get('solicitud/almacen',[controladorSolic::class,'solicitudAlm'])->name('solicitudAlm');
-        Route::get('unidades',[controladorSolic::class,'unidades'])->name('unidadesSoli');
+        Route::get('unidades',[controladorSolic::class,'tableUnidades'])->name('unidadesSoli');
         Route::get('/solicitud/form-Unidad', [controladorSolic::class, 'createUnidad'])->name('CreateUnidadSoli');
         Route::get('solicitud/edit-Unidad/{id}/{from}', [controladorSolic::class, 'editUnidad'])->name('editUnidadSoli');
         Route::get('solicitud/activ-Unidad',[controladorSolic::class,'activarUnidad'])->name('actUnuiSoli');
