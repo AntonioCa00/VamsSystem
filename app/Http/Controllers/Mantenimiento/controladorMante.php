@@ -360,6 +360,7 @@ class controladorMante extends Controller
         $unidades = Unidades::select('unidades.id_unidad','unidades.n_de_permiso','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje')
         ->where('unidades.estatus', '1')
         ->where('unidades.id_unidad', '!=', '1')
+        ->where('unidades.id_unidad', '!=', '2')
         ->where('unidades.estado', 'Activo')
         ->orderBy('unidades.id_unidad', 'asc')
         ->get();
