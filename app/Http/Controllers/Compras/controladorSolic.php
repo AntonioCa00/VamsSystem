@@ -660,7 +660,7 @@ class controladorSolic extends Controller
         return back()->with('servDelete','servDelete');
     }
 
-    public function crearPago (Request $req){
+    public function insertPago (Request $req){
         $servicio_id = $req->input('servicio');
         $Nota = $req->input('Notas');
         $importe = $req->input('importe');
