@@ -1133,7 +1133,9 @@ class controladorCompras extends Controller
             }
 
             //Obtiene la unidad en caso de ser para mantenimiento
-            $datos = Requisiciones::select('unidad_id')->where('id_requisicion',$rid)->first();
+            $datos = Requisiciones::select('unidad_id','mantenimiento')->where('id_requisicion',$rid)->first();
+
+            $mantenimiento = $datos->mantenimiento;
 
             //Si existe unidad guarda todos sus datos para mostrarlos en pdf
             if(!empty($datos->unidad_id)){

@@ -1,5 +1,5 @@
-<?php 
-require_once('tcpdf_include.php'); 
+<?php
+require_once('tcpdf_include.php');
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -68,7 +68,7 @@ $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
 $pdf->Ln(10); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 12);
 
-// Imprimir el subtutitulo 
+// Imprimir el subtutitulo
 $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 // Crear la tabla de gastos
 $pdf->SetFont('helvetica', '', 10);
@@ -83,7 +83,7 @@ foreach ($articulos as $articulo) {
     $pdf->Cell(20, 10, $articulo['cantidad'], 1);
     $pdf->Cell(40, 10, $articulo['unidad'], 1);
     $pdf->Cell(100, 10, $articulo['descripcion'], 1);
-    $pdf->Ln(10); // Salto de línea antes de la tabla   
+    $pdf->Ln(10); // Salto de línea antes de la tabla
 }
 
 if(!empty($unidad)){
@@ -91,12 +91,21 @@ if(!empty($unidad)){
     $pdf->SetFont('helvetica', 'A', 11);
     // Encabezados de la tabla
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(160, 7, 'Unidad', 1, 1, 'C', 1);
+    $pdf->Cell(125, 7, 'Unidad', 1, 0, 'C', 1);
+    $pdf->Cell(35, 7, 'Mantenimiento', 1, 1, 'C', 1);
+
     // notas que agrega el solicitante
-    $pdf->MultiCell(160, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1, 1 ,'C', 0 );
+    if ($unidad->tipo === "AUTOMOVIL" ){
+        $pdf->Cell(125, 6,'Placas: '.$unidad->id_unidad.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1 );
+    } else {
+        $pdf->Cell(125, 6,'Permiso: '.$unidad->n_de_permiso.' - Descripcion: '. $unidad->marca.' '.$unidad->modelo, 1);
+    }
+
+    $pdf->Cell(35, 6, $mantenimiento, 1, 1, 'C');
+
 }
 
-$pdf->Ln(10); // Salto de línea antes de la tabla   
+$pdf->Ln(10); // Salto de línea antes de la tabla
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
@@ -132,7 +141,7 @@ $pdf->Cell(0, 10, '              Solicita                                       
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'requisicion_' .$datos['id_requisicion']. '.pdf';
 
-//$rutaDescarga = 'D:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+//$rutaDescarga = 'C:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 $rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');
