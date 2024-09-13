@@ -147,6 +147,16 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">TIPO DE MANTENIMIENTO:</label>
+                        <select name="mantenimiento" class="form-control" required>
+                            <option value="" selected disabled>Selecciona el tipo de mantenimiento al que pertenece la requisición</option>
+                            <option value="Preventivo">Preventivo</option>
+                            <option value="Correctivo">Correctivo</option>
+
+                        </select>
+                    </div>
                 @endif
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Notas:</label>

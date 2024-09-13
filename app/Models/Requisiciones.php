@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Requisiciones extends Model
 {
 
-    protected $fillable = [ 
-    'id_requisicion',
-        'usuario_id',        
+    protected $fillable = [
+        'id_requisicion',
+        'usuario_id',
         'pdf',
         'notas',
         'estado',
