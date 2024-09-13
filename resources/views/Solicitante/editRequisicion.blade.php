@@ -135,22 +135,31 @@
             <form action="{{route('updateSolicitud',$id)}}" method="post">
                 @csrf
                 {!!method_field('PUT')!!}
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Notas:</label>
-                    <input name="Notas" type="text" class="form-control" value="{{$unidad->notas}}" placeholder="Agrega notas si necesario">
-                </div>
-                @if(session('departamento')=== "Mantenimiento")
+                @if(session('departamento') === "Mantenimiento")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         <select name="unidad" class="form-control" required>
                             <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             <option disabled>Selecciona una unidad en caso de cambiar de unidad la requisicion</option>
-                            @foreach ($unidades as $unidad)
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                            @foreach ($unidades as $unidade)
+                                <option value="{{$unidade->id_unidad}}">{{$unidade->id_unidad}} {{$unidade->marca}} {{$unidade->modelo}}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">TIPO DE MANTENIMIENTO:</label>
+                        <select name="mantenimiento" class="form-control" required>
+                            <option value="{{ $unidad->mant }}">{{ $unidad->mant }}</option>
+                            <option value="Preventivo">Preventivo</option>
+                            <option value="Correctivo">Correctivo</option>
+                        </select>
+                    </div>
                 @endif
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Notas:</label>
+                    <input name="Notas" type="text" class="form-control" value="{{$unidad->notas}}" placeholder="Agrega notas si necesario">
+                </div>
                 <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
             </form>
         </div>

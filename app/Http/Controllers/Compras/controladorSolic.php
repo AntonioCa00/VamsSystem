@@ -229,6 +229,8 @@ class controladorSolic extends Controller
             // Procesamiento de los datos de la solicitud y del empleado
             $Nota = $req->input('Notas');
 
+            $mantenimiento = $req->input('mantenimiento');
+
             // Definición y serialización de los datos del empleado
             $datosEmpleado[] = [
                 'idEmpleado' => session('loginId'),
@@ -276,6 +278,7 @@ class controladorSolic extends Controller
                     "unidad_id" => $req->input('unidad'),
                     "pdf" => $rutaDescargas,
                     "notas" => $Nota,
+                    "mantenimiento"=>$req->input('mantenimiento'),
                     "estado"=> "Solicitado",
                     "created_at"=>Carbon::now(),
                     "updated_at"=>Carbon::now(),
@@ -337,7 +340,7 @@ class controladorSolic extends Controller
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         // Recuperación de detalles de la unidad asociada a la requisición
-        $unidad = Requisiciones::select('id_unidad','marca','modelo','notas')
+        $unidad = Requisiciones::select('id_unidad','marca','modelo','notas','requisiciones.mantenimiento as mant')
         ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
         ->where('requisiciones.id_requisicion',$id)
         ->first();
@@ -463,11 +466,14 @@ class controladorSolic extends Controller
         } else {
             // Recopilación de información de la requisición y generación del nuevo PDF
             $notas = $req->Notas;
+
+            $mantenimiento = $req->mantenimiento;
             $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
             ->join('users','requisiciones.usuario_id','=','users.id')
             ->where('requisiciones.id_requisicion',$id)
             ->first();
 
+            $datos->unidad_id = $req->unidad;
             // Eliminar el archivo PDF anterior si existe
             $fileToDelete = public_path($datos->pdf);
 
@@ -494,12 +500,24 @@ class controladorSolic extends Controller
             ob_end_clean();
 
             // Actualización del estado de la requisición a 'Solicitado'
-            Requisiciones::where('id_requisicion',$id)->update([
-                "estado"=>'Solicitado',
-                "pdf"=>$rutaDescargas,
-                "notas"=>$notas,
-                "updated_at"=>Carbon::now(),
-            ]);
+
+            if(session('departamento') === "Mantenimiento"){
+                Requisiciones::where('id_requisicion',$id)->update([
+                    "unidad_id"=>$req->unidad,
+                    "pdf"=>$rutaDescargas,
+                    "notas"=>$notas,
+                    "estado"=>'Solicitado',
+                    "mantenimiento"=>$mantenimiento,
+                    "updated_at"=>Carbon::now(),
+                ]);
+            } else{
+                Requisiciones::where('id_requisicion',$id)->update([
+                    "estado"=>'Solicitado',
+                    "pdf"=>$rutaDescargas,
+                    "notas"=>$notas,
+                    "updated_at"=>Carbon::now(),
+                ]);
+            }
 
             // Redirección al usuario con mensaje de éxito
             return redirect('solicitud')->with('editado','editado');

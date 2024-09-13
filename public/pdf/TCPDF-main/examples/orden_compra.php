@@ -109,9 +109,14 @@ if(!empty($unidad)){
     $pdf->SetFont('helvetica', 'A', 11);
     // Encabezados de la tabla
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(180, 7, 'Unidad', 1, 1, 'C', 1);
+    $pdf->Cell(130, 7, 'Unidad', 1, 0, 'C', 1);
+    $pdf->Cell(50, 7, 'Tipo de Mantenimiento', 1, 1, 'C', 1);
+
     // notas que agrega el solicitante
-    $pdf->MultiCell(180, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 1 ,'C', 0 );
+    $pdf->Cell(130, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 0 , 0 );
+
+    $pdf->Cell(50, 6, $mantenimiento, 1, 1,'C');
+
 }
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
