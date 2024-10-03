@@ -3,7 +3,7 @@
 @section('Contenido')
 
 @if(session()->has('insert'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('update'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,11 +23,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('delete'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -35,21 +35,21 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <style>
     .modal-body-scrollable {
-        max-height: 450px; 
+        max-height: 450px;
         overflow-y: auto; /* Se habilita el desplazamiento vertical si el contenido excede la altura máxima */
     }
-</style>    
+</style>
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">PROVEEDORES</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -60,18 +60,18 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nombre:</th>                         
+                            <th>Nombre:</th>
                             <th>Detalles:</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($proveedores as $proveedor)
-                        <tr>                    
+                        <tr>
                             <th>{{$proveedor->nombre}}</th>
                             {{-- <th>
                                 <a href="{{ asset($proveedor->CIF) }}" target="_blank">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                </a>    
+                                </a>
                             </th> --}}
                             <th>
                                 <a href="#" data-toggle="modal" data-target="#detalles{{$proveedor->id_proveedor}}">
@@ -97,7 +97,7 @@
                                                         <label for="exampleFormControlInput1">Telefono:</label>
                                                         <h6>{{$proveedor->telefono}}</h6>
                                                     </div>
-                                                    @if (!empty($proveedor->telefono2)) 
+                                                    @if (!empty($proveedor->telefono2))
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Telefono secundario:</label>
                                                             <h6>{{$proveedor->telefono2}}</h6>
@@ -134,25 +134,25 @@
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Banco:</span></label>
                                                             <h6>{{$proveedor->banco}}</h6>
-                                                        </div>               
+                                                        </div>
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Número de cuenta:</span></label>
                                                             <h6>{{$proveedor->n_cuenta}}</h6>
-                                                        </div>               
+                                                        </div>
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Número de cuenta clabe:</span></label>
                                                             <h6>{{$proveedor->n_cuenta_clabe}}</h6>
-                                                        </div> 
+                                                        </div>
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
                                                             <a href="{{ asset($proveedor->estado_cuenta) }}" target="_blank">
                                                                 <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                                             </a>
-                                                        </div>                             
+                                                        </div>
                                                     @else
                                                         <div class="form-group">
-                                                            <label for="exampleFormControlInput1">NO TIENE DATOS BANCARIOS REGISTRADOS</span></label>                                                            
-                                                        </div>                                                    
+                                                            <label for="exampleFormControlInput1">NO TIENE DATOS BANCARIOS REGISTRADOS</span></label>
+                                                        </div>
                                                     @endif
                                                 </div>
                                                 <div class="modal-footer">
@@ -180,13 +180,13 @@
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                 <form action="{{route('deleteProveedor',$proveedor->id_proveedor)}}" method="post">
                                                     @csrf
-                                                    {!!method_field('PUT')!!}    
+                                                    {!!method_field('PUT')!!}
                                                     <button type="submit" class="btn btn-primary">confirmar</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                </div> 
+                                </div>
                             </th>
                         </tr>
                         @endforeach

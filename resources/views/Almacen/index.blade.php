@@ -3,7 +3,7 @@
 @section('contenido')
 
 @if(session()->has('entra'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,7 +11,7 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
@@ -75,12 +75,12 @@
                 <!-- Card Header - Dropdown -->
                 <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Estado actual del almacen</h6>                    
+                    <h6 class="m-0 font-weight-bold text-primary">Estado actual del almacen</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>                        
+                        </a>
                     </div>
                 </div>
                 <!-- Card Body -->
@@ -92,8 +92,8 @@
                                     <th>Clave:</th>
                                     <th>Ubicación:</th>
                                     <th>Descripcion:</th>
-                                    <th>Medida:</th>  
-                                    <th>Marca:</th>                                                      
+                                    <th>Medida:</th>
+                                    <th>Marca:</th>
                                     <th>Stock:</th>
                                 </tr>
                             </thead>

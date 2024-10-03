@@ -394,7 +394,6 @@ class controladorMante extends Controller
             } else{
                 $title .= $event->id_unidad; // Suponiendo que 'placas' es la columna para las placas del automóvil
             }
-
             return [
                 'id' => $event->id_programacion,
                 'title' => $title,
