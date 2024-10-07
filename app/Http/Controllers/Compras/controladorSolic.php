@@ -795,6 +795,17 @@ class controladorSolic extends Controller
     }
 
     public function deletePago($id){
+        //Consulta la orden de pago seleccionada
+        $pago = Pagos_fijos::where('id_pago',$id)->first();
+
+        //Guarda la ruta del archivo PDF de la orden
+        $fileToDelete = public_path($pago->pdf);
+
+        //Si existe el archivo lo elimina
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
+
         Pagos_Fijos::where('id_pago',$id)->delete();
 
         return back()->with('eliminado','eliminado');

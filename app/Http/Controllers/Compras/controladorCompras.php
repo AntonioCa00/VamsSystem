@@ -1363,6 +1363,7 @@ class controladorCompras extends Controller
         ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
         ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
         ->orderBy('id_pago','desc')
+        ->where('pagos_fijos.usuario_id',session('loginId'))
         ->get();
 
         // Obtener todos los servicios activos
@@ -1379,6 +1380,194 @@ class controladorCompras extends Controller
 
         // Cargar y mostrar la vista con los datos necesarios
         return view('Compras.pagos',compact('pagos','servicios','proveedores'));
+    }
+
+    public function crearOrdenPago(){
+        // Obtener todos los servicios activos y sus proveedores
+        $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+        // Obtener todos los proveedores activos
+        $proveedores = Proveedores::where('estatus','1')
+        ->orderBy('nombre','asc')
+        ->get();
+
+        // Cargar y mostrar la vista con los datos necesarios para la creación de un nuevo pago
+        return view('Compras.crearPago',compact('servicios','proveedores'));
+    }
+
+    public function createServicio (Request $req){
+        // Crea un nuevo registro de servicio en la base de datos con los datos proporcionados en la solicitud
+        Servicios::create([
+            "nombre_servicio"=>$req->nombre,
+            "proveedor_id"=>$req->proveedor,
+            "usuario_id"=>session('loginId'),
+            "estatus"=>1,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        // Redirige al usuario a la página anterior con un mensaje de éxito
+        return back()->with('servicio','servicio');
+    }
+
+    public function editServicio(Request $req, $id){
+        // Actualiza el registro del servicio en la base de datos con los datos proporcionados
+        Servicios::where('id_servicio',$id)->update([
+            "nombre_servicio"=>$req->input('nombre'),
+            "proveedor_id"=>$req->input('proveedor'),
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        // Redirige al usuario a la página anterior con un mensaje de éxito
+        return back()->with('servEditado','servEditado');
+    }
+
+    public function deleteServicioC($id){
+        Servicios::where('id_servicio',$id)->update([
+            "estatus"=>"0",
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        // Redirige al usuario a la página anterior con un mensaje de éxito
+        return back()->with('servDelete','servDelete');
+    }
+
+    public function createPago(Request $req){
+        $servicio_id = $req->input('servicio');
+        $Nota = $req->input('Notas');
+        $importe = $req->input('importe');
+        // Definición y serialización de los datos del empleado
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombres' => session('loginNombres'),
+            'apellidoP' => session('loginApepat'),
+            'apellidoM' => session('loginApemat'),
+            'rol' => session('rol'),
+            'dpto' =>session('departamento')
+        ];
+
+        // Determinación del ID de la nueva requisición y preparación del PDF
+        $ultimoPago = Pagos_Fijos::select('id_pago')->latest('id_pago')->first();
+        if (empty($ultimoPago)){
+            $idcorresponde = 1;
+        } else {
+            $idcorresponde = $ultimoPago->id_pago + 1;
+        }
+
+        $servicio = Servicios::select('servicios.nombre_servicio','proveedores.*')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->where('servicios.id_servicio',$servicio_id)
+        ->first();
+
+        // Serializar los datos del empleado y almacenarlos en un archivo para pasarlos al PDF
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleado.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Se genera el nombre y ruta para guardar PDF
+        $nombreArchivo = 'pagoFijo_' . $idcorresponde . '.pdf';
+        $rutaDescargas = 'pagosFijos/' . $nombreArchivo;
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start(); //* Iniciar el búfer de salida para pasar las variables al PDF
+        include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
+        ob_end_clean();
+
+        Pagos_Fijos::create([
+            "id_pago"=>$idcorresponde,
+            "servicio_id"=>$servicio_id,
+            "usuario_id"=>session('loginId'),
+            "costo_total"=>$importe,
+            "pdf"=>$rutaDescargas,
+            "estado"=>'Solicitado',
+            "notas"=>$Nota,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return redirect()->route('pagosFijos')->with('pago','pago');
+    }
+
+    public function updatePago(Request $req, $id){
+        $servicio_id = $req->input('servicio');
+        $Nota = $req->input('Notas');
+        $importe = $req->input('importe');
+        // Definición y serialización de los datos del empleado
+        $datosEmpleado[] = [
+            'idEmpleado' => session('loginId'),
+            'nombres' => session('loginNombres'),
+            'apellidoP' => session('loginApepat'),
+            'apellidoM' => session('loginApemat'),
+            'rol' => session('rol'),
+            'dpto' =>session('departamento')
+        ];
+
+        $idcorresponde = $id;
+        $pdf = Pagos_Fijos::select('pdf')
+        ->where('id_pago',$id)
+        ->first();
+
+        $servicio = Servicios::select('servicios.nombre_servicio','proveedores.*')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->where('servicios.id_servicio',$servicio_id)
+        ->first();
+
+        //Guarda la ruta del archivo PDF de la requisicion
+        $fileToDelete = public_path($pdf->pdf);
+
+        //Si existe el archivo lo elimina
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
+
+        // Serializar los datos del empleado y almacenarlos en un archivo para pasarlos al PDF
+        $datosSerializados = serialize($datosEmpleado);
+        $rutaArchivo = storage_path('app/datos_empleado.txt');
+        file_put_contents($rutaArchivo, $datosSerializados);
+
+        // Se genera el nombre y ruta para guardar PDF
+        $nombreArchivo = 'pagoFijo_' . $idcorresponde . '.pdf';
+        $rutaDescargas = 'pagosFijos/' . $nombreArchivo;
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start(); //* Iniciar el búfer de salida para pasar las variables al PDF
+        include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
+        ob_end_clean();
+
+        Pagos_Fijos::where('id_pago',$id)->update([
+            "servicio_id"=>$servicio_id,
+            "usuario_id"=>session('loginId'),
+            "costo_total"=>$importe,
+            "pdf"=>$rutaDescargas,
+            "estado"=>'Solicitado',
+            "notas"=>$Nota,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+        ]);
+
+        return back()->with('editado','editado');
+    }
+
+    public function deletePago($id){
+        $pago = Pagos_fijos::where('id_pago',$id)->first();
+
+        //Guarda la ruta del archivo PDF de la orden
+        $fileToDelete = public_path($pago->pdf);
+
+        //Si existe el archivo lo elimina
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
+
+        //Elimina el registro de la base de datos
+        Pagos_Fijos::where('id_pago',$id)->delete();
+
+        //Redirecciona a la página de consulta
+        return back()->with('eliminado','eliminado');
     }
 
     /*
