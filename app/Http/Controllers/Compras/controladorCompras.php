@@ -1142,13 +1142,16 @@ class controladorCompras extends Controller
                 $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
             }
 
-            //Variable que contiene los articulos seleccionados en el formulario.
             $articulosSeleccionados = $req->input('articulos_seleccionados');
+            $articulosFiltrados = [];
 
-            //Filtrar solo los articulos seleccionados
-            $articulosFiltrados = array_filter($articulos, function($articulo) use ($articulosSeleccionados){
-                return in_array($articulo['id'],$articulosSeleccionados);
-            });
+            // Asegúrate de que $articulos tiene ids únicos antes de proceder
+            foreach ($articulos as $articulo) {
+                if (in_array($articulo['id'], $articulosSeleccionados)) {
+                    // Solo agrega artículos seleccionados y evita duplicados
+                    $articulosFiltrados[$articulo['id']] = $articulo; // Usar id como clave para evitar duplicados
+                }
+            }
 
             // Serializar los datos del empleado y almacenarlos en un archivo
             $datosSerializados = serialize($datosEmpleado);
@@ -1188,22 +1191,28 @@ class controladorCompras extends Controller
                 "updated_at"=>Carbon::now(),
             ]);
 
-            //Por cada articulo modifica las cantidades y precios.
-            foreach ($articulosFiltrados as $id => $articulo) {
-                // Aquí puedes acceder a cada elemento del array $articulo
-                $articuloUnico = Articulos::where('id',$id)->first();
-                $cantidad_total = $articuloUnico->cantidad - $articulo['cantidad'];
+            // Almacenar los estatus de actualización
+            $estatusActualizaciones = [];
 
-                // Determina el estatus antes de la actualización
+            // Recorrer los articulos filtrados usando un bucle for
+            $articulosCount = count($articulosFiltrados);
+            $articulosArray = array_values($articulosFiltrados); // Convierte el array asociativo a un array indexado
+
+            for ($i = 0; $i < $articulosCount; $i++) {
+                // Aquí puedes acceder a cada elemento del array $articulo
+                $articuloUnico = Articulos::where('id', $articulosArray[$i]['id'])->first();
+                $cantidad_total = $articuloUnico->cantidad - $articulosArray[$i]['cantidad'];
+
+                //Determina el estatus antes de la actualización
                 $estatus = $cantidad_total == 0 ? 1 : 0;
-                Articulos::where('id', $id)->update([
+                Articulos::where('id', $articulosArray[$i]['id'])->update([
                     'cantidad' => $cantidad_total,
-                    'unidad' => $articulo['unidad'],
-                    'descripcion' => $articulo['descripcion'],
-                    'precio_unitario' => $articulo['precio_unitario'],
-                    'ult_compra'=>$articulo['cantidad'],
+                    'unidad' => $articulosArray[$i]['unidad'],
+                    'descripcion' => $articulosArray[$i]['descripcion'],
+                    'precio_unitario' => $articulosArray[$i]['precio_unitario'],
+                    'ult_compra' => $articulosArray[$i]['cantidad'],
                     'estatus' => $estatus, // Usa la variable $estatus aquí
-                    'orden_id'=>$idnuevaorden
+                    'orden_id' => $idnuevaorden
                 ]);
             }
 
@@ -1280,18 +1289,28 @@ class controladorCompras extends Controller
         // Recuperar los artículos asociados a la orden de compra
         $articulos_ord = Articulos::where('orden_id', $id)->get();
 
-    foreach ($articulos_ord as $articulo) {
-        // Restaurar la cantidad del artículo al estado anterior a la compra
-        $anterior_cantidad = $articulo->cantidad + $articulo->ult_compra;
+        foreach ($articulos_ord as $articulo) {
+            // Restaurar la cantidad del artículo al estado anterior a la compra
+            $anterior_cantidad = $articulo->cantidad + $articulo->ult_compra;
 
-        // Actualizas solo este artículo específico usando su ID único
-        Articulos::where('id', $articulo->id)->update([
-            "cantidad" => $anterior_cantidad,
-            "precio_unitario" => null,
-            "estatus" => 0,
-            "orden_id" => null,
-        ]);
-    }
+            // Actualizas solo este artículo específico usando su ID único
+            Articulos::where('id', $articulo->id)->update([
+                "cantidad" => $anterior_cantidad,
+                "precio_unitario" => null,
+                "estatus" => 0,
+                "orden_id" => null,
+            ]);
+        }
+
+        $datos = Orden_compras::where('id_orden',$id)->first();
+
+        //Guarda la ruta del archivo PDF de la requisicion
+        $fileToDelete = public_path($datos->pdf);
+
+        //Si existe el archivo lo elimina
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
         // Eliminar la orden de compra
         Orden_compras::where('id_orden',$id)->delete();
 
@@ -1610,54 +1629,97 @@ class controladorCompras extends Controller
         // Obtener los departamentos seleccionados (si se ha implementado)
         $departamentos = $req->input('departamentos', []);
 
+        $queryTotal = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
+               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
+               'users.nombres', 'users.apellidoP', 'users.departamento',
+               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'proveedores.nombre')
+               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+               ->where(function ($query) use ($fInicio, $fFin) {
+                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
+               })
+               ->where(function ($query) {
+                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
+                   $query->where(function ($query) {
+                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                             ->whereNotNull('orden_compras.id_orden');
+                   })
+                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
+                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+               });
+
         // Construir la consulta con INNER JOIN
         $queryPendientes = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
-            'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
-            'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
-            'proveedores.nombre')
-            ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-            ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
-            ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-            ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
-            ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
-            ->where(function ($query) use ($fInicio, $fFin) {
-                $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
-            })
+               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
+               'users.nombres', 'users.apellidoP', 'users.departamento',
+               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'proveedores.nombre')
+               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+               ->where(function ($query) use ($fInicio, $fFin) {
+                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
+               })
+               ->where(function ($query) {
+                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
+                   $query->where(function ($query) {
+                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                             ->whereNotNull('orden_compras.id_orden');
+                   })
+                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
+                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+               })
             ->where('orden_compras.estado', '=', null);
 
         // Construir la consulta con INNER JOIN
-        $queryPagados= Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
-            'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
-            'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
-            'proveedores.nombre')
-            ->leftJoin('cotizaciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-            ->leftJoin('orden_compras','orden_compras.cotizacion_id','cotizaciones.id_cotizacion')
-            ->leftJoin('proveedores','orden_compras.proveedor_id','proveedores.id_proveedor')
-            ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
-            ->where(function($query) use ($fInicio, $fFin) {
-                $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
-            })
+        $queryPagados = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
+               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
+               'users.nombres', 'users.apellidoP', 'users.departamento',
+               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'proveedores.nombre')
+               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+               ->where(function ($query) use ($fInicio, $fFin) {
+                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
+               })
+               ->where(function ($query) {
+                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
+                   $query->where(function ($query) {
+                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                             ->whereNotNull('orden_compras.id_orden');
+                   })
+                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
+                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+               })
             ->where('orden_compras.estado', '=', 'Pagado');
 
             // Si se han seleccionado departamentos, filtrar por ellos
         if (!empty($departamentos)) {
             $queryPendientes->whereIn('users.departamento', $departamentos);
             $queryPagados->whereIn('users.departamento', $departamentos);
+            $queryTotal->whereIn('users.departamento', $departamentos);
         }
 
         // Ejecutar la consulta y obtener los resultados
         $datosGastosFinalizados = $queryPagados->get();
         $datosGastosPendientes = $queryPendientes->get();
+        $datosGastos = $queryTotal->get();
 
         // Crear un nuevo archivo Excel para los datos de las requisiciones
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         // Asignar nombre a la hoja
-        $sheet->setTitle('Ordenes Pendientes');
+        $sheet->setTitle('Ordenes de Compra');
 
         // Añadir borde grueso a la celda A1
         $sheet->getStyle('A1:G1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
@@ -1692,7 +1754,7 @@ class controladorCompras extends Controller
         // Combinar celdas de la fila 5 para clasificar requisiciones
         $sheet->mergeCells('A5:D5');
 
-        $sheet->setCellValue('A5', 'Registro de ordenes de compra pendientes');
+        $sheet->setCellValue('A5', 'Registro de ordenes de compra');
 
         // Centrar los encabezados y ajustar tamaño de letra
         $sheet->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -1731,7 +1793,7 @@ class controladorCompras extends Controller
         $rowNumber = 8;
 
         // Para cada orden de compra que obtenga la consulta
-        foreach ($datosGastosPendientes as $orden) {
+        foreach ($datosGastos as $orden) {
 
             // Contatena el nombre completo del solicitante
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
@@ -1819,7 +1881,7 @@ class controladorCompras extends Controller
         $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Crear segunda hoja
-        $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
+        $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pendientes');
         $spreadsheet->addSheet($sheet2);
 
         // Añadir borde grueso a la celda A1
@@ -1855,7 +1917,7 @@ class controladorCompras extends Controller
         // Combinar celdas de la fila 5 para clasificar requisiciones
         $sheet2->mergeCells('A5:D5');
 
-        $sheet2->setCellValue('A5', 'Registro de ordenes de compra pagados');
+        $sheet2->setCellValue('A5', 'Registro de ordenes de compra pendientes');
 
         // Centrar los encabezados y ajustar tamaño de letra
         $sheet2->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -1890,14 +1952,14 @@ class controladorCompras extends Controller
         }
 
         // Calcular el total de costos pendientes
-        $totalFinalizados = $datosGastosFinalizados->sum('costo_total');
+        $totalPendientes = $datosGastosPendientes->sum('costo_total');
 
         // Escribir los datos de las requisiciones en el archivo Excel
         // Comeinza a escribir los datos desde la fila 8
         $rowNumber = 8;
 
         // Para cada orden de compra que obtenga en la consulta
-        foreach ($datosGastosFinalizados as $orden) {
+        foreach ($datosGastosPendientes as $orden) {
 
             // Contatena el nombre completo del solicitante
             $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
@@ -1983,6 +2045,172 @@ class controladorCompras extends Controller
 
         // Añadir bordes gruesos a la fila del total
         $sheet2->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Crear segunda hoja
+        $sheet3 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
+        $spreadsheet->addSheet($sheet3);
+
+        // Añadir borde grueso a la celda A1
+        $sheet3->getStyle('A1:H1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Combinar celdas de la fila 1 para el título
+        $sheet3->mergeCells('A1:H1');
+        $sheet3->setCellValue('A1', 'REPORTE GENERAL DE ORDENES DE COMPRA');
+
+        // Establecer el color de fondo de la celda A1
+        $sheet3->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF69B0F3');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet3->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet3->getStyle('A1')->getFont()->setSize(18);
+
+        $sheet3->setCellValue('B3', 'Fecha Inicio:');
+        $sheet3->setCellValue('C3', $fechas['fecha_inicio']);
+        $sheet3->setCellValue('E3', 'Fecha Fin:');
+        $sheet3->setCellValue('F3', $fechas['fecha_fin']);
+
+        // Centrar los encabezados de fechas
+        $sheet3->getStyle('A3:G3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados de fecha
+        $sheet3->getStyle('B3:C3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet3->getStyle('E3:F3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Establecer el color de fondo de los encabezados de fecha
+        $sheet3->getStyle('B3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet3->getStyle('E3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Combinar celdas de la fila 5 para clasificar requisiciones
+        $sheet3->mergeCells('A5:D5');
+
+        $sheet3->setCellValue('A5', 'Registro de ordenes de compra pagadas');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet3->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet3->getStyle('A5')->getFont()->setSize(16);
+
+        // Escribir encabezados en el archivo Excel
+        $sheet3->setCellValue('A7', 'Mes');
+        $sheet3->setCellValue('B7', 'Semana');
+        $sheet3->setCellValue('C7', 'Rango');
+        $sheet3->setCellValue('D7', 'Fecha Requisicion');
+        $sheet3->setCellValue('E7', 'Área');
+        $sheet3->setCellValue('F7', 'Solicitante');
+        $sheet3->setCellValue('G7', 'Requisicion');
+        $sheet3->setCellValue('H7', 'Estado');
+        $sheet3->setCellValue('I7', 'orden compra');
+        $sheet3->setCellValue('J7', 'Proveedor');
+        $sheet3->setCellValue('K7', 'Costo');
+        $sheet3->setCellValue('L7', 'Unidad');
+
+        // Establecer el color de fondo de los encabezados
+        $sheet3->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Centrar los encabezados
+        $sheet3->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados
+        $sheet3->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+         // Ajustar el tamaño de las columnas al contenido
+         foreach (range('A', 'L') as $columnID) {
+            $sheet3->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Calcular el total de costos pendientes
+        $totalFinalizados = $datosGastosFinalizados->sum('costo_total');
+
+        // Escribir los datos de las requisiciones en el archivo Excel
+        // Comeinza a escribir los datos desde la fila 8
+        $rowNumber = 8;
+
+        // Para cada orden de compra que obtenga en la consulta
+        foreach ($datosGastosFinalizados as $orden) {
+
+            // Contatena el nombre completo del solicitante
+            $nombreCompleto = $orden->nombres . ' ' . $orden->apellidoP;
+
+            // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+            $fecha = date('d/m/Y', strtotime($orden->fechaReq));
+
+            $fechaInput = $fecha; // Fecha en formato dd/mm/aaaa
+
+            // Convertir la fecha a un objeto Carbon
+            $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
+
+            // Obtener el mes en texto (en español)
+            $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
+
+            // Obtener el número de semana
+            $numeroSemana = $fechaConvert->weekOfYear;
+
+            // Obtener la fecha del lunes y viernes de esa semana
+            $lunes = $fechaConvert->startOfWeek(Carbon::MONDAY)->day;
+            $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
+
+            // Valida si la requisición pertenece a una unidad
+            if (empty($orden->id_unidad)) {
+                // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
+                $unidad = 'NA';
+            }
+
+            // Valida si la requisición pertenece a la unidad 1 o 2
+            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+                // Si pertenece, entonces el valor de unidad es 'No signada'
+                $unidad = 'No asignada';
+
+                //S tiene otra unidad...
+            } else{
+
+                //Valida si el tipo es camión o camioneta
+                if($orden->tipo === "CAMIÓN" || $orden->tipo=== "CAMIONETA"){
+                    // Si su tipo es alguno de esos, unidad es su permiso
+                    $unidad = $orden->n_de_permiso;
+
+                } else{
+                    // Si no, son sus placas (unidad_id)
+                    $unidad = $orden->id_unidad;
+                }
+            }
+
+            $sheet3->setCellValue('A' . $rowNumber, $nombreMes);
+            $sheet3->setCellValue('B' . $rowNumber, $numeroSemana);
+            $sheet3->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
+            $sheet3->setCellValue('D' . $rowNumber, $fecha);
+            $sheet3->setCellValue('E' . $rowNumber, $orden->departamento);
+            $sheet3->setCellValue('F' . $rowNumber, $nombreCompleto);
+            $sheet3->setCellValue('G' . $rowNumber, $orden->id_requisicion);
+            $sheet3->setCellValue('H' . $rowNumber, $orden->estadoReq);
+            $sheet3->setCellValue('I' . $rowNumber, $orden->id_orden);
+            $sheet3->setCellValue('J' . $rowNumber, $orden->nombre);
+            $sheet3->setCellValue('K' . $rowNumber, $orden->costo_total);
+            $sheet3->setCellValue('L' . $rowNumber, $unidad);
+
+            // Centrar las celdas de la fila actual
+            $sheet3->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Añadir bordes normales a las celdas de los datos
+            $sheet3->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            // Aumenta en 1 la fila.
+            $rowNumber++;
+        }
+
+        // Aplicar filtros a la tabla de datos
+        $sheet3->setAutoFilter('A7:L7');
+
+        // Calcular y escribir el total de los costos al final de la tabla
+        $sheet3->setCellValue('J' . $rowNumber, 'Total');
+        $sheet3->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
+
+        // Formato de moneda para la celda del total
+        $sheet3->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+
+        // Centrar las celdas del total
+        $sheet3->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a la fila del total
+        $sheet3->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         $spreadsheet->setActiveSheetIndex(0);
 
