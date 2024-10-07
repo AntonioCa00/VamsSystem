@@ -81,6 +81,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('ordenesCompras',[controladorCompras::class,'tableordenesCompras'])->name('ordenesCompras');
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
         Route::get('reportesCompras/Unidades',[controladorCompras::class,'reporteUnidades'])->name('reporteUnidadesCom');
+        Route::get('ordenPago/Crear',[controladorCompras::class,'crearOrdenPago'])->name('crearOrdenPago');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
@@ -107,6 +108,13 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('reportesCompras/Requisiciones',[controladorCompras::class,'reporteReq'])->name('reportesReqCom');
         Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
         Route::post('solicitudes/Compras/{filt}',[controladorCompras::class,'filtrarSolicitudes'])->name('filtrarSolic');
+        Route::post('servicio/create',[controladorCompras::class,'createServicio'])->name('createServicioC');
+        Route::put('update/servicioC/{id}',[controladorCompras::class,'editServicio'])->name('editServicioC');
+        Route::delete('delete/servicioC/{id}',[controladorCompras::class,'deleteServicioC'])->name('deleteServicioC');
+        Route::post('update/pagoC/{id}',[controladorCompras::class,'updatePagp'])->name('updatePagoC');
+        Route::post('pago/create',[controladorCompras::class,'createPago'])->name('createPagoC');
+        Route::put('pago/update/{id}',[controladorCompras::class,'updatePago'])->name('updatePagoC');
+        Route::delete('pago/delete/{id}',[controladorCompras::class,'deletePago'])->name('deletePagoC');
     });
 
     Route::middleware(['check.role:Gerente Area'])->group(function () {
