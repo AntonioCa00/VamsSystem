@@ -103,65 +103,66 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Obtener el checkbox universal
-    var checkTodos = document.getElementById('checkTodos');
-    // Obtener todos los checkboxes individuales
-    var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el checkbox universal
+        var checkTodos = document.getElementById('checkTodos');
+        // Obtener todos los checkboxes individuales
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
 
-    // Iterar sobre cada checkbox y establecer el atributo "required" en el campo precio_unitario correspondiente
-    checkboxes.forEach(function (checkbox) {
-        var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
-        precioInput.required = true;
-
-        // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox individual
-        checkbox.addEventListener('change', function () {
-            toggleRequired(this);
-        });
-    });
-
-    // Función para cambiar el estado del atributo "required" según el estado del checkbox individual
-    function toggleRequired(checkbox) {
-        var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
-        if (checkbox.checked) {
+        // Iterar sobre cada checkbox y establecer el atributo "required" en el campo precio_unitario correspondiente
+        checkboxes.forEach(function (checkbox) {
+            var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
             precioInput.required = true;
-        } else {
-            precioInput.required = false;
+
+            // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox individual
+            checkbox.addEventListener('change', function () {
+                toggleRequired(this);
+                updateCheckTodos();
+            });
+        });
+
+        // Función para cambiar el estado del atributo "required" según el estado del checkbox individual
+        function toggleRequired(checkbox) {
+            var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
+            if (checkbox.checked) {
+                precioInput.required = true;
+            } else {
+                precioInput.required = false;
+            }
         }
-    }
 
-    // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox universal
-    checkTodos.addEventListener('change', function (e) {
-        var estado = this.checked; // true o false
-        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+        // Función para actualizar el estado del checkbox principal según el estado de los checkboxes individuales
+        function updateCheckTodos() {
+            var allChecked = true;
+            checkboxes.forEach(function (checkbox) {
+                if (!checkbox.checked) {
+                    allChecked = false;
+                }
+            });
+            checkTodos.checked = allChecked;
+        }
 
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = estado;
-            toggleRequired(checkbox);
+        // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox universal
+        checkTodos.addEventListener('change', function (e) {
+            var estado = this.checked; // true o false
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = estado;
+                toggleRequired(checkbox);
+            });
         });
     });
-});
 
+    // Mostrar u ocultar campo de días de crédito según la condición de pago seleccionada
     document.getElementById('condicionPago').addEventListener('change', function() {
-    var valor = this.value;
-    var datosBancarios = document.getElementById('datosBancarios');
+        var valor = this.value;
+        var datosBancarios = document.getElementById('datosBancarios');
 
-    if (valor == 'Credito') {
-        datosBancarios.style.display = 'block';
-    } else {
-        datosBancarios.style.display = 'none';
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('checkTodos').addEventListener('change', function (e) {
-        var estado = this.checked; // true o false
-        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
-
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = estado;
-        });
+        if (valor == 'Credito') {
+            datosBancarios.style.display = 'block';
+        } else {
+            datosBancarios.style.display = 'none';
+        }
     });
-});
-</script>
+    </script>
 @endsection
