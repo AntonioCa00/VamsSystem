@@ -103,10 +103,6 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-arrayOrden/{index}',[controladorCompras::class,'deleteArray'])->name('eliminarElemOrden');
         Route::post('ordenCompra/{cid}/{rid}',[controladorCompras::class,'insertOrdenCom'])->name('createOrdenCompra');
         Route::put('finalizarRequisicion/{id}',[controladorCompras::class,'FinalizarReq'])->name('FinalizarReq');
-        Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
-        Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
-        Route::post('reportesCompras/Requisiciones',[controladorCompras::class,'reporteReq'])->name('reportesReqCom');
-        Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
         Route::post('solicitudes/Compras/{filt}',[controladorCompras::class,'filtrarSolicitudes'])->name('filtrarSolic');
         Route::post('servicio/create',[controladorCompras::class,'createServicio'])->name('createServicioC');
         Route::put('update/servicioC/{id}',[controladorCompras::class,'editServicio'])->name('editServicioC');
@@ -115,6 +111,11 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('pago/create',[controladorCompras::class,'createPago'])->name('createPagoC');
         Route::put('pago/update/{id}',[controladorCompras::class,'updatePago'])->name('updatePagoC');
         Route::delete('pago/delete/{id}',[controladorCompras::class,'deletePago'])->name('deletePagoC');
+        Route::post('reporteEncAdm',[controladorCompras::class,'reporteEnc'])->name('reporteEncargadoAdm');
+        Route::post('reporteUniAdm',[controladorCompras::class,'reporteUnid'])->name('reporteUnidadAdm');
+        Route::post('reportesCompras/Requisiciones',[controladorCompras::class,'reporteReq'])->name('reportesReqCom');
+        Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
+        Route::post('reportesCompras/OrdenesPago',[controladorCompras::class,'reportePagos'])->name('reportesPagos');
     });
 
     Route::middleware(['check.role:Gerente Area'])->group(function () {
