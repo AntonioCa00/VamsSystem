@@ -443,7 +443,7 @@ class controladorMante extends Controller
                 'updated_at'=>Carbon::now()
             ]);
 
-            return back()->with('programado','programado');
+            return redirect('calendario')->with('programado','programado');
         } else {
             // Si ya existe una programación, validar que sea una fecha diferente a la que se planeó veces anteriores
             if ($programacion->fecha_progra === $fecha){
@@ -459,7 +459,7 @@ class controladorMante extends Controller
                     'updated_at'=>Carbon::now()
                 ]);
 
-                return back()->with('programado','programado');
+                return redirect('calendario')->with('programado','programado');
             }
         }
     }
