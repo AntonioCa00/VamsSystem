@@ -64,9 +64,14 @@
                     @endphp
 
                     <div class="form-check">
-                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Finanzas" id="flexCheckDefault"
-                            {{ in_array('Finanzas', $departamentosSeleccionados) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="flexCheckDefault">Finanzas</label>
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Mantenimiento" id="flexCheckDefault"
+                            {{ in_array('Mantenimiento', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckDefault">Mantenimiento</label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Almacen" id="flexCheckDefault"
+                            {{ in_array('Almacen', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckDefault">Almacen</label>
                     </div>
                     <div class="form-check">
                         <input name="departamentos[]" class="form-check-input" type="checkbox" value="Logistica" id="flexCheckChecked"
@@ -74,14 +79,24 @@
                         <label class="form-check-label" for="flexCheckChecked">Logistica</label>
                     </div>
                     <div class="form-check">
-                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Mantenimiento" id="flexCheckDefault"
-                            {{ in_array('Mantenimiento', $departamentosSeleccionados) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="flexCheckDefault">Mantenimiento</label>
-                    </div>
-                    <div class="form-check">
                         <input name="departamentos[]" class="form-check-input" type="checkbox" value="RH" id="flexCheckChecked"
                             {{ in_array('RH', $departamentosSeleccionados) ? 'checked' : '' }}>
                         <label class="form-check-label" for="flexCheckChecked">RH</label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Gestoría" id="flexCheckChecked"
+                            {{ in_array('Gestoría', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckChecked">Gestoría</label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Contabilidad" id="flexCheckDefault"
+                            {{ in_array('Contabilidad', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckDefault">Contabilidad</label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Sistemas" id="flexCheckChecked"
+                            {{ in_array('Sistemas', $departamentosSeleccionados) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flexCheckChecked">Sistemas</label>
                     </div>
                     <div class="form-check mb-3">
                         <input name="departamentos[]" class="form-check-input" type="checkbox" value="Ventas" id="flexCheckChecked"
