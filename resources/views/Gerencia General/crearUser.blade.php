@@ -56,9 +56,15 @@
                         <p class="text-danger fst-italic fw-bold">{{ $errors->first('departamentos') }}</p>
                     @endif
                     <div class="form-check">
-                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Finanzas" id="flexCheckDefault">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Mantenimiento" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
-                            Finanzas
+                            Mantenimiento
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Almacen" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Almacen
                         </label>
                     </div>
                     <div class="form-check">
@@ -68,15 +74,27 @@
                         </label>
                     </div>
                     <div class="form-check">
-                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Mantenimiento" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Mantenimiento
-                        </label>
-                    </div>
-                    <div class="form-check">
                         <input name="departamentos[]" class="form-check-input" type="checkbox" value="RH" id="flexCheckChecked">
                         <label class="form-check-label" for="flexCheckChecked">
                             RH
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Gestoría" id="flexCheckChecked">
+                        <label class="form-check-label" for="flexCheckChecked">
+                            Gestoría
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Contabilidad" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Contabilidad
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input name="departamentos[]" class="form-check-input" type="checkbox" value="Sistemas" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Sistemas
                         </label>
                     </div>
                     <div class="form-check mb-3">
