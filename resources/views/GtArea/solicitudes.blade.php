@@ -142,9 +142,7 @@
                                     <th>
                                         <!-- Ver Cotizaciones -->
                                         @if ($solicitudes->estado === "Cotizado" && in_array($solicitudes->departamento, $departamentosSesion))
-                                        <a class="btn btn-info" href="{{route('verCotizaF', $solicitudes->id_requisicion)}}">
-                                            Revisar Cotizaciones
-                                        </a>
+                                        <a href="#" class="btn btn-info" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Revisar Cotizaciones</a>
                                             <!-- Acción específica si es necesario -->
                                         @elseif ($solicitudes->estado === "Pre Validado" && session('rol') === "Gerente Area" && in_array("Finanzas", $departamentosSesion))
                                             <a class="btn btn-info" href="{{ route('aprobCotiza', $solicitudes->id_requisicion) }}">
