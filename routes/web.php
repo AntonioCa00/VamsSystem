@@ -61,6 +61,8 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS DE LAS VISTAS------------------------//
 
         //RUTAS ADMIN-COMPRAS
+        Route::get('corte/Compras',[controladorCompras::Class,'corteSemanal'])->name('corte');
+        Route::get('editarArticulos/Compras/{id}',[controladorCompras::class,'editarArti'])->name('editarArtComp');
         Route::get('inicio/Compras', [controladorCompras::class, 'index'])->name('index');
         Route::get('almacen/Compras', [controladorCompras::class, 'tableRefaccion'])->name('refacciones');
         Route::get('entradas/Compras',[controladorCompras::class,'tableEntradas'])->name('entradas');
@@ -86,6 +88,10 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
         //RUTAS ADMIN-COMPRAS
+        Route::post('corte-compras',[controladorCompras::class,'createCorte'])->name('createCorte');
+        Route::put('editArticulo/Compras/{id}',[controladorCompras::class,'editarArt'])->name('editarArtCompras');
+        Route::delete('rechazarArticulo/Compras/{id}',[controladorCompras::class,'rechazaArt'])->name('rechazaArtCompras');
+        Route::put('aprobarArt/Compras/{rid}',[controladorCompras::class,'aprobar'])->name('aprobarCompras');
         Route::post('insert-unidad',[controladorCompras::class,'insertUnidad'])->name('insertUnidad');
         Route::put('update-unidad/{id}',[controladorCompras::class, 'updateUnidad'])->name('updateUnidad');
         Route::put('delete-unidad/{id}',[controladorCompras::class,'deleteUnidad'])->name('deleteUnidad');
@@ -202,6 +208,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('pagos',[controladorSolic::class,'tablePagosFijos'])->name('pagos');
         Route::get('pagos/form',[controladorSolic::class,'createPago'])->name('crearPagos');
         Route::get('solicitud', [controladorSolic::class, 'tableRequisicion'])->name('solicitudesSoli');
+        Route::get('requisiciones/consulta',[controladorSolic::class,'tableSolicitudes'])->name('requsicionesConta');
+        Route::get('aprobarCotizaciones/{id}',[controladorSolic::class,'cotizaciones'])->name('cotizacionesSolic');
         Route::get('solicitud/form', [controladorSolic::class, 'createSolicitud'])->name('createSolicitud');
         Route::get('solicitud/edit/{id}',[controladorSolic::class,'editReq'])->name('editReq');
         Route::get('unidades',[controladorSolic::class,'tableUnidades'])->name('unidadesSoli');
@@ -240,6 +248,8 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('delete-UnidadSol/{id}',[controladorSolic::class,'deleteUnidad'])->name('deleteUnidadSoli');
         Route::put('baja-Unidad/{id}',[controladorSolic::class,'bajaUnidad'])->name('bajaUnidadSoli');
         Route::put('activ-unidadSoli/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
+        Route::put('select-cotiza/Solic/{id}/{sid}',[controladorSolic::class,'selectCotiza'])->name('selectCotizaSolic');
+        Route::put('rechazaContabilidad/{id}/{sid}',[controladorSolic::class,'rechazarCont'])->name('rechazarCont');
 
         //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
         Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');

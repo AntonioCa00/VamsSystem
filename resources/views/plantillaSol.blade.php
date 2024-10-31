@@ -69,7 +69,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Tablas
+                MIS SOLICITUDES
             </div>
 
             <!-- Nav Item - Tables -->
@@ -96,6 +96,37 @@
                 </li>
             @endif
 
+            @if (session('departamento') === "Contabilidad")
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    CONSULTAS GENERALES
+                </div>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ route('requsicionesConta') }}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Requisiciones</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Ordenes de compra</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Pagos Fijo</span></a>
+                </li>
+            @endif
+
             @if (session('departamento') == "Mantenimiento")
                 <!-- Divider -->
                 <hr class="sidebar-divider">
@@ -116,11 +147,10 @@
                         <i class="fas fa-fw fa-table"></i>
                         <span>Calendario</span></a>
                 </li>
-
             @endif
 
             <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
+            <hr class="sidebar-divider">
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">

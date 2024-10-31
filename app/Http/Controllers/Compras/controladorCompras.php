@@ -495,6 +495,8 @@ class controladorCompras extends Controller
         ->orderBy('requisiciones.created_at','desc')
         ->groupBy('requisiciones.id_requisicion')
         ->where('requisiciones.estado','!=','Finalizado')
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->where('requisiciones.estado','!=','Solicitado')
         ->get();
 
         // Recuperación de información agrupada por departamento
@@ -502,19 +504,10 @@ class controladorCompras extends Controller
         ->join('users','requisiciones.usuario_id','users.id')
         ->groupBy('departamento')->get();
 
-        // Recuperación de estados de solicitudes para filtros adicionales
-        $estatus = Requisiciones::select('estado')
-        ->where(function($query) {
-            $query->where('estado', '!=', 'Solicitado')
-                ->Where('estado', '!=', 'Finalizado')
-                ->Where('estado', '!=', 'Pre Validado');
-        })
-        ->groupBy('estado')
-        ->orderBy('estado','asc')->get();
-
+        $corte = Requisiciones::where('estado','Solicitada')->get();
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
-        return view('Compras.solicitudes',compact('solicitudes','departamentos','estatus'));
+        return view('Compras.solicitudes',compact('solicitudes','departamentos','corte'));
     }
 
     /*
@@ -530,78 +523,161 @@ class controladorCompras extends Controller
 
       Retorna la vista 'Compras.solicitudes', pasando el listado filtrado de solicitudes, departamentos y estados para su visualización.
     */
-    public function filtrarSolicitudes(Request $req,$filt){
+    public function corteSemanal(){
 
-        // Lógica para filtrar las solicitudes basada en el criterio especificado
-        switch ($filt){
-            case "departamento":
-                // Filtrar por departamento
-
-                // Consulta de solicitudes que cumplen con los criterios de estado especificados y cálculo de cantidad de artículos inactivos.
-                $solicitudes = Requisiciones::select(['requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.pdf','requisiciones.estado','requisiciones.created_at as fecha_creacion',DB::raw('(SELECT COUNT(*) FROM articulos WHERE articulos.requisicion_id = requisiciones.id_requisicion AND articulos.estatus = 0) as cantidad_articulos')])
-                ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-                ->where(function($query) {
-                    $query->where('requisiciones.estado', '=', 'Aprobado')
-                        ->orWhere('requisiciones.estado', '=', 'Cotizado')
-                        ->orWhere('requisiciones.estado', '=', 'Validado')
-                        ->orWhere('requisiciones.estado', '=', 'Comprado');
-                })
-                //Esta codición se encarga de mostrar solo las que cumplan con el filtro
-                ->where('users.departamento','=',$req->filtro)
-                ->orderBy('requisiciones.created_at','desc')
-                ->get();
-
-                // Recuperación de información agrupada por departamento
-                $departamentos = Requisiciones::select('departamento')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->groupBy('departamento')->get();
-
-                // Recuperación de estados de solicitudes para filtros adicionales
-                $estatus = Requisiciones::select('estado')
-                ->where(function($query) {
-                    $query->where('estado', '!=', 'Solicitado')
-                        ->Where('estado', '!=', 'Finalizado')
-                        ->Where('estado', '!=', 'Pre Validado');
-                })
-                ->groupBy('estado')
-                ->orderBy('estado','asc')->get();
-            break;
-            case "estado":
-                // Filtrar por estado
-
-                // Consulta de solicitudes que cumplen con los criterios de estado especificados y cálculo de cantidad de artículos inactivos.
-                $solicitudes = Requisiciones::select(['requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.pdf','requisiciones.estado','requisiciones.created_at as fecha_creacion',DB::raw('(SELECT COUNT(*) FROM articulos WHERE articulos.requisicion_id = requisiciones.id_requisicion AND articulos.estatus = 0) as cantidad_articulos')])
-                ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-                ->where(function($query) {
-                    $query->where('requisiciones.estado', '=', 'Aprobado')
-                        ->orWhere('requisiciones.estado', '=', 'Cotizado')
-                        ->orWhere('requisiciones.estado', '=', 'Validado')
-                        ->orWhere('requisiciones.estado', '=', 'Comprado');
-                })
-                //Esta codición se encarga de mostrar solo las que cumplan con el filtro
-                ->where('requisiciones.estado','=',$req->filtro)
-                ->orderBy('requisiciones.created_at','desc')
-                ->get();
-
-                // Recuperación de información agrupada por departamento
-                $departamentos = Requisiciones::select('departamento')
-                ->join('users','requisiciones.usuario_id','users.id')
-                ->groupBy('departamento')->get();
-
-                // Recuperación de estados de solicitudes para filtros adicionales
-                $estatus = Requisiciones::select('estado')
-                ->where(function($query) {
-                    $query->where('estado', '!=', 'Solicitado')
-                        ->Where('estado', '!=', 'Finalizado')
-                        ->Where('estado', '!=', 'Pre Validado');
-                })
-                ->groupBy('estado')
-                ->orderBy('estado','asc')->get();
-            break;
-        }
+        $corte = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.created_at')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->whereBetween('requisiciones.created_at', [Carbon::now()->subMonth(), Carbon::now()])
+        ->where('requisiciones.estado','Solicitado')
+        ->get();
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
-        return view('Compras.solicitudes',compact('solicitudes','departamentos','estatus'));
+        return view('Compras.corteSemanal',compact('corte'));
+    }
+
+    public function createCorte(Request $req)
+    {
+        // Obtener los artículos seleccionados del formulario,
+        // o un arreglo vacío si no hay ninguno seleccionado.
+        $articulosSeleccionados = $req->input('requisiciones', []);
+
+        // Recorrer cada requisición enviada en el formulario.
+        foreach ($articulosSeleccionados as $idRequisicion => $data) {
+            // Comprobar si la requisición fue seleccionada.
+            $status = array_key_exists('seleccionado', $data) ? 'Aprobado' : 'Rechazado';
+
+            // Actualizar el estatus de la requisición en la base de datos.
+            // Aquí puedes realizar la lógica para actualizar en la base de datos,
+            // usando el ID de la requisición y el nuevo estado.
+            Requisiciones::where('id_requisicion', $idRequisicion)
+                ->update(['estado' => $status]);
+        }
+
+        // Redirigir al usuario de regreso a la página anterior
+        // con un mensaje de éxito.
+        return redirect('solicitud/Compras')->with('corte','corte');
+    }
+
+    public function editarArti($id){
+        // Busca todos los artículos vinculados a la ID de la requisición proporcionada
+        $articulos = Articulos::where('requisicion_id',$id)->get();
+
+        // Retorna la vista para la aprobación de la solicitud, pasando los artículos recuperados
+        return view('Compras.editarSolicitud',compact('articulos'));
+    }
+
+    /*
+      TODO: Actualiza la información de un artículo específico basado en los datos proporcionados por el usuario.
+
+      Este método recibe datos de un formulario a través de una petición HTTP y utiliza estos datos para actualizar
+      los detalles de un artículo específico en la base de datos. Los campos actualizables incluyen la cantidad,
+      unidad y descripción del artículo. Además, se actualiza el campo 'updated_at' para reflejar el momento
+      de la actualización.
+
+      @param  int  $id  El ID del artículo que se va a actualizar.
+
+      Redirige al usuario a la página anterior tras la actualización exitosa del artículo.
+    */
+    public function editarArt(Request $req, $id){
+        // Actualiza el registro del artículo específico con los datos proporcionados
+        Articulos::where('id',$id)->update([
+            "cantidad"=>$req->editCantidad,
+            "unidad"=>$req->editUnidad,
+            "descripcion"=>$req->editDescripcion,
+            "updated_at"=>Carbon::now()
+        ]);
+
+        // Redirige al usuario a la página anterior tras la actualización
+        return back();
+    }
+
+    /*
+     TODO:Elimina un artículo específico de la base de datos.
+
+      Este método se encarga de eliminar de forma permanente un registro de artículo específico,
+      identificado por su ID, de la base de datos. Es útil en situaciones donde un artículo ha sido rechazado
+      o ya no es necesario en una solicitud o requisición, permitiendo así mantener la base de datos limpia
+      y actualizada.
+
+      @param  int  $id  El ID del artículo que se va a eliminar.
+
+      Redirige al usuario a la página anterior tras la eliminación exitosa del artículo.
+    */
+    public function rechazaArt($id){
+        // Elimina el artículo específico por su ID
+        Articulos::where('id',$id)->delete();
+
+        // Redirige al usuario a la página anterior tras la eliminación
+        return back();
+    }
+
+    /*
+      TODO: Aprueba una solicitud o requisición específica y actualiza su estado en la base de datos.
+
+      1. Recopila información detallada de la requisición y del usuario solicitante para su uso en la generación
+        del PDF de la solicitud aprobada.
+      2. Elimina el archivo PDF anterior asociado a la requisición, si existe.
+      3. Genera un nuevo PDF para la requisición aprobada utilizando una plantilla específica.
+      4. Actualiza el estado de la requisición a 'Aprobado' y guarda la ruta del nuevo PDF en la base de datos.
+      5. Crea un registro de comentario, si se proporcionan comentarios.
+
+      @param  int  $rid El ID de la requisición que se va a aprobar.
+
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la aprobación fue exitosa.
+    */
+    public function aprobar(Request $req,$rid){
+
+        // Recopilación de información de la requisición y generación del nuevo PDF
+        $notas = $req->Comentarios;
+        $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.mantenimiento as mant','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
+        ->join('users','requisiciones.usuario_id','=','users.id')
+        ->where('requisiciones.id_requisicion',$rid)
+        ->first();
+
+        //Guarda la ruta del archivo PDF de la requisicion
+        $fileToDelete = public_path($datos->pdf);
+
+        //Si existe el archivo lo elimina
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
+
+        //Recupera los articulos por requisicion
+        $articulos = Articulos::where('requisicion_id',$rid)->get();
+
+        //Valida si la requisicion tiene una unidad asignada y recupera su información
+        if(!empty($datos->unidad_id)){
+            $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+        }
+
+        // Nombre y ruta del archivo en laravel
+        $nombreArchivo = 'requisicion_' . $datos->id_requisicion . '.pdf';
+        $rutaDescargas = 'requisiciones/' . $nombreArchivo;
+
+        // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
+        ob_start(); // Iniciar el búfer de salida
+        include(public_path('/pdf/TCPDF-main/examples/RequisicionAprobada.php'));
+        ob_end_clean();
+
+        // Actualización del estado de la requisición a 'Aprobado'
+        Requisiciones::where('id_requisicion',$rid)->update([
+            "pdf"=>$rutaDescargas,
+            "updated_at"=>Carbon::now(),
+        ]);
+
+        // Creación de comentario si se proporciona
+        if (!empty($req->input('Comentarios'))){
+            Comentarios::create([
+                "requisicion_id"=>$rid,
+                "usuario_id"=>session('loginId'),
+                "detalles"=>$req->input('Comentarios'),
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+        }
+
+        // Redirección al usuario con mensaje de éxito
+        return redirect('corte/Compras')->with('editado','editado');
     }
 
     /*

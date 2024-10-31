@@ -62,7 +62,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Tablas
+                Consultar
             </div>
 
             <!-- Nav Item - Tables -->
@@ -85,14 +85,14 @@
                         <span>Ordenes de compra</span></a>
                 </li>
             @endif
-        
+
             @if (session('departamento')=== "Mantenimiento")
                 <li class="nav-item active">
                     <a class="nav-link" href="{{route('unidadesDir')}}">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Unidades</span></a>
                 </li>
-            @endif            
+            @endif
 
             {{-- @if (session('departamento') === "Mantenimiento")
             <li class="nav-item active">
@@ -117,7 +117,7 @@
                 <a class="nav-link" href="{{route('salidasDir')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Salidas</span></a>
-            </li> --}}                    
+            </li> --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -179,7 +179,7 @@
 
 
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
-                @yield('contenido') 
+                @yield('contenido')
 
 
             </div>
@@ -190,7 +190,7 @@
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>Copyright &copy; <script>
-                            let date = new Date();                        
+                            let date = new Date();
                             let year = date.getFullYear();
                             document.write(year);
                         </script>
@@ -253,6 +253,6 @@
     <!-- Incluir jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    
+
 </body>
 </html>

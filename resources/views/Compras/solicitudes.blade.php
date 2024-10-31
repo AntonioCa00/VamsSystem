@@ -38,58 +38,31 @@
     </script>
 @endif
 
+@if(session()->has('corte'))
+    <script type="text/javascript">
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Solicitudes procesadas',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script>
+@endif
+
 <div class="container-fluid">
 
     <!-- Encabezado de la tabla -->
     <h1 class="h3 mb-2 text-gray-800">SOLICITUDES</h1>
 
     <!-- Tabla de los datos -->
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-1">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">HISTORIAL DE SOLICITUDES</h6>
             <div class="form-group d-flex align-items-center">
-                <a href="" class="btn btn-secondary" href="#" data-toggle="modal" data-target="#Filtro">
-                    <img src="{{asset('img/filtrar.png')}}">Filtrar requisiciones
+                <a href="{{ route('corte') }}" class="btn btn-warning">
+                    <img src="{{asset('img/corte.png')}}">Corte Semanal
                 </a>
-                <div class="modal fade" id="Filtro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Filtrado de requisiciones</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">X</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group align-items-center">
-                                    <form action="{{route('filtrarSolic','departamento')}}" method="POST" class="w-100 d-flex align-items-center mb-4">
-                                        @csrf
-                                        <select name="filtro" class="form-control flex-grow-1 mr-2" required>
-                                            <option value="" disabled selected>Filtrar por departamento...</option>
-                                            @foreach ($departamentos as $dpto)
-                                                <option value="{{$dpto->departamento}}">{{$dpto->departamento}}</option>
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                                    </form>
-                                    <form action="{{route('filtrarSolic','estado')}}" method="POST" class="w-100 d-flex align-items-center mb-2">
-                                        @csrf
-                                        <select name="filtro" class="form-control flex-grow-1 mr-2" required>
-                                            <option value="" disabled selected>Filtrar por estatus...</option>
-                                            @foreach ($estatus as $estat)
-                                                <option value="{{$estat->estado}}">{{$estat->estado}}</option>
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <a href="{{route('solicitudes')}}" class="btn btn-success">Ver Todas</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="card-body">

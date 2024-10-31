@@ -76,7 +76,7 @@
                 <a class="nav-link" href="{{route('comprasGerGen')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Ordenes de compra</span></a>
-            </li>            
+            </li>
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('pagosGerGen')}}">
@@ -94,7 +94,7 @@
                 <a class="nav-link" href="{{route('encargados')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Usuarios</span></a>
-            </li> 
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -140,7 +140,7 @@
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">                               
+                                aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Cerrar sesion
@@ -155,7 +155,7 @@
 
 
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
-                @yield('contenido') 
+                @yield('contenido')
 
 
             </div>
@@ -166,7 +166,7 @@
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>Copyright &copy; <script>
-                            let date = new Date();                        
+                            let date = new Date();
                             let year = date.getFullYear();
                             document.write(year);
                         </script>
