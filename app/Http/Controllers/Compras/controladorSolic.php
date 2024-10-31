@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
 use Carbon\Carbon;
+use App\Models\Cotizaciones;
 use App\Models\Requisiciones;
 use App\Models\Unidades;
 use App\Models\Salidas;
@@ -45,6 +46,87 @@ class controladorSolic extends Controller
         return view("Solicitante.index",[
             'pendientes'=>$pendiente,
             'completas'=>$completas]);
+    }
+
+    public function tableSolicitudes(){
+        // Recupera las solicitudes de la base de datos
+        $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')->where('requisiciones.estado','!=','Finalizado')
+        ->select('requisiciones.id_requisicion','requisiciones.created_at','requisiciones.unidad_id','requisiciones.estado','us.departamento','us.nombres','requisiciones.created_at','requisiciones.pdf', DB::raw('MAX(comentarios.detalles) as detalles'),'users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
+        ->join('users as us','requisiciones.usuario_id','us.id')
+        ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
+        ->leftJoin('users','users.id','=','comentarios.usuario_id')
+        ->orderBy('requisiciones.created_at','desc')
+        ->groupBY('requisiciones.id_requisicion')
+        ->get();
+
+        //Redirige al usuario a la página para visualizar la consulta
+        return view('Solicitante.solicitudes',compact('solicitudes'));
+    }
+
+    /*
+      TODO: Recupera y muestra todas las cotizaciones activas asociadas a una requisición específica.
+
+      Este método consulta la base de datos para obtener un listado de cotizaciones activas (estatus '1')
+      que están asociadas a una requisición específica, identificada por su ID. Para cada cotización, se recopilan
+      detalles como el ID de la cotización, el ID de la requisición asociada, el nombre del usuario que realizó
+      la cotización, y las rutas a los archivos PDF de la requisición y de la cotización.
+
+      @param  int  $id El ID de la requisición para la cual se recuperarán las cotizaciones.
+
+      Retorna la vista 'GtArea.cotizaciones', pasando el listado de cotizaciones y el ID de la requisición.
+    */
+    public function cotizaciones($id){
+        //Recupera las cotizaciones basandose en el estatus 1 y segun la requisicion
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+        ->join('users','cotizaciones.usuario_id', '=', 'users.id')
+        ->where('requisicion_id', $id)
+        ->where('cotizaciones.estatus','1')->get();
+
+        // Redirige al usuario a la página para visualizar las cotizaciones
+        return view('Solicitante.cotizaciones',compact('cotizaciones','id'));
+    }
+
+    public function selectCotiza($id,$sid){
+
+        Cotizaciones::where('id_cotizacion', '!=', $id)
+            ->where('requisicion_id', $sid)
+            ->update([
+            "estatus" => "0",
+            "updated_at" => Carbon::now()
+        ]);
+
+        // Actualizar el estado de la solicitud a "Pre Validado"
+        Requisiciones::where('id_requisicion',$sid)->update([
+            "estado" => "Validado",
+            "updated_at" => Carbon::now()
+        ]);
+
+        // Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada o validada.
+        return redirect('requisiciones/consulta')->with('validacion','validacion');
+    }
+
+    /*
+      TODO: Procesa el rechazo final de una cotización para una solicitud específica y actualiza el estado correspondiente.
+
+      1. Crea un nuevo registro de comentario con los detalles proporcionados por el usuario, asociado a la solicitud específica,
+        para documentar la razón del rechazo.
+      2. Actualiza el estatus de todas las cotizaciones asociadas a la solicitud indicada a "1", indicando que se pueden consultar
+        nuevamente.
+      3. Cambia el estado de la solicitud a "Cotizado", indicando que se deberá pre validar cotizaciones del conjunto cargado.
+
+      @param int $id El ID de la cotización específica que se rechaza (no usado directamente en la actualización).
+      @param int $sid El ID de la solicitud asociada a la cotización rechazada.
+
+      Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido rechazada.
+    */
+    public function rechazarCont(Request $req, $id,$sid){
+        // Actualización del estatus de todas las cotizaciones asociadas a la solicitud
+        Cotizaciones::where('id_cotizacion', $id)
+        ->delete();
+
+        // Redirige al usuario a la lista de solicitudes con un mensaje de confirmación del rechazo.
+        return back()->with('rechazaC','rechazaC');
     }
 
     /*
