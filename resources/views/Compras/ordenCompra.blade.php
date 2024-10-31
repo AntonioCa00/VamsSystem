@@ -1,81 +1,93 @@
 @extends('plantillaAdm')
 
 @section('Contenido')
+    <div class="container-fluid">
 
-<div class="container-fluid">
+        <!-- Page Heading -->
+        <h1 class="h3 mb-2 text-gray-800">ORDEN DE COMPRA</h1>
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">ORDEN DE COMPRA</h1>
-
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">ORDEN DE COMPRA</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered text-center" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Requisicion:</th>
-                            <th>Cotizacion Validada:</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th class="text-center">
-                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
-                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
-                                </a>
-                            </th>
-                            <th class="text-center">
-                                <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
-                                    <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
-                                </a>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">ORDEN DE COMPRA</h6>
             </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Requisicion:</th>
+                                <th>Cotizacion Validada:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="text-center">
+                                    <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
+                                        <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
+                                    </a>
+                                </th>
+                                <th class="text-center">
+                                    <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
+                                        <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
+                                    </a>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th><input checked type="checkbox" id="checkTodos"/> Seleccionar:</th>
-                            <th>Cantidad:</th>
-                            <th>Unidad de medida:</th>
-                            <th>Descripcion:</th>
-                            <th>Precio unitario SIN IVA:</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <form action="{{route('createOrdenCompra',['cid' => $cotizacion->id_cotizacion, 'rid' => $id])}}" method="post">
-                            @csrf
-                        @foreach($articulos as $index => $articulo)
-                        <tr>
-                            <th>
-                                <input checked type="checkbox" name="articulos_seleccionados[]" value="{{$articulo->id}}" onchange="toggleRequired(this)">
-                            </th>
-                            <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
-                                <input class="form-control" type="text" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required></th>
-                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
-                            <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
+                <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th><input checked type="checkbox" id="checkTodos" /> Seleccionar:</th>
+                                <th>Cantidad:</th>
+                                <th>Unidad de medida:</th>
+                                <th>Descripcion:</th>
+                                <th>Precio unitario SIN IVA:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <form
+                                action="{{ route('createOrdenCompra', ['cid' => $cotizacion->id_cotizacion, 'rid' => $id]) }}"
+                                method="post">
+                                @csrf
+                                @foreach ($articulos as $index => $articulo)
+                                    <tr>
+                                        <th>
+                                            <input checked type="checkbox" name="articulos_seleccionados[]"
+                                                value="{{ $articulo->id }}" onchange="toggleRequired(this)">
+                                        </th>
+                                        <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]"
+                                                value="{{ $articulo->id }}">
+                                            <input class="form-control" type="text"
+                                                name="articulos[{{ $articulo->id }}][cantidad]"
+                                                value="{{ $articulo->cantidad }}" required>
+                                        </th>
+                                        <th><input class="form-control" type="text"
+                                                name="articulos[{{ $articulo->id }}][unidad]"
+                                                value="{{ $articulo->unidad }}" required></th>
+                                        <th><input class="form-control" type="text"
+                                                name="articulos[{{ $articulo->id }}][descripcion]"
+                                                value="{{ $articulo->descripcion }}" required></th>
 
-                            <th><input class="form-control" type="number" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" step="0.01"></th>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer py-3">
+                                        <th><input class="form-control" type="number"
+                                                name="articulos[{{ $articulo->id }}][precio_unitario]"
+                                                value="{{ $articulo->precio }}" step="0.01"></th>
+                                    </tr>
+                                @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer py-3">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA</label>
                         <select name="Proveedor" id="proveedor" class="form-control" required>
                             <option value="" selected disabled>Selecciona el proveedor de este articulo:</option>
                             @foreach ($proveedores as $proveedor)
-                                <option value="{{$proveedor->id_proveedor}}">{{$proveedor->nombre}}</option>
+                                <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -93,76 +105,79 @@
                     </div>
                     <div class="form-group mt-4">
                         <label for="exampleFormControlInput1">Notas:</label>
-                        <input name="Notas" type="text" class="form-control" value="" placeholder="Agrega notas si necesario">
+                        <input name="Notas" type="text" class="form-control" value=""
+                            placeholder="Agrega notas si necesario">
                     </div>
-                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de orden de compra</h6></button>
-                </form>
+                    <button type="submit" class="btn btn-primary">
+                        <h6>Crear formato de orden de compra</h6>
+                    </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Obtener el checkbox universal
-        var checkTodos = document.getElementById('checkTodos');
-        // Obtener todos los checkboxes individuales
-        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener el checkbox universal
+            var checkTodos = document.getElementById('checkTodos');
+            // Obtener todos los checkboxes individuales
+            var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="articulos_seleccionados"]');
 
-        // Iterar sobre cada checkbox y establecer el atributo "required" en el campo precio_unitario correspondiente
-        checkboxes.forEach(function (checkbox) {
-            var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
-            precioInput.required = true;
-
-            // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox individual
-            checkbox.addEventListener('change', function () {
-                toggleRequired(this);
-                updateCheckTodos();
-            });
-        });
-
-        // Función para cambiar el estado del atributo "required" según el estado del checkbox individual
-        function toggleRequired(checkbox) {
-            var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
-            if (checkbox.checked) {
+            // Iterar sobre cada checkbox y establecer el atributo "required" en el campo precio_unitario correspondiente
+            checkboxes.forEach(function(checkbox) {
+                var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
                 precioInput.required = true;
-            } else {
-                precioInput.required = false;
-            }
-        }
 
-        // Función para actualizar el estado del checkbox principal según el estado de los checkboxes individuales
-        function updateCheckTodos() {
-            var allChecked = true;
-            checkboxes.forEach(function (checkbox) {
-                if (!checkbox.checked) {
-                    allChecked = false;
-                }
+                // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox individual
+                checkbox.addEventListener('change', function() {
+                    toggleRequired(this);
+                    updateCheckTodos();
+                });
             });
-            checkTodos.checked = allChecked;
-        }
 
-        // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox universal
-        checkTodos.addEventListener('change', function (e) {
-            var estado = this.checked; // true o false
+            // Función para cambiar el estado del atributo "required" según el estado del checkbox individual
+            function toggleRequired(checkbox) {
+                var precioInput = checkbox.closest('tr').querySelector('input[name*="[precio_unitario]"]');
+                if (checkbox.checked) {
+                    precioInput.required = true;
+                } else {
+                    precioInput.required = false;
+                }
+            }
 
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = estado;
-                toggleRequired(checkbox);
+            // Función para actualizar el estado del checkbox principal según el estado de los checkboxes individuales
+            function updateCheckTodos() {
+                var allChecked = true;
+                checkboxes.forEach(function(checkbox) {
+                    if (!checkbox.checked) {
+                        allChecked = false;
+                    }
+                });
+                checkTodos.checked = allChecked;
+            }
+
+            // Agregar un event listener para cambiar el estado del atributo "required" cuando cambia el estado del checkbox universal
+            checkTodos.addEventListener('change', function(e) {
+                var estado = this.checked; // true o false
+
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = estado;
+                    toggleRequired(checkbox);
+                });
             });
         });
-    });
 
-    // Mostrar u ocultar campo de días de crédito según la condición de pago seleccionada
-    document.getElementById('condicionPago').addEventListener('change', function() {
-        var valor = this.value;
-        var datosBancarios = document.getElementById('datosBancarios');
+        // Mostrar u ocultar campo de días de crédito según la condición de pago seleccionada
+        document.getElementById('condicionPago').addEventListener('change', function() {
+            var valor = this.value;
+            var datosBancarios = document.getElementById('datosBancarios');
 
-        if (valor == 'Credito') {
-            datosBancarios.style.display = 'block';
-        } else {
-            datosBancarios.style.display = 'none';
-        }
-    });
+            if (valor == 'Credito') {
+                datosBancarios.style.display = 'block';
+            } else {
+                datosBancarios.style.display = 'none';
+            }
+        });
     </script>
 @endsection

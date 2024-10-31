@@ -20,6 +20,8 @@
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
@@ -75,19 +77,19 @@
                 <a class="nav-link" href="{{route('ordenesCompras')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Orden de compra</span></a>
-            </li> 
+            </li>
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('pagosFijos')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Pagos Fijos</span></a>
-            </li>            
+            </li>
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('proveedores')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Proveedores</span></a>
-            </li>              
+            </li>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item active">
@@ -95,7 +97,7 @@
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>
             </li>
-            
+
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{route('entradas')}}">
                     <i class="fas fa-fw fa-table"></i>
@@ -148,7 +150,7 @@
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">                            
+                        <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><b>Usuario:</b>{{session('loginNombres')}} {{session('loginApepat')}} {{session('loginApemat')}}</span>
@@ -157,7 +159,7 @@
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">                
+                                aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Cerrar sesion
@@ -172,7 +174,7 @@
 
 
                 <!--Dentro de este componente se encuentra el contenido de cada interfaz expecifica-->
-                @yield('Contenido') 
+                @yield('Contenido')
 
 
             </div>
@@ -183,7 +185,7 @@
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>Copyright &copy; <script>
-                            let date = new Date();                        
+                            let date = new Date();
                             let year = date.getFullYear();
                             document.write(year);
                         </script>
