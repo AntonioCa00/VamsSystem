@@ -16,6 +16,7 @@ use App\Models\Proveedores;
 use App\Models\Servicios;
 use App\Models\Pagos_Fijos;
 use App\Models\Articulos;
+use App\Models\Orden_compras;
 use App\Models\CamionServicioPreventivo;
 use App\Models\Logs;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -50,7 +51,7 @@ class controladorSolic extends Controller
 
     public function tableSolicitudes(){
         // Recupera las solicitudes de la base de datos
-        $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')->where('requisiciones.estado','!=','Finalizado')
+        $solicitudes = Requisiciones::where('requisiciones.estado','!=','Rechazado')
         ->select('requisiciones.id_requisicion','requisiciones.created_at','requisiciones.unidad_id','requisiciones.estado','us.departamento','us.nombres','requisiciones.created_at','requisiciones.pdf', DB::raw('MAX(comentarios.detalles) as detalles'),'users.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
         ->join('users as us','requisiciones.usuario_id','us.id')
         ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
@@ -61,6 +62,30 @@ class controladorSolic extends Controller
 
         //Redirige al usuario a la página para visualizar la consulta
         return view('Solicitante.solicitudes',compact('solicitudes'));
+    }
+
+    public function tableOrdenes(){
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        ->join('users','orden_compras.admin_id','=','users.id')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        //Se excluyen las que se encuentren rechazadas.
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->orderBy('orden_compras.created_at','desc')
+        ->get();
+
+        return view('Solicitante.ordenesCompras',compact('ordenes'));
+    }
+
+    public function tablePagos () {
+        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
+        ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
+        ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
+        ->orderBy('id_pago','desc')
+        ->get();
+
+        return view('Solicitante.consultaPagos',compact('pagos'));
     }
 
     /*
@@ -77,7 +102,7 @@ class controladorSolic extends Controller
     */
     public function cotizaciones($id){
         //Recupera las cotizaciones basandose en el estatus 1 y segun la requisicion
-        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.pdf as cotPDF')
+        $cotizaciones = Cotizaciones::select('cotizaciones.id_cotizacion','requisiciones.id_requisicion as requisicion_id','users.nombres as usuario','requisiciones.pdf as reqPDF','cotizaciones.id_cotizacion','cotizaciones.pdf as cotPDF')
         ->join('requisiciones','cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->join('users','cotizaciones.usuario_id', '=', 'users.id')
         ->where('requisicion_id', $id)
@@ -104,6 +129,39 @@ class controladorSolic extends Controller
 
         // Redirige al usuario a la lista de solicitudes con una sesión flash indicando que la cotización ha sido pre-validada o validada.
         return redirect('requisiciones/consulta')->with('validacion','validacion');
+    }
+
+    public function validaciones(){
+        $validaciones = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.created_at','cotizaciones.id_cotizacion','cotizaciones.pdf as coti')
+        ->leftJoin('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->whereBetween('requisiciones.created_at', [Carbon::now()->subWeeks(1)->startOfWeek(), Carbon::now()])
+        ->where('requisiciones.estado','Cotizado')
+        ->get();
+
+        return view('Solicitante.validaciones',compact('validaciones'));
+    }
+
+    public function crearValidacion (Request $req){
+        // Obtener los artículos seleccionados del formulario,
+        // o un arreglo vacío si no hay ninguno seleccionado.
+        $requisicionesSeleccionadas = $req->input('requisiciones', []);
+
+        // Recorrer cada requisición enviada en el formulario.
+        foreach ($requisicionesSeleccionadas as $idRequisicion => $data) {
+            // Comprobar si la requisición fue seleccionada.
+            $status = array_key_exists('seleccionado', $data) ? 'Validado' : 'Cotizado';
+
+            // Actualizar el estatus de la requisición en la base de datos.
+            // Aquí puedes realizar la lógica para actualizar en la base de datos,
+            // usando el ID de la requisición y el nuevo estado.
+            Requisiciones::where('id_requisicion', $idRequisicion)
+                ->update(['estado' => $status]);
+        }
+
+        // Redirigir al usuario de regreso a la página anterior
+        // con un mensaje de éxito.
+        return redirect('requisiciones/consulta')->with('corte','corte');
     }
 
     /*
@@ -309,6 +367,24 @@ class controladorSolic extends Controller
             return back()->with('vacio','vacio');
         }else {
             // Procesamiento de los datos de la solicitud y del empleado
+            if (!empty($req->urgencia)) {
+                $urgencia = 'Requisición urgente';
+                try {
+                    // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+                    $fechaProgramada = date('d/m/Y', strtotime($req->dias));
+                } catch (\Exception $e) {
+                    // Manejar el error si el formato es incorrecto
+                    $fechaProgramada = null;
+
+                    return $e;
+                    // Puedes lanzar una excepción o registrar el error si es necesario
+                    // throw new \Exception('Formato de fecha no válido');
+                }
+            } else {
+                $urgencia = null;
+                $fechaProgramada = null;
+            }
+
             $Nota = $req->input('Notas');
 
             $mantenimiento = $req->input('mantenimiento');
@@ -359,6 +435,8 @@ class controladorSolic extends Controller
                     "usuario_id"=>session('loginId'),
                     "unidad_id" => $req->input('unidad'),
                     "pdf" => $rutaDescargas,
+                    "urgencia"=>$req->urgencia,
+                    "fecha_programada"=>$req->dias,
                     "notas" => $Nota,
                     "mantenimiento"=>$req->input('mantenimiento'),
                     "estado"=> "Solicitado",
@@ -370,6 +448,8 @@ class controladorSolic extends Controller
                     "id_requisicion"=>$idcorresponde,
                     "usuario_id"=>session('loginId'),
                     "pdf" => $rutaDescargas,
+                    "urgencia"=>$req->urgencia,
+                    "fecha_programada"=>$req->dias,
                     "estado"=> "Solicitado",
                     "notas"=> $Nota,
                     "created_at"=>Carbon::now(),
@@ -422,7 +502,7 @@ class controladorSolic extends Controller
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         // Recuperación de detalles de la unidad asociada a la requisición
-        $unidad = Requisiciones::select('id_unidad','marca','modelo','notas','requisiciones.mantenimiento as mant')
+        $unidad = Requisiciones::select('id_unidad','marca','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
         ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
         ->where('requisiciones.id_requisicion',$id)
         ->first();
@@ -549,6 +629,25 @@ class controladorSolic extends Controller
             // Recopilación de información de la requisición y generación del nuevo PDF
             $notas = $req->Notas;
 
+            // Procesamiento de los datos de la solicitud y del empleado
+            if (!empty($req->urgencia)) {
+                $urgencia = 'Requisición urgente';
+                try {
+                    // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+                    $fechaProgramada = date('d/m/Y', strtotime($req->dias));
+                } catch (\Exception $e) {
+                    // Manejar el error si el formato es incorrecto
+                    $fechaProgramada = null;
+
+                    return $e;
+                    // Puedes lanzar una excepción o registrar el error si es necesario
+                    // throw new \Exception('Formato de fecha no válido');
+                }
+            } else {
+                $urgencia = null;
+                $fechaProgramada = null;
+            }
+
             $mantenimiento = $req->mantenimiento;
             $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
             ->join('users','requisiciones.usuario_id','=','users.id')
@@ -587,6 +686,8 @@ class controladorSolic extends Controller
                 Requisiciones::where('id_requisicion',$id)->update([
                     "unidad_id"=>$req->unidad,
                     "pdf"=>$rutaDescargas,
+                    "urgencia"=>$req->urgencia,
+                    "fecha_programada"=>$req->dias,
                     "notas"=>$notas,
                     "estado"=>'Solicitado',
                     "mantenimiento"=>$mantenimiento,
@@ -596,6 +697,8 @@ class controladorSolic extends Controller
                 Requisiciones::where('id_requisicion',$id)->update([
                     "estado"=>'Solicitado',
                     "pdf"=>$rutaDescargas,
+                    "urgencia"=>$req->urgencia,
+                    "fecha_programada"=>$req->dias,
                     "notas"=>$notas,
                     "updated_at"=>Carbon::now(),
                 ]);

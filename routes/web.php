@@ -90,7 +90,7 @@ Route::middleware(['authcheck'])->group(function () {
         //RUTAS ADMIN-COMPRAS
         Route::post('corte-compras',[controladorCompras::class,'createCorte'])->name('createCorte');
         Route::put('editArticulo/Compras/{id}',[controladorCompras::class,'editarArt'])->name('editarArtCompras');
-        Route::delete('rechazarArticulo/Compras/{id}',[controladorCompras::class,'rechazaArt'])->name('rechazaArtCompras');
+        Route::delete('rechazarArticulo/Compras/{id}/{rid}',[controladorCompras::class,'rechazaArt'])->name('rechazaArtCompras');
         Route::put('aprobarArt/Compras/{rid}',[controladorCompras::class,'aprobar'])->name('aprobarCompras');
         Route::post('insert-unidad',[controladorCompras::class,'insertUnidad'])->name('insertUnidad');
         Route::put('update-unidad/{id}',[controladorCompras::class, 'updateUnidad'])->name('updateUnidad');
@@ -216,6 +216,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('/solicitud/form-Unidad', [controladorSolic::class, 'createUnidad'])->name('CreateUnidadSoli');
         Route::get('solicitud/edit-Unidad/{id}/{from}', [controladorSolic::class, 'editUnidad'])->name('editUnidadSoli');
         Route::get('solicitud/activ-Unidad',[controladorSolic::class,'activarUnidad'])->name('actUnuiSoli');
+        Route::get('validaciones',[controladorSolic::class,'validaciones'])->name('validaciones');
+        Route::get('ordenes/Compras',[controladorSolic::class,'tableOrdenes'])->name('ordenesdecompras');
+        Route::get('ordenes/Pagos',[controladorSolic::class,'tablePagos'])->name('ordenesdePago');
 
         //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
@@ -250,6 +253,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('activ-unidadSoli/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
         Route::put('select-cotiza/Solic/{id}/{sid}',[controladorSolic::class,'selectCotiza'])->name('selectCotizaSolic');
         Route::put('rechazaContabilidad/{id}/{sid}',[controladorSolic::class,'rechazarCont'])->name('rechazarCont');
+        Route::post('validaciones',[controladorSolic::class,'crearValidacion'])->name('crearValidacion');
 
         //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
         Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');

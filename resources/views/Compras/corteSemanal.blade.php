@@ -29,30 +29,42 @@
                             </thead>
                             <tbody>
                                 @foreach ($corte as $req)
-                                    <tr class="text-center">
-                                        <td>
-                                            <input type="checkbox"
-                                                name="requisiciones[{{ $req->id_requisicion }}][seleccionado]"
-                                                value="1" checked>
-                                            <input type="hidden" name="requisiciones[{{ $req->id_requisicion }}][id]"
-                                                value="{{ $req->id_requisicion }}">
-                                        </td>
-                                        <td>{{ $req->id_requisicion }}</td>
-                                        <td>{{ $req->nombres }} {{ $req->apellidoP }}</td>
-                                        <td>{{ $req->departamento }}</td>
-                                        <td class="text-center">
-                                            <a href="{{ asset($req->pdf) }}" target="_blank">
-                                                <img class="imagen-container" src="{{ asset('img/req.jpg') }}"
-                                                    alt="Abrir PDF">
-                                            </a>
-                                        </td>
-                                        <td>{{ $req->created_at }}</td>
-                                        <td><a href="{{ route('editarArtComp',$req->id_requisicion) }}" class="btn btn-success">Editar</a></td>
+                                    @if (!empty($req->urgencia))
+                                        <tr class="text-center text-danger">
+                                        @else
+                                        <tr class="text-center">
+                                    @endif
+                                    <td>
+                                        <input type="checkbox"
+                                            name="requisiciones[{{ $req->id_requisicion }}][seleccionado]" value="1"
+                                            checked>
+                                        <input type="hidden" name="requisiciones[{{ $req->id_requisicion }}][id]"
+                                            value="{{ $req->id_requisicion }}">
+                                    </td>
+                                    <td>{{ $req->id_requisicion }}</td>
+                                    <td>{{ $req->nombres }} {{ $req->apellidoP }}</td>
+                                    <td>{{ $req->departamento }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ asset($req->pdf) }}" target="_blank">
+                                            <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
+                                        </a>
+                                    </td>
+                                    <td>{{ $req->created_at }}</td>
+                                    <td><a href="{{ route('editarArtComp', $req->id_requisicion) }}"
+                                            class="btn btn-success">Editar</a></td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <button type="submit" class="btn btn-primary">Procesar Requisiciones</button>
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <button type="submit" value="Corte" name="action" class="btn btn-primary">Procesar
+                                Requisiciones</button>
+                            <div class="form-group d-flex align-items-center">
+                                <button type="submit" name="action" value="Urgencia" class="btn btn-danger">
+                                    <img src="{{ asset('img/urgencia.png') }}">Procesar urgencias
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

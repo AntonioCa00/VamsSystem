@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('unidad_id')->nullable();
             $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
             $table->string('pdf');
+            $table->enum('urgencia',['1','2'])->nullable();
+            $table->date('fecha_estimada')->nullable();
             $table->string('notas');
             $table->string('mantenimiento');
             $table->string('estado');

@@ -26,6 +26,30 @@
     </script>
 @endif
 
+@if(session()->has('cotizacion'))
+    <script type="text/javascript">
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Se registro la cotización',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script>
+@endif
+
+@if(session()->has('actualizacion'))
+    <script type="text/javascript">
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Se registro la nueva cotización',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script>
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->

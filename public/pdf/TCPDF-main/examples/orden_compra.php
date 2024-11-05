@@ -186,7 +186,7 @@ $pdf->Line(75, $y, 130, $y);
 $pdf->Line(140, $y, 190, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '     Gerente de area                                 Aprueba compras                                   Gerente general ', 0, 1, 'A', 0);
+$pdf->Cell(0, 10, '     Solicita compras                                  Contabilidad                                    Gerente general ', 0, 1, 'A', 0);
 
 
 

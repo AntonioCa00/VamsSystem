@@ -114,14 +114,14 @@
 
                 <!-- Nav Item - Tables -->
                 <li class="nav-item active">
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="{{ route('ordenesdecompras') }}">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Ordenes de compra</span></a>
                 </li>
 
                 <!-- Nav Item - Tables -->
                 <li class="nav-item active">
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="{{ route('ordenesdePago') }}">
                         <i class="fas fa-fw fa-table"></i>
                         <span>Pagos Fijo</span></a>
                 </li>
