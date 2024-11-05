@@ -935,9 +935,101 @@ class controladorCompras extends Controller
       Redirige al usuario a la lista de proveedores con una sesión flash que indica que el nuevo proveedor ha sido insertado exitosamente.
     */
     public function insertProveedor(Request $req){
-        //Valida que exista un archivo CIF, que se haya cargado el comprante de pago y el numero de cuenta clabe
-        if (empty($req->file('archivo_CIF')) && (empty($req->banco) || empty($req->n_cuenta) || empty($req->n_cuenta_clabe))){
-            //En caso de que no se carguen se inserta el proveedor sin esos archivos, unicamente con los datos obligatorios
+
+        if (!empty($req->file('archivo_CIF')) && !empty($req->file('archivo_estadoCuenta'))){
+
+            //Procesamiento y almacenamiento de los archivo CIF
+            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_CIF');
+            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+
+            $archivo->storeAs('CIF', $nombreArchivo, 'public');
+            $CIF_pdf = 'CIF/' . $nombreArchivo;
+
+            //Procesamiento y almacenamiento del archivo estado de cuenta
+            $archivo = $req->file('archivo_estadoCuenta');
+            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+            // Creación del registro de proveedor en la base de datos
+            Proveedores::create([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>"$estadoCuenta_pdf",
+                "estatus"=>"1",
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+
+        } elseif (!empty($req->file('archivo_CIF')) && empty($req->file('archivo_estadoCuenta'))){
+
+            //Procesamiento y almacenamiento de los archivo CIF
+            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_CIF');
+            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+
+            $archivo->storeAs('CIF', $nombreArchivo, 'public');
+            $CIF_pdf = 'CIF/' . $nombreArchivo;
+
+            // Creación del registro de proveedor en la base de datos
+            Proveedores::create([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>null,
+                "estatus"=>"1",
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+        } elseif (!empty($req->file('archivo_estadoCuenta')) && empty($req->file('archivo_CIF'))){
+
+            //Procesamiento y almacenamiento del archivo estado de cuenta
+            $archivo = $req->file('archivo_estadoCuenta');
+            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+            // Creación del registro de proveedor en la base de datos
+            Proveedores::create([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>null,
+                "estatus"=>"1",
+                "created_at"=>Carbon::now(),
+                "updated_at"=>Carbon::now()
+            ]);
+        } else {
+            // Creación del registro de proveedor en la base de datos
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "telefono"=>$req->input('telefono'),
@@ -948,67 +1040,14 @@ class controladorCompras extends Controller
                 "rfc"=>$req->input('rfc'),
                 "correo"=>$req->input('correo'),
                 "CIF"=>null,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>null,
+                "estatus"=>"1",
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now()
             ]);
-        } else {
-            //En caso de que se hayan cargado los archivos, estos se guardan en sus respectivas carpetas y se relacionan al proveedor con el nombre
-            //Procesamiento y almacenamiento de los archivo CIF
-            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
-            $archivo = $req->file('archivo_CIF');
-            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
-
-            $archivo->storeAs('CIF', $nombreArchivo, 'public');
-            $CIF_pdf = 'CIF/' . $nombreArchivo;
-
-            //Validacion de datos bancarios para validar archivos de cuenta
-            if(!empty($req->banco) || !empty($req->n_cuenta) || !empty($req->n_cuenta_clabe)) {
-                // Solo validar 'archivo_estadoCuenta' si se cumplen las condiciones
-                $req->validate([
-                    'archivo_estadoCuenta' => 'required|file|mimes:pdf',
-                ]);
-
-                //Procesamiento y almacenamiento del archivo estado de cuenta
-                $archivo = $req->file('archivo_estadoCuenta');
-                $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
-                $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
-                $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
-
-                // Creación del registro de proveedor en la base de datos
-                Proveedores::create([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                    "CIF"=>$CIF_pdf,
-                    "banco"=>$req->input('banco'),
-                    "n_cuenta"=>$req->input('n_cuenta'),
-                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
-                    "estado_cuenta"=>$estadoCuenta_pdf,
-                    "estatus"=>"1",
-                    "created_at"=>Carbon::now(),
-                    "updated_at"=>Carbon::now()
-                    ]);
-            }else{
-                //En caso de no tener datos bancarios crea el registro son esos datos
-                Proveedores::create([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                    "CIF"=>$CIF_pdf,
-                    "created_at"=>Carbon::now(),
-                    "updated_at"=>Carbon::now()
-                ]);
-            }
         }
 
         // Redirección con mensaje de éxito
@@ -1048,132 +1087,104 @@ class controladorCompras extends Controller
       Redirige al usuario a la lista de proveedores con una sesión flash que indica que el proveedor ha sido actualizado exitosamente.
     */
     public function updateProveedor(Request $req,$id){
-        //Recupera los datos actuales del proveedor
-        $proveedor = Proveedores::where('id_proveedor',$id)->first();
 
-        //Valida si los datos bancarios han cambiado respecto a los guardados por ultima vez
-        if(($req->banco != $proveedor->banco || $req->n_cuenta != $proveedor->n_cuenta || $req->n_cuenta_banco != $proveedor->n_cuenta_banco) || $req->hasFile('archivo_estadoCuenta') && $req->file('archivo_estadoCuenta')->isValid()){
-            //En caso de ser así, hace obligatorio subir un estado de cuenta nuevo
-            $req->validate([
-                'archivo_estadoCuenta' => 'required|file|mimes:pdf',
-            ]);
+        if (!empty($req->file('archivo_CIF')) && !empty($req->file('archivo_estadoCuenta'))){
 
-            //Eliminacion del archivo de estado de cuenta para evitar duplicados
-            if (!empty($proveedor->estado_cuenta)) {
-                $fileToDelete = public_path($proveedor->estado_cuenta);
-                // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
-                if (file_exists($fileToDelete)) {
-                    unlink($fileToDelete);
-                }
-            }
-
-            //Procesar y almacenar el archivo de estado de cuenta
+            //Procesamiento y almacenamiento de los archivo CIF
             $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_CIF');
+            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+
+            $archivo->storeAs('CIF', $nombreArchivo, 'public');
+            $CIF_pdf = 'CIF/' . $nombreArchivo;
+
+            //Procesamiento y almacenamiento del archivo estado de cuenta
             $archivo = $req->file('archivo_estadoCuenta');
             $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
             $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
             $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
 
-            //Validar que se haya modificado el archivo de CIF
-            if(empty($req->archivo_CIF)){
+            //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
+            Proveedores::where('id_proveedor',$id)->update([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>$estadoCuenta_pdf
+            ]);
 
-                //Insertar al proveedor en la base de datos sin modificar CIF pero con datos bancarios nuevos
-                Proveedores::where('id_proveedor',$id)->update([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                    "banco"=>$req->input('banco'),
-                    "n_cuenta"=>$req->input('n_cuenta'),
-                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
-                    "estado_cuenta"=>$estadoCuenta_pdf
-                ]);
-            }else{
-                //Si se cargó un documento elimina el archivo existente para evitar duplicados
-                if (!empty($proveedor->CIF)) {
-                    $fileToDelete = public_path($proveedor->CIF);
-                    // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
-                    if (file_exists($fileToDelete)) {
-                        unlink($fileToDelete);
-                    }
-                }
+        } elseif (!empty($req->file('archivo_CIF')) && empty($req->file('archivo_estadoCuenta'))){
 
-                //Procesar y almacenar el CIF
-                $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
-                $archivo = $req->file('archivo_CIF');
-                $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            //Procesamiento y almacenamiento de los archivo CIF
+            $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
+            $archivo = $req->file('archivo_CIF');
+            $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
 
-                $archivo->storeAs('CIF', $nombreArchivo, 'public');
-                $CIF_pdf = 'CIF/' . $nombreArchivo;
+            $archivo->storeAs('CIF', $nombreArchivo, 'public');
+            $CIF_pdf = 'CIF/' . $nombreArchivo;
 
-                //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
-                Proveedores::where('id_proveedor',$id)->update([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                    "CIF"=>$CIF_pdf,
-                    "banco"=>$req->input('banco'),
-                    "n_cuenta"=>$req->input('n_cuenta'),
-                    "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
-                    "estado_cuenta"=>$estadoCuenta_pdf
-                ]);
-            }
+            //Insertar el archivo CIF y datos actualizados
+            Proveedores::where('id_proveedor',$id)->update([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "CIF"=>$CIF_pdf,
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+            ]);
+        } elseif (!empty($req->file('archivo_estadoCuenta')) && empty($req->file('archivo_CIF'))){
+
+            //Procesamiento y almacenamiento del archivo estado de cuenta
+            $archivo = $req->file('archivo_estadoCuenta');
+            $nombreArchivo = 'estadoCuenta_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
+            $archivo->storeAs('Estado Cuenta', $nombreArchivo, 'public');
+            $estadoCuenta_pdf = 'Estado Cuenta/' . $nombreArchivo;
+
+            //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
+            Proveedores::where('id_proveedor',$id)->update([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+                "estado_cuenta"=>$estadoCuenta_pdf
+            ]);
         } else {
-            //Datos bancarios no actualizados
-            if(empty($req->archivo_CIF)){
-                //Si no se modifia el CIF, actualiza los datos unicamente que son obligatorios
-                Proveedores::where('id_proveedor',$id)->update([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                ]);
-            }else{
-
-                //Si se cargó un documento elimina el archivo existente para evitar duplicados
-                if (!empty($proveedor->CIF)) {
-                    $fileToDelete = public_path($proveedor->CIF);
-                    // Luego, verifica si el archivo realmente existe antes de intentar eliminarlo.
-                    if (file_exists($fileToDelete)) {
-                        unlink($fileToDelete);
-                    }
-                }
-
-                //Procesar y almacenar el CIF
-                $nombreEmpresa = str_replace(' ', '', $req->nombre); // Elimina todos los espacios en blanco
-                $archivo = $req->file('archivo_CIF');
-                $nombreArchivo = 'CIF_' . $nombreEmpresa . '.' . $archivo->getClientOriginalExtension();
-
-                $archivo->storeAs('CIF', $nombreArchivo, 'public');
-                $CIF_pdf = 'CIF/' . $nombreArchivo;
-
-                //Insertar el archivo CIF y modificaciones
-                Proveedores::where('id_proveedor',$id)->update([
-                    "nombre"=>$req->input('nombre'),
-                    "telefono"=>$req->input('telefono'),
-                    "telefono2"=>$req->input('telefono2'),
-                    "contacto"=>$req->input('contacto'),
-                    "direccion"=>$req->input('direccion'),
-                    "domicilio"=>$req->input('domicilio'),
-                    "rfc"=>$req->input('rfc'),
-                    "correo"=>$req->input('correo'),
-                    "CIF"=>$CIF_pdf
-                ]);
-            }
-        }
+           //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
+           Proveedores::where('id_proveedor',$id)->update([
+                "nombre"=>$req->input('nombre'),
+                "telefono"=>$req->input('telefono'),
+                "telefono2"=>$req->input('telefono2'),
+                "contacto"=>$req->input('contacto'),
+                "direccion"=>$req->input('direccion'),
+                "domicilio"=>$req->input('domicilio'),
+                "rfc"=>$req->input('rfc'),
+                "correo"=>$req->input('correo'),
+                "banco"=>$req->input('banco'),
+                "n_cuenta"=>$req->input('n_cuenta'),
+                "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
+            ]);
+        }  
 
         //Redirecciona al listado de proveedores con mensaje de exito
         return redirect('proveedores/Compras')->with('update','update');

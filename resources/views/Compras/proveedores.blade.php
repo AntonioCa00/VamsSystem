@@ -123,14 +123,23 @@
                                                         <label for="exampleFormControlInput1">Correo:</span></label>
                                                         <h6>{{$proveedor->correo}}</h6>
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">CIF en formato PDF:</label>
-                                                        <a href="{{ asset($proveedor->CIF) }}" target="_blank">
-                                                            <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                        </a>
-                                                    </div>
+                                                    @if(empty($proveedor->CIF))
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlInput1">CIF en formato PDF:</label>
+                                                            <a href="#">
+                                                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                                            </a>
+                                                        </div>
+                                                    @else 
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlInput1">CIF en formato PDF:</label>
+                                                            <a href="{{ asset($proveedor->CIF) }}" target="_blank">
+                                                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                                            </a>
+                                                        </div>
+                                                    @endif                                                      
                                                     <h4 class="text-center text-primary">Datos  bancarios</h4>
-                                                    @if (!empty($proveedor->banco) && !empty($proveedor->n_cuenta) && !empty($proveedor->n_cuenta_clabe) && !empty($proveedor->estado_cuenta))
+                                                    @if (!empty($proveedor->banco) && !empty($proveedor->n_cuenta) && !empty($proveedor->n_cuenta_clabe))
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">Banco:</span></label>
                                                             <h6>{{$proveedor->banco}}</h6>
@@ -143,12 +152,22 @@
                                                             <label for="exampleFormControlInput1">Número de cuenta clabe:</span></label>
                                                             <h6>{{$proveedor->n_cuenta_clabe}}</h6>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
-                                                            <a href="{{ asset($proveedor->estado_cuenta) }}" target="_blank">
-                                                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                            </a>
-                                                        </div>
+
+                                                        @if(empty($proveedor->estado_cuenta))
+                                                            <div class="form-group">
+                                                                <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
+                                                                <a href="#">
+                                                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                                                </a>
+                                                            </div>
+                                                        @else 
+                                                            <div class="form-group">
+                                                                <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
+                                                                <a href="{{ asset($proveedor->estado_cuenta) }}" target="_blank">
+                                                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                                                                </a>
+                                                            </div>
+                                                        @endif                                                        
                                                     @else
                                                         <div class="form-group">
                                                             <label for="exampleFormControlInput1">NO TIENE DATOS BANCARIOS REGISTRADOS</span></label>
