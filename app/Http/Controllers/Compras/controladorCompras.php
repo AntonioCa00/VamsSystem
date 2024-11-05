@@ -487,27 +487,33 @@ class controladorCompras extends Controller
     */
     public function tableSolicitud(){
         // Consulta de solicitudes que cumplen con los criterios de estado especificados y cálculo de cantidad de artículos inactivos.
-        $solicitudes = Requisiciones::select(['requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.pdf','requisiciones.estado','requisiciones.created_at as fecha_creacion',DB::raw('(SELECT COUNT(*) FROM articulos WHERE articulos.requisicion_id = requisiciones.id_requisicion AND articulos.estatus = 0) as cantidad_articulos')])
-        ->leftJoin('comentarios','requisiciones.id_requisicion','=','comentarios.requisicion_id')
-        ->leftJoin('users as us','us.id','=','comentarios.usuario_id')
-        ->select('requisiciones.id_requisicion','users.nombres','requisiciones.unidad_id','requisiciones.estado','requisiciones.created_at','requisiciones.pdf','requisiciones.created_at as fecha_creacion', DB::raw('MAX(comentarios.detalles) as detalles'),'us.rol',DB::raw('MAX(comentarios.created_at) as fechaCom'))
+        $solicitudes = Requisiciones::select(
+            'requisiciones.id_requisicion',
+            'users.nombres',
+            'requisiciones.unidad_id',
+            'requisiciones.urgencia',
+            'requisiciones.estado',
+            'requisiciones.created_at',
+            'requisiciones.pdf',
+            'requisiciones.created_at as fecha_creacion',
+            DB::raw('(SELECT COUNT(*) FROM articulos WHERE articulos.requisicion_id = requisiciones.id_requisicion AND articulos.estatus = 0) as cantidad_articulos'),
+            DB::raw('MAX(comentarios.detalles) as detalles'),
+            'us.rol',
+            DB::raw('MAX(comentarios.created_at) as fechaCom')
+        )
+        ->leftJoin('comentarios', 'requisiciones.id_requisicion', '=', 'comentarios.requisicion_id')
+        ->leftJoin('users as us', 'us.id', '=', 'comentarios.usuario_id')
         ->join('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->orderBy('requisiciones.created_at','desc')
+        ->where('requisiciones.estado', '!=', 'Finalizado')
+        ->where('requisiciones.estado', '!=', 'Rechazado')
+        ->where('requisiciones.estado', '!=', 'Solicitado')
         ->groupBy('requisiciones.id_requisicion')
-        ->where('requisiciones.estado','!=','Finalizado')
-        ->where('requisiciones.estado','!=','Rechazado')
-        ->where('requisiciones.estado','!=','Solicitado')
+        ->orderBy('requisiciones.created_at', 'desc')
         ->get();
 
-        // Recuperación de información agrupada por departamento
-        $departamentos = Requisiciones::select('departamento')
-        ->join('users','requisiciones.usuario_id','users.id')
-        ->groupBy('departamento')->get();
-
-        $corte = Requisiciones::where('estado','Solicitada')->get();
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
-        return view('Compras.solicitudes',compact('solicitudes','departamentos','corte'));
+        return view('Compras.solicitudes',compact('solicitudes'));
     }
 
     /*
@@ -525,9 +531,9 @@ class controladorCompras extends Controller
     */
     public function corteSemanal(){
 
-        $corte = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.created_at')
+        $corte = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.urgencia','requisiciones.created_at')
         ->join('users','requisiciones.usuario_id','users.id')
-        ->whereBetween('requisiciones.created_at', [Carbon::now()->subMonth(), Carbon::now()])
+        ->whereBetween('requisiciones.created_at', [Carbon::now()->subWeeks(1)->startOfWeek(), Carbon::now()])
         ->where('requisiciones.estado','Solicitado')
         ->get();
 
@@ -541,18 +547,29 @@ class controladorCompras extends Controller
         // o un arreglo vacío si no hay ninguno seleccionado.
         $articulosSeleccionados = $req->input('requisiciones', []);
 
-        // Recorrer cada requisición enviada en el formulario.
-        foreach ($articulosSeleccionados as $idRequisicion => $data) {
-            // Comprobar si la requisición fue seleccionada.
-            $status = array_key_exists('seleccionado', $data) ? 'Aprobado' : 'Rechazado';
+        if ($req->action === 'Urgencia') {
+            // Recorrer cada requisición enviada en el formulario.
+            foreach ($articulosSeleccionados as $idRequisicion => $data) {
+                // Comprobar si la requisición fue seleccionada.
+                $status = array_key_exists('seleccionado', $data) ? 'Aprobado' : 'Solicitado';
+                // usando el ID de la requisición y el nuevo estado.
+                Requisiciones::where('id_requisicion', $idRequisicion)
+                    ->update(['estado' => $status]);
+            }
 
-            // Actualizar el estatus de la requisición en la base de datos.
-            // Aquí puedes realizar la lógica para actualizar en la base de datos,
-            // usando el ID de la requisición y el nuevo estado.
-            Requisiciones::where('id_requisicion', $idRequisicion)
-                ->update(['estado' => $status]);
+        } elseif ($req->action === 'Corte'){
+            // Recorrer cada requisición enviada en el formulario.
+            foreach ($articulosSeleccionados as $idRequisicion => $data) {
+                // Comprobar si la requisición fue seleccionada.
+                $status = array_key_exists('seleccionado', $data) ? 'Aprobado' : 'Rechazado';
+
+                // Actualizar el estatus de la requisición en la base de datos.
+                // Aquí puedes realizar la lógica para actualizar en la base de datos,
+                // usando el ID de la requisición y el nuevo estado.
+                Requisiciones::where('id_requisicion', $idRequisicion)
+                    ->update(['estado' => $status]);
+            }
         }
-
         // Redirigir al usuario de regreso a la página anterior
         // con un mensaje de éxito.
         return redirect('solicitud/Compras')->with('corte','corte');
@@ -603,9 +620,21 @@ class controladorCompras extends Controller
 
       Redirige al usuario a la página anterior tras la eliminación exitosa del artículo.
     */
-    public function rechazaArt($id){
+    public function rechazaArt($id,$rid){
         // Elimina el artículo específico por su ID
         Articulos::where('id',$id)->delete();
+
+        //Valida el numero de articulos que se han registrado al, hacer una requisición
+        $N_articulos = Articulos::where('requisicion_id',$rid)->count();
+
+        //Valida si la cantidad de articulos registrados al editar una requisición sea 0
+        if($N_articulos == 0){
+            //Si no hay ningun articulo automaticamente se cambia el estatus a incompleta.
+            Requisiciones::where('id_requisicion',$rid)->update([
+                "estado"=>"Rechazada",
+                "updated_at"=>Carbon::now(),
+            ]);
+        }
 
         // Redirige al usuario a la página anterior tras la eliminación
         return back();
@@ -629,10 +658,29 @@ class controladorCompras extends Controller
 
         // Recopilación de información de la requisición y generación del nuevo PDF
         $notas = $req->Comentarios;
-        $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.mantenimiento as mant','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
+        $datos = Requisiciones::select('requisiciones.id_requisicion','requisiciones.unidad_id','requisiciones.mantenimiento as mant','requisiciones.created_at','requisiciones.pdf','requisiciones.notas','requisiciones.urgencia','requisiciones.fecha_programada','requisiciones.usuario_id','users.nombres','users.apellidoP','users.apellidoM','users.rol','users.departamento')
         ->join('users','requisiciones.usuario_id','=','users.id')
         ->where('requisiciones.id_requisicion',$rid)
         ->first();
+
+        // Procesamiento de los datos de la solicitud y del empleado
+        if (!empty($datos->urgencia)) {
+            $urgencia = 'Requisición urgente';
+            try {
+                // Le da formato dd/mm/aaaa a la fecha creacion de la requisición
+                $fechaProgramada = date('d/m/Y', strtotime($datos->fecha_programada));
+            } catch (\Exception $e) {
+                // Manejar el error si el formato es incorrecto
+                $fechaProgramada = null;
+
+                return $e;
+                // Puedes lanzar una excepción o registrar el error si es necesario
+                // throw new \Exception('Formato de fecha no válido');
+            }
+        } else {
+            $urgencia = null;
+            $fechaProgramada = null;
+        }
 
         //Guarda la ruta del archivo PDF de la requisicion
         $fileToDelete = public_path($datos->pdf);
@@ -747,36 +795,68 @@ class controladorCompras extends Controller
             $archivo->storeAs('archivos', $nombreArchivo, 'public');
             $archivo_pdf = 'archivos/' . $nombreArchivo;
 
-            // Creación del registro de cotización en la base de datos
-            Cotizaciones::create([
-                "requisicion_id"=>$req->input('requisicion'),
-                "usuario_id"=>session('loginId'),
-                "pdf"=>$archivo_pdf,
-                "estatus"=>"1",
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
+            $cotiza = Cotizaciones::where('requisicion_id',$req->requisicion)->first();
 
-             // Actualización del estado de la requisición asociada
-            Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
-                "estado" => "Cotizado",
-                "updated_at" => Carbon::now()
-            ]);
+            if (empty($cotiza)){
+                // Creación del registro de cotización en la base de datos
+                Cotizaciones::create([
+                    "requisicion_id"=>$req->input('requisicion'),
+                    "usuario_id"=>session('loginId'),
+                    "pdf"=>$archivo_pdf,
+                    "estatus"=>"1",
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                ]);
 
-            // Registro de la acción en un log
-            Logs::create([
-                "user_id"=>session('loginId'),
-                "requisicion_id"=>$req->input('requisicion'),
-                "table_name"=>"Solicitudes",
-                "action"=>"Se ha hecho una cotizacion en la solicitud:".$req->input('solicitud'),
-                "created_at"=>Carbon::now(),
-                "updated_at"=>Carbon::now()
-            ]);
+                // Actualización del estado de la requisición asociada
+                Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
+                    "estado" => "Cotizado",
+                    "updated_at" => Carbon::now()
+                ]);
 
-            //Recarga la página con una alerta de exito
-            return back()->with('cotizacion','cotizacion');
+                // Registro de la acción en un log
+                Logs::create([
+                    "user_id"=>session('loginId'),
+                    "requisicion_id"=>$req->input('requisicion'),
+                    "table_name"=>"Solicitudes",
+                    "action"=>"Se ha hecho una cotizacion en la solicitud:".$req->input('solicitud'),
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                ]);
+
+                //Recarga la página con una alerta de exito
+                return back()->with('cotizacion','cotizacion');
+
+            } else {
+                Cotizaciones::where('id_cotizacion',$cotiza->id_cotizacion)->update([
+                    // Creación del registro de cotización en la base de datos
+                    "requisicion_id"=>$req->input('requisicion'),
+                    "usuario_id"=>session('loginId'),
+                    "pdf"=>$archivo_pdf,
+                    "estatus"=>"1",
+                    "updated_at"=>Carbon::now()
+                ]);
+
+                // Actualización del estado de la requisición asociada
+                Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
+                    "estado" => "Cotizado",
+                    "updated_at" => Carbon::now()
+                ]);
+
+                // Registro de la acción en un log
+                Logs::create([
+                    "user_id"=>session('loginId'),
+                    "requisicion_id"=>$req->input('requisicion'),
+                    "table_name"=>"Solicitudes",
+                    "action"=>"Se ha hecho una cotizacion en la solicitud:".$req->input('solicitud'),
+                    "created_at"=>Carbon::now(),
+                    "updated_at"=>Carbon::now()
+                ]);
+
+                //Recarga la página con una alerta de exito
+                return back()->with('actualizacion','actualizacion');
+            }
         } else {
-
             // Manejo del caso en que no se sube un archivo válido
             return back()->with('error', 'No se ha seleccionado ningún archivo.');
         }

@@ -111,14 +111,19 @@ $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(160, 5, 'Notas', 1, 1, 'C', 1);
-// notas que agrega el solicitante
 
-$pdf->MultiCell(160, 5, 'Notas requisicion: '.$datos->notas, 1 ,'C', 0 );
-if (!empty($notas)){
-    $pdf->MultiCell(160, 5, 'Comentarios encargado: '.$notas, 1 ,'C', 0 );
+if($urgencia != null && ($notas != null || $datos->notas !=null)){
+    // notas que agrega el solicitante
+    $pdf->MultiCell(160, 5, 'Requisicion de urgencia. Fecha programada para recibir articulos: '.$fechaProgramada.'
+Notas de requisicion: '. $notas, 1, 1 ,'C', 0 );
+}  elseif($urgencia != null && ($notas != null && $datos->notas !=null)){
+    $pdf->MultiCell(160, 5, 'Requisicion de urgencia. Fecha programada para recibir articulos: '.$fechaProgramada, 1, 1 ,'C', 0 );
+} else{
+   // notas que agrega el solicitante
+    $pdf->MultiCell(160, 5, $notas, 1, 1 ,'C', 0 );
 }
 
-$pdf->SetY(260); // Ajusta la posición Y según tus necesidades
+$pdf->SetY(265); // Ajusta la posición Y según tus necesidades
 // Dibujar una línea
 
 // Coordenadas iniciales y finales para los tres segmentos
@@ -129,16 +134,16 @@ $x3 = 130;
 $y = $pdf->GetY(); // Obtener la posición Y actual
 
 // Dibujar el primer segmento de la línea
-$pdf->Line(10, $y, 60, $y);
+$pdf->Line(15, $y, 65, $y);
 
 // Dibujar el segundo segmento de la línea
-$pdf->Line(75, $y, 130, $y);
+$pdf->Line(75, $y, 125, $y);
 
 // Dibujar el tercer segmento de la línea
-$pdf->Line(140, $y, 190, $y);
+$pdf->Line(135, $y, 185, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '              Solicita                                         Encargado área                              Autoriza Gerencia ', 0, 1, 'A', 0);
+$pdf->Cell(0, 7, '   Solicitante Requisicion              Encargado área (Requisicion)          Autoriza Gerencia (Cotización) ', 0, 1, 'A', 0);
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
