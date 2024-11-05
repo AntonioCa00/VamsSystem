@@ -48,7 +48,7 @@
                                 </button>
                             </th>
                             <th>
-                                <form action="{{ route('rechazaArtCompras', $articulo->id) }}" method="post">
+                                <form action="{{ route('rechazaArtCompras', ['id' => $articulo->id, 'rid' => $articulo->requisicion_id]) }}" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-primary">Rechazar</button>

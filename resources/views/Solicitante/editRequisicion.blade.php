@@ -82,8 +82,6 @@
                                                 <label>Descripcion:</label>
                                                 <input type="text" class="form-control" name="editDescripcion" value="{{ $articulo->descripcion}}">
                                             </div>
-
-                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                                         </form>
                                     </div>
                                 </div>
@@ -131,7 +129,7 @@
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
         </div>
-        <div class="card-footer py-3 text-center">
+        <div class="card-footer py-3">
             <form action="{{route('updateSolicitud',$id)}}" method="post">
                 @csrf
                 {!!method_field('PUT')!!}
@@ -156,11 +154,34 @@
                         </select>
                     </div>
                 @endif
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Notas:</label>
-                    <input name="Notas" type="text" class="form-control" value="{{$unidad->notas}}" placeholder="Agrega notas si necesario">
+                <div class="form-group mb-4">
+                    <div class="form-check form-check-inline">
+                        @if ($unidad->urgencia != null)
+                            <input class="form-check-input" type="checkbox" name="urgencia" id="inlineRadio1" value="1" checked>
+                        @else
+                            <input class="form-check-input" type="checkbox" name="urgencia" id="inlineRadio1" value="1">
+                        @endif
+                        <label class="form-check-label text-danger" for="inlineRadio1">Selecciona esta casilla SOLO si la requisición es URGENCIA</label>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
+                <div id="diaEstimado" style="display: none;">
+                    <label for="banco">Fecha estimada de entrega:</label>
+                    @if ($unidad->urgencia != null)
+                        <input type="date" class="form-control" style="width: 60%" id="dias" name="dias"
+                        value="{{ $unidad->fecha_programada ? \Carbon\Carbon::parse($unidad->fecha_programada)->format('Y-m-d') : '' }}">
+                    @else
+                        <input type="date" class="form-control" style="width: 60%" id="dias" name="dias"><br>
+                    @endif
+                </div>
+
+                <div class="form-group mt-4">
+                    <label for="exampleFormControlInput1">Notas:</label>
+                    <input name="Notas" type="text" class="form-control" value="{{ $unidad->notas }}" placeholder="Agrega notas si es necesario">
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary"><h6>Crear formato de requisición</h6></button>
+                </div>
             </form>
         </div>
     </div>
@@ -179,6 +200,30 @@
             otro.style.display = 'none';
             input.required = false;
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var urgenciaCheckbox = document.getElementById('inlineRadio1');
+        var diasEstimados = document.getElementById('diaEstimado');
+        var inputDias = document.getElementById('dias');
+
+        // Comprobar el estado del checkbox al cargar la página
+        if (urgenciaCheckbox.checked) {
+            diasEstimados.style.display = 'block';
+            inputDias.setAttribute('required', 'required');
+        }
+
+        // Manejar el cambio del checkbox
+        urgenciaCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                diasEstimados.style.display = 'block';
+                inputDias.setAttribute('required', 'required');
+            } else {
+                diasEstimados.style.display = 'none';
+                inputDias.removeAttribute('required');
+                inputDias.value = ''; // Limpiar el valor del input cuando se oculta
+            }
+        });
     });
 </script>
 @endsection

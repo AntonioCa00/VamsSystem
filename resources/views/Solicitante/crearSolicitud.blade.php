@@ -130,7 +130,7 @@
                 <button type="submit" class="btn btn-primary">Agregar articulo</button>
             </form>
         </div>
-        <div class="card-footer py-3 text-center">
+        <div class="card-footer py-3">
             <form action="{{route('requisicion')}}" method="post">
                 @csrf
                 @if(session('departamento')=== "Mantenimiento")
@@ -158,11 +158,23 @@
                         </select>
                     </div>
                 @endif
+                <div class="form-goup mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="urgencia" id="inlineRadio1" value="1">
+                        <label class="form-check-label text-danger" for="inlineRadio1">Selecciona esta casilla SOLO si la requisicion es URGENCIA</label>
+                    </div>
+                </div>
+                <div id="diaEstimado" style="display: none;">
+                    <label for="banco">Fecha estimada de entrega:</label>
+                    <input type="date" class="form-control" style="width: 60%" id="dias" name="dias"><br>
+                </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Notas:</label>
                     <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
                 </div>
-                <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary"><h6 >Crear formato de requisición</h6></button>
+                </div>
             </form>
         </div>
     </div>
@@ -180,6 +192,20 @@
         } else {
             otro.style.display = 'none';
             input.required = false;
+        }
+    });
+
+    // Mostrar u ocultar campo de días de fecha estimada según la urgencia
+    document.getElementById('inlineRadio1').addEventListener('change', function() {
+        var diasEstimados = document.getElementById('diaEstimado');
+        var inputDias = document.getElementById('dias');
+
+        if (this.checked) {
+            diasEstimados.style.display = 'block';
+            inputDias.setAttribute('required', 'required'); // Hacer obligatorio el campo
+        } else {
+            diasEstimados.style.display = 'none';
+            inputDias.removeAttribute('required'); // Eliminar la obligatoriedad
         }
     });
 </script>
