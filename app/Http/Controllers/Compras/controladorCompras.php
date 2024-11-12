@@ -533,7 +533,7 @@ class controladorCompras extends Controller
 
         $corte = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.urgencia','requisiciones.created_at')
         ->join('users','requisiciones.usuario_id','users.id')
-        ->whereBetween('requisiciones.created_at', [Carbon::now()->subWeeks(1)->startOfWeek(), Carbon::now()])
+        ->whereBetween('requisiciones.created_at', [Carbon::now()->submonths(4)->startOfMonth(), Carbon::now()])
         ->where('requisiciones.estado','Solicitado')
         ->get();
 
