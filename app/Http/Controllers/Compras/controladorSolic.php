@@ -135,7 +135,8 @@ class controladorSolic extends Controller
         $validaciones = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.created_at','cotizaciones.id_cotizacion','cotizaciones.pdf as coti')
         ->leftJoin('cotizaciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
-        ->whereBetween('requisiciones.created_at', [Carbon::now()->subWeeks(1)->startOfWeek(), Carbon::now()])
+        //Se cambio para poder obtener las requisiciones desde meses atrás
+        ->whereBetween('requisiciones.created_at', [Carbon::now()->subMonths(4)->startOfMonth(), Carbon::now()])
         ->where('requisiciones.estado','Cotizado')
         ->get();
 
