@@ -77,7 +77,7 @@
                             @else
                                 <th>{{$solicitud->estado}}</th>
                             @endif
-                            <th>{{$solicitud->created_at}}</th>
+                            <th>{{$solicitud->fecha_creacion}}</th>
                             <th>
                                 <a href="{{ asset($solicitud->pdf) }}" target="_blank">
                                     <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">

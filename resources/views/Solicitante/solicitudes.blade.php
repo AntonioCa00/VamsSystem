@@ -86,7 +86,7 @@
                                 <th>{{ $solicitudes->id_requisicion }}</th>
                                 <th>{{ $solicitudes->nombres }}</th>
                                 <th>{{ $solicitudes->departamento }}</th>
-                                <th>{{ $solicitudes->created_at }}</th>
+                                <th>{{ $solicitudes->fecha_creacion }}</th>
                                 <th>{{ $solicitudes->estado }}</th>
                                 <th class="text-center">
                                     <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
