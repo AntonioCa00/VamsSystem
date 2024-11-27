@@ -85,8 +85,8 @@
                         <tbody>
                             @foreach ($solicitudes as $solicitud)
                                 @if (!empty($solicitud->urgencia))
-                                    <tr class="text-center text-danger">
-                                    @else
+                                    <tr class="text-danger">
+                                @else
                                     <tr>
                                 @endif
                                 <th>{{ $solicitud->id_requisicion }}</th>
@@ -165,6 +165,10 @@
                                             href="{{ route('createCotiza', $solicitud->id_requisicion) }}">
                                             Subir cotizaciones
                                         </a>
+                                        <a class="btn btn-success" href="#" data-toggle="modal"
+                                            data-target="#Finalizar{{ $solicitud->id_requisicion }}">
+                                            Finalizar
+                                        </a>
                                     @elseif ($solicitud->estado === 'Validado' || $solicitud->estado === 'Comprado')
                                         <a class="btn btn-info"
                                             href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
@@ -209,6 +213,10 @@
                                         <a class="btn btn-primary" href="" onclick="return false;"
                                             style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                             Eliminar
+                                        </a>
+                                        <a class="btn btn-sucess" href="" onclick="return false;"
+                                            style="pointer-events: none; background-color: gray; cursor: not-allowed;">
+                                            Finalizar
                                         </a>
                                     @endif
                                 </th>
