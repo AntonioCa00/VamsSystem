@@ -511,6 +511,11 @@ class controladorCompras extends Controller
         ->orderBy('requisiciones.created_at', 'desc')
         ->get();
 
+        // Formatear fechas
+        $solicitudes->transform(function ($solicitud) {
+            $solicitud->fecha_creacion = Carbon::parse($solicitud->created_at)->format('d/m/Y');
+            return $solicitud;
+        });
 
         // Redirige al usuario a la lista de solicitudes con los datos recuperados
         return view('Compras.solicitudes',compact('solicitudes'));
@@ -1184,7 +1189,7 @@ class controladorCompras extends Controller
                 "n_cuenta"=>$req->input('n_cuenta'),
                 "n_cuenta_clabe"=>$req->input('n_cuenta_clabe'),
             ]);
-        }  
+        }
 
         //Redirecciona al listado de proveedores con mensaje de exito
         return redirect('proveedores/Compras')->with('update','update');
@@ -1433,6 +1438,13 @@ class controladorCompras extends Controller
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('orden_compras.created_at','desc')
         ->get();
+
+        // Formatear fechas
+        $ordenes->transform(function ($orden) {
+            $orden->fecha_creacion = Carbon::parse($orden->created_at)->format('d/m/Y');
+            return $orden;
+        });
+
         //Muentra la vista con la variable que contiene las ordenes de compra
         return view ('Compras.ordenesCompras',compact('ordenes'));
     }
@@ -3102,6 +3114,8 @@ class controladorCompras extends Controller
         // Consultar las unidades que se encuentren activas al momento
         $unidades = Unidades::where('estatus',1)
         ->orderBY('n_de_permiso','asc')
+        ->where('id_unidad','!=',1)
+        ->where('id_unidad','!=',2)
         ->get();
 
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable
