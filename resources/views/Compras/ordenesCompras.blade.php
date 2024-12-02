@@ -3,7 +3,7 @@
 @section('Contenido')
 
 @if(session()->has('eliminada'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -11,11 +11,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('finalizada'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -23,11 +23,11 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 @if(session()->has('orden'))
-    <script type="text/javascript">          
+    <script type="text/javascript">
         Swal.fire({
         position: 'center',
         icon: 'success',
@@ -35,14 +35,14 @@
         showConfirmButton: false,
         timer: 1000
         })
-    </script> 
+    </script>
 @endif
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">ORDENES DE COMPRAS</h1>
-    
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -71,7 +71,7 @@
                             <th>{{$orden->nombres}}</th>
                             <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->proveedor}}</th>
-                            <th>${{$orden->costo_total}}</th>                        
+                            <th>${{$orden->costo_total}}</th>
                             @if ($orden->estado === "Pagado")
                                 <th class="text-success">{{$orden->estado}}</th>
                             @else
@@ -82,8 +82,8 @@
                                     <img class="imagen-container" src="{{ asset('img/compra.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
-                            <th>{{$orden->created_at}}</th>
-                            <th>                        
+                            <th>{{$orden->fecha_creacion}}</th>
+                            <th>
                                 @if($orden->estadoComp === null)
                                     {{-- <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
                                         Registrar pago
@@ -101,10 +101,10 @@
                                                 </div>
                                                 <div class="modal-body">Selecciona confirmar para finalizar proceso</div>
                                                 <div class="modal-footer">
-                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                     <form action="{{route('FinalizarC',$orden->id_orden)}}" method="POST">
                                                         @csrf
-                                                        {!!method_field('PUT')!!}    
+                                                        {!!method_field('PUT')!!}
                                                         <button type="submit" class="btn btn-primary">Confirmar</button>
                                                     </form>
                                                 </div>
@@ -127,24 +127,24 @@
                                                 </div>
                                                 <div class="modal-body">Selecciona confirmar para eliminar esta orden de compra</div>
                                                 <div class="modal-footer">
-                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>                                        
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
                                                     <form action="{{route('deleteOrd',['id' => $orden->id_orden, 'sid' => $orden->id_requisicion])}}" method="POST">
                                                         @csrf
-                                                        {!!method_field('PUT')!!}    
+                                                        {!!method_field('PUT')!!}
                                                         <button type="submit" class="btn btn-primary">Confirmar</button>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                @else                                
+                                @else
                                 @if(empty($orden->comprobante_pago))
                                     Sin comprobante
-                                @else 
+                                @else
                                     <a href="{{ asset($orden->comprobante_pago)}}" target="_blank">
                                         Comprobante pago
                                     </a>
-                                @endif 
+                                @endif
                                 @endif
                             </th>
                         </tr>

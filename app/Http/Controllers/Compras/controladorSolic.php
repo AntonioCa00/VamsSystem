@@ -60,6 +60,12 @@ class controladorSolic extends Controller
         ->groupBY('requisiciones.id_requisicion')
         ->get();
 
+        // Formatear fechas
+        $solicitudes->transform(function ($solicitud) {
+            $solicitud->fecha_creacion = Carbon::parse($solicitud->created_at)->format('d/m/Y');
+            return $solicitud;
+        });
+
         //Redirige al usuario a la página para visualizar la consulta
         return view('Solicitante.solicitudes',compact('solicitudes'));
     }
@@ -74,6 +80,12 @@ class controladorSolic extends Controller
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('orden_compras.created_at','desc')
         ->get();
+
+        // Formatear fechas
+        $ordenes->transform(function ($orden) {
+            $orden->fecha_creacion = Carbon::parse($orden->created_at)->format('d/m/Y');
+            return $orden;
+        });
 
         return view('Solicitante.ordenesCompras',compact('ordenes'));
     }
@@ -208,6 +220,12 @@ class controladorSolic extends Controller
         ->orderBy('requisiciones.created_at','desc') //* Ordena las requisiciones por fecha de creación de manera descendente
         ->groupBy('requisiciones.id_requisicion')
         ->get();
+
+        // Formatear fechas
+        $solicitudes->transform(function ($solicitud) {
+            $solicitud->fecha_creacion = Carbon::parse($solicitud->created_at)->format('d/m/Y');
+            return $solicitud;
+        });
 
         // Retorna la vista 'Solicitante.requisiciones', pasando las solicitudes obtenidas
         return view('Solicitante.requisiciones',compact('solicitudes'));

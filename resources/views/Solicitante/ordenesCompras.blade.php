@@ -82,7 +82,7 @@
                                     <img class="imagen-container" src="{{ asset('img/compra.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
-                            <th>{{$orden->created_at}}</th>
+                            <th>{{$orden->fecha_creacion}}</th>
                             <th>
                                 @if(empty($orden->comprobante_pago))
                                     Sin comprobante
