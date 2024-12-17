@@ -1875,7 +1875,7 @@ class controladorCompras extends Controller
         // Comienza a escribir los datos desde la fila 6
         $rowNumber = 6;
 
-        // Para cada requsicion que obtenga en la consulta
+        // Para cada requisicion que obtenga en la consulta
         foreach ($datosRequisicion as $requisicion) {
 
             // Concatena el nombre del solicitante y su apellido paterno
