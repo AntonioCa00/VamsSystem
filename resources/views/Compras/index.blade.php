@@ -138,7 +138,7 @@
                 <!-- Card Header - Dropdown -->
                 <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Fuentes de ingresos</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Gastos mensuales por área</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -153,14 +153,29 @@
                     </div>
                     <div class="mt-4 text-center small">
                         <span class="mr-2">
-                            <i class="fas fa-circle text-primary"></i> Direct
+                            <i class="fas fa-circle text-primary"></i> Mantenimiento
                         </span>
                         <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Social
+                            <i class="fas fa-circle text-success"></i> Almacen
                         </span>
                         <span class="mr-2">
-                            <i class="fas fa-circle text-info"></i> Referral
+                            <i class="fas fa-circle text-info"></i> Logistica
                         </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-danger"></i> RH
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-warning"></i> Gestoría
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-secondary"></i> Contabilidad
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-dark"></i> Sistemas
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #ff00ff;"></i> Ventas
+                        </span>                        
                     </div>
                 </div>
             </div>
@@ -182,7 +197,20 @@
     var noviembre = {{ $noviembre }};
     var diciembre = {{ $diciembre }};
 
+    var mantenimiento = parseFloat({{ $mantenimiento }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var almacen = parseFloat({{ $almacen }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var logistica = parseFloat({{ $logistica }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var rh = parseFloat({{ $rh }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var gestoria = parseFloat({{ $gestoria }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var contabilidad = parseFloat({{ $contabilidad }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var sistemas = parseFloat({{ $sistemas }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+    var ventas = parseFloat({{ $ventas }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
+
+
     generarGraficaCombinada(enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre);
-    });
+
+    generarGraficarea( mantenimiento, almacen, logistica, rh, gestoria, contabilidad, sistemas, ventas);
+
+    });    
 </script>
 @endsection
