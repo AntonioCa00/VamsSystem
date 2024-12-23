@@ -113,7 +113,7 @@ if(!empty($unidad)){
     $pdf->Cell(50, 7, 'Tipo de Mantenimiento', 1, 1, 'C', 1);
 
     // notas que agrega el solicitante
-    $pdf->Cell(130, 6,'Núm. placas: '. $unidad->id_unidad.'.  Núm de permiso: '.$unidad->n_de_permiso, 1, 0 , 0 );
+    $pdf->Cell(130, 6,'Núm. de serie: '. $unidad->n_de_serie, 1, 0 , 0 );
 
     $pdf->Cell(50, 6, $mantenimiento, 1, 1,'C');
 

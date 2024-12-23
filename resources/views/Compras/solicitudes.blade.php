@@ -74,10 +74,6 @@
                                 <th>Fecha solicitud:</th>
                                 <th>Estado:</th>
                                 <th>Comentarios:</th>
-                                {{-- <th style="width: 150px; /* o el ancho específico que desees */
-                            max-width: 150px; /* coincide con el ancho para asegurar el límite */
-                            overflow: hidden;
-                            white-space: nowrap;text-overflow: ellipsis;">Servicio:</th> --}}
                                 <th>Requisicion:</th>
                                 <th>Opciones:</th>
                             </tr>
@@ -86,7 +82,7 @@
                             @foreach ($solicitudes as $solicitud)
                                 @if (!empty($solicitud->urgencia))
                                     <tr class="text-danger">
-                                @else
+                                    @else
                                     <tr>
                                 @endif
                                 <th>{{ $solicitud->id_requisicion }}</th>
@@ -140,11 +136,14 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">Comentario emitido por:
-                                                        <strong>{{ $solicitud->rol }}</strong></div>
+                                                        <strong>{{ $solicitud->rol }}</strong>
+                                                    </div>
                                                     <div class="modal-body">Comentario:
-                                                        <strong>{{ $solicitud->detalles }}</strong></div>
+                                                        <strong>{{ $solicitud->detalles }}</strong>
+                                                    </div>
                                                     <div class="modal-body">Fecha del comentario:
-                                                        <strong>{{ $solicitud->fechaCom }}</strong></div>
+                                                        <strong>{{ $solicitud->fechaCom }}</strong>
+                                                    </div>
                                                     <div class="modal-footer">
                                                         <button class="btn btn-secondary" type="button"
                                                             data-dismiss="modal">cancelar</button>
@@ -186,7 +185,8 @@
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">¿Se ha completado la
+                                                        <h5 class="modal-title" id="exampleModalLabel">¿Se ha completado
+                                                            la
                                                             requisicion?</h5>
                                                         <button class="close" type="button" data-dismiss="modal"
                                                             aria-label="Close">
