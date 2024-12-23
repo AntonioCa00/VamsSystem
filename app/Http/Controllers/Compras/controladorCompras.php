@@ -36,7 +36,7 @@ use Carbon\Carbon;
 class controladorCompras extends Controller
 {
     /*
-      Recopila datos para la visualización de informes de gestión en el área correspondiente.
+      TODO: Recopila datos para la visualización de informes de gestión en el área correspondiente.
 
       Este método se encarga de compilar datos detallados de operaciones de compra por mes y totales anuales,
       así como el conteo de requisiciones completas y pendientes. Utiliza la clase Orden_compras para sumar los costos totales
@@ -53,158 +53,182 @@ class controladorCompras extends Controller
         $EneroPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $EneroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as enero"))
             ->whereBetween('created_at', ["$anio_actual-01-01 00:00:00", "$anio_actual-01-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Enero = $EneroPagos->enero + $EneroCompras->enero;
 
         $FebreroPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $FebreroCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as febrero"))
             ->whereBetween('created_at', ["$anio_actual-02-01 00:00:00", "$anio_actual-02-28 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Febrero = $FebreroPagos->febrero + $FebreroCompras->febrero;
 
         $MarzoPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $MarzoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as marzo"))
             ->whereBetween('created_at', ["$anio_actual-03-01 00:00:00", "$anio_actual-03-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Marzo = $MarzoPagos->marzo + $MarzoCompras->marzo;
 
         $AbrilPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $AbrilCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as abril"))
             ->whereBetween('created_at', ["$anio_actual-04-01 00:00:00", "$anio_actual-04-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Abril = $AbrilPagos->abril + $AbrilCompras->abril;
 
         $MayoPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $MayoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as mayo"))
             ->whereBetween('created_at', ["$anio_actual-05-01 00:00:00", "$anio_actual-05-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Mayo = $MayoPagos->mayo + $MayoCompras->mayo;
 
         $JunioPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $JunioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as junio"))
             ->whereBetween('created_at', ["$anio_actual-06-01 00:00:00", "$anio_actual-06-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Junio = $JunioPagos->junio + $JunioCompras->junio;
 
         $JulioPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $JulioCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as julio"))
             ->whereBetween('created_at', ["$anio_actual-07-01 00:00:00", "$anio_actual-07-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Julio = $JulioPagos->julio + $JulioCompras->julio;
 
         $AgostoPagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $AgostoCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as agosto"))
             ->whereBetween('created_at', ["$anio_actual-08-01 00:00:00", "$anio_actual-08-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Agosto = $AgostoPagos->agosto + $AgostoCompras->agosto;
 
         $SeptiembrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $SeptiembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as septiembre"))
             ->whereBetween('created_at', ["$anio_actual-09-01 00:00:00", "$anio_actual-09-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Septiembre = $SeptiembrePagos->septiembre + $SeptiembreCompras->septiembre;
 
         $OctubrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $OctubreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as octubre"))
             ->whereBetween('created_at', ["$anio_actual-10-01 00:00:00", "$anio_actual-10-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Octubre = $OctubrePagos->octubre + $OctubreCompras->octubre;
 
         $NoviembrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $NoviembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as noviembre"))
             ->whereBetween('created_at', ["$anio_actual-11-01 00:00:00", "$anio_actual-11-30 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Noviembre = $NoviembrePagos->noviembre + $NoviembreCompras->noviembre;
 
         $DiciembrePagos = Pagos_Fijos::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $DiciembreCompras = Orden_compras::
             select(DB::raw("COALESCE(SUM(costo_total), 0) as diciembre"))
             ->whereBetween('created_at', ["$anio_actual-12-01 00:00:00", "$anio_actual-12-31 23:59:59"])
-            ->where('estado','Pagado')
             ->first();
         $Diciembre = $DiciembrePagos->diciembre + $DiciembreCompras->diciembre;
 
         // Suma total de costos para el mes actual
         $mesActual = now()->format('m');
         $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
-        $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->where('estado','Pagado')->sum('costo_total');
+        $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->sum('costo_total');
         $TotalMes = $totalRequisicionesMes + $totalPagosMes;
 
         // Suma total de costos para el año en curso
         $anioActual = now()->year;
         $totalRequisicionesAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
-        $totalPagosAnio= Pagos_Fijos::whereYear('created_at', $anioActual)->where('estado','Pagado')->sum('costo_total');
+        $totalPagosAnio= Pagos_Fijos::whereYear('created_at', $anioActual)->sum('costo_total');
         $TotalAnio = $totalRequisicionesAnio + $totalPagosAnio;
+
+        $mantenimiento = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Mantenimiento')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $almacen = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Almacen')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $logistica = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Logistica')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $rh = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','RH')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $gestoria = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Gestoria')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $contabilidad = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Contabilidad')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $sistemas = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Sistemas')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+
+        $ventas = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
+        ->join('users','requisiciones.usuario_id','users.id')
+        ->where('users.departamento','Ventas')
+        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
 
         // Conteo de requisiciones completas
         $completas = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
@@ -235,12 +259,22 @@ class controladorCompras extends Controller
             'septiembre' => $Septiembre,
             'octubre'    => $Octubre,
             'noviembre'  => $Noviembre,
-            'diciembre'  => $Diciembre,]);
+            'diciembre'  => $Diciembre,
+            //Por departamentos
+            'mantenimiento'=>$mantenimiento,
+            'almacen'=>$almacen,
+            'logistica'=>$logistica,
+            'rh'=>$rh,
+            'gestoria'=>$gestoria,
+            'contabilidad'=>$contabilidad,
+            'sistemas'=>$sistemas,
+            'ventas'=>$ventas,
+        ]);
     }
 
     //VISTAS DE LAS TABLAS
     /*
-      Recupera y muestra todas las refacciones activas en el almacen.
+      TODO: Recupera y muestra todas las refacciones activas en el almacen.
 
       Este método consulta la base de datos para obtener un listado de todas las refacciones que tienen un estatus '1',
       indicando que están activas. La intención es proporcionar una visión general de las refacciones disponibles en el
@@ -267,7 +301,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
+      TODO: Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
 
       Este método consulta la base de datos para obtener un listado de todas las unidades que están marcadas como activas
       (estatus '1'), excluyendo la unidad con ID '1' por razones específicas de negocio o de la aplicación. Además, las unidades
@@ -287,7 +321,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Muestra la vista para la creación de una nueva unidad.
+      TODO: Muestra la vista para la creación de una nueva unidad.
 
       Este método se encarga de cargar y presentar la vista que contiene el formulario utilizado para la creación
       de nuevas unidades dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
@@ -301,7 +335,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Inserta una nueva unidad en la base de datos con la información proporcionada a través de un formulario.
+      TODO: Inserta una nueva unidad en la base de datos con la información proporcionada a través de un formulario.
 
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
       año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
@@ -333,7 +367,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Muestra la vista para editar los detalles de una unidad específica.
+      TODO: Muestra la vista para editar los detalles de una unidad específica.
 
       Este método se encarga de recuperar los detalles de una unidad específica, identificada por su ID, de la base de datos.
       La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
@@ -353,7 +387,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Actualiza los detalles de una unidad específica en la base de datos con la información proporcionada por el formulario.
+      TODO: Actualiza los detalles de una unidad específica en la base de datos con la información proporcionada por el formulario.
 
       Este método recibe datos de un formulario a través de una petición HTTP, incluyendo el ID de la unidad, tipo, estado,
       año de la unidad, marca, modelo, características, número de serie, y número de permiso. Utiliza estos datos para
@@ -384,7 +418,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Desactiva una unidad específica marcándola como inactiva en la base de datos.
+      TODO: Desactiva una unidad específica marcándola como inactiva en la base de datos.
 
       En lugar de eliminar el registro de la unidad, este método actualiza el campo 'estatus' a 0,
       indicando que la unidad está inactiva. Esta operación es crucial para mantener la integridad de los datos
@@ -407,7 +441,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Marca una unidad específica como inactiva en la base de datos.
+      TODO: Marca una unidad específica como inactiva en la base de datos.
 
       Este método actualiza el estado de una unidad específica, identificada por su ID, a "Inactivo", lo que indica
       que la unidad ya no está en uso activo dentro del sistema. La fecha de la última actualización también se registra mediante el campo
@@ -428,7 +462,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Recupera y muestra todas las unidades inactivas para su potencial activación.
+      TODO: ecupera y muestra todas las unidades inactivas para su potencial activación.
 
       Este método consulta la base de datos para obtener un listado de todas las unidades que actualmente están marcadas
       como "Inactivo". La intención es proporcionar a los administradores una visión general de las unidades que no están
@@ -445,7 +479,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Reactiva una unidad específica cambiando su estado a "Activo".
+       TODO: Reactiva una unidad específica cambiando su estado a "Activo".
 
       Este método actualiza el estado de una unidad específica, identificada por su ID, a "Activo" en la base de datos.
        La fecha de la última actualización también se registra para mantener un seguimiento adecuado de las modificaciones.
@@ -476,7 +510,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Recupera y muestra un listado de solicitudes que cumplen con ciertos criterios de estado, junto con información relevante.
+      TODO: Recupera y muestra un listado de solicitudes que cumplen con ciertos criterios de estado, junto con información relevante.
 
       Este método realiza consultas complejas a la base de datos para obtener un listado de solicitudes que están en los estados
       'Aprobado', 'Cotizado', 'Validado', o 'Comprado'. Además de la información básica de la solicitud, se calcula y muestra la
@@ -522,20 +556,18 @@ class controladorCompras extends Controller
     }
 
     /*
-      Filtra y muestra un listado de solicitudes basado en criterios específicos como el departamento o el estado.
+      TODO: Filtra y muestra un listado de solicitudes solicitadas.
 
-      Este método maneja la lógica para filtrar las solicitudes de acuerdo con el criterio especificado por el usuario,
-      ya sea 'departamento' o 'estado'. Dependiendo del criterio seleccionado, realiza una consulta a la base de datos
-      para recuperar las solicitudes que coinciden con el valor de filtro proporcionado en la petición HTTP. Además de
-      filtrar las solicitudes, también recupera y organiza información adicional sobre los departamentos y los estados de
-      las solicitudes para posibles filtros o visualizaciones adicionales en la vista.
+      Este método maneja la lógica para consultar un listado de requisiciones que se encuentren en el estado de Solicitadas. 
+      Esta consulta busca especificamente las requisiciones que se hayan hecho entre el día de la consulta y 4 meses atrás (idealmente
+      es una antiguedad de una semana). Una vez que se obtenga el listado este se muestra en una vista en la cual se procesan las requisiciones
+      mostradas.
 
-      @param  string $filt El criterio de filtro especificado ('departamento' o 'estado').
-
-      Retorna la vista 'Compras.solicitudes', pasando el listado filtrado de solicitudes, departamentos y estados para su visualización.
+      Retorna la vista 'Compras.corteSemanal', pasando el listado de requisiciones.
     */
     public function corteSemanal(){
 
+        //Consulta las requisiciones pendientes de ser procesadas (estado 'Solicitado')
         $corte = Requisiciones::select('requisiciones.id_requisicion','users.nombres','users.apellidoP','users.departamento','requisiciones.pdf','requisiciones.urgencia','requisiciones.created_at')
         ->join('users','requisiciones.usuario_id','users.id')
         ->whereBetween('requisiciones.created_at', [Carbon::now()->submonths(4)->startOfMonth(), Carbon::now()])
@@ -546,12 +578,25 @@ class controladorCompras extends Controller
         return view('Compras.corteSemanal',compact('corte'));
     }
 
+    /*
+      TODO: Procesa las requisiciones que pasaran de estatus.
+
+      Este método se encarga de obtener las requisiciones que el encargado de compras haya seleccionado y cambia el estado a aprobado
+      para dar el seguimiento adecuado dentro del flujo del sistema. Aquellas que no esten seleccionadas o no pertenezcan al arrelgo de las
+      seleccionadas se le cambiará el estado a rechazado y esto permitirá que los solicitantes puedan verla y darle el seguimiento correcto.
+      También dentro de este método se procesan las urgencias para que unicamente de paso a las requisiciones en urgencia y no afectar las que 
+      no deben ser procesadas.
+
+
+      Retorna la vista ruta de requisiciones con un mensaje de exito.
+    */
     public function createCorte(Request $req)
     {
         // Obtener los artículos seleccionados del formulario,
         // o un arreglo vacío si no hay ninguno seleccionado.
         $articulosSeleccionados = $req->input('requisiciones', []);
 
+        //Valida si la requisiciones se debe de procesar como urgencia para solo afectar esas
         if ($req->action === 'Urgencia') {
             // Recorrer cada requisición enviada en el formulario.
             foreach ($articulosSeleccionados as $idRequisicion => $data) {
@@ -562,6 +607,7 @@ class controladorCompras extends Controller
                     ->update(['estado' => $status]);
             }
 
+            //Procesa todas por medio de aprobar o rechazar
         } elseif ($req->action === 'Corte'){
             // Recorrer cada requisición enviada en el formulario.
             foreach ($articulosSeleccionados as $idRequisicion => $data) {
@@ -569,14 +615,11 @@ class controladorCompras extends Controller
                 $status = array_key_exists('seleccionado', $data) ? 'Aprobado' : 'Rechazado';
 
                 // Actualizar el estatus de la requisición en la base de datos.
-                // Aquí puedes realizar la lógica para actualizar en la base de datos,
-                // usando el ID de la requisición y el nuevo estado.
                 Requisiciones::where('id_requisicion', $idRequisicion)
                     ->update(['estado' => $status]);
             }
         }
-        // Redirigir al usuario de regreso a la página anterior
-        // con un mensaje de éxito.
+        // Redirigir al usuario de regreso a la página anterior con un mensaje de éxito.
         return redirect('solicitud/Compras')->with('corte','corte');
     }
 
@@ -734,7 +777,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Valida una solicitud específica cambiando su estado a "Validado" y registra la acción en un log.
+      TODO: Valida una solicitud específica cambiando su estado a "Validado" y registra la acción en un log.
 
       Este método se encarga de actualizar el estado de una solicitud específica, identificada por su ID, a "Validado" en
       la base de datos, indicando que la solicitud ha pasado por un proceso de verificación o aprobación según los criterios
@@ -757,7 +800,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Carga la vista para la creación de nuevas cotizaciones asociadas a una solicitud específica.
+      TODO: Carga la vista para la creación de nuevas cotizaciones asociadas a una solicitud específica.
 
       Este método recupera todas las cotizaciones activas (estatus '1') asociadas a una solicitud específica,
       identificada por su ID, incluyendo los archivos PDF tanto de la solicitud original como de las cotizaciones
@@ -778,7 +821,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Procesa y almacena una nueva cotización para una requisición específica.
+      TODO: Procesa y almacena una nueva cotización para una requisición específica.
 
       Este método es responsable de manejar el archivo de cotización enviado a través de un formulario. Verifica que se haya
       subido un archivo válido y, de ser así, procede a almacenar el archivo en el sistema de archivos y a crear un nuevo registro
@@ -868,7 +911,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Elimina una cotización específica de la base de datos.
+      TODO: Elimina una cotización específica de la base de datos.
 
       Este método permite a los usuarios con los permisos adecuados eliminar una cotización específica,
       identificada por su ID, de la base de datos.
@@ -895,7 +938,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Recupera y muestra todos los proveedores activos en la base de datos.
+      TODO: Recupera y muestra todos los proveedores activos en la base de datos.
 
       Este método consulta la base de datos para obtener un listado de todos los proveedores que están marcados como activos
       mediante el estatus '1'. La intención es proporcionar a los administradores y usuarios autorizados una visión general
@@ -912,7 +955,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Muestra la vista para la creación de un nuevo proveedor.
+      TODO: Muestra la vista para la creación de un nuevo proveedor.
 
       Este método se encarga de cargar y presentar la vista que contiene el formulario utilizado para la creación
       de nuevos proveedores dentro del sistema. La vista proporcionará los campos necesarios para capturar la información
@@ -1060,7 +1103,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Muestra la vista para editar los detalles de un proveedor específico.
+      TODO: Muestra la vista para editar los detalles de un proveedor específico.
 
       Este método se encarga de recuperar los detalles de un proveedor específico, identificado por su ID, de la base de datos.
       La recuperación de esta información es crucial para pre-rellenar el formulario de edición en la vista con los datos actuales
@@ -1080,7 +1123,7 @@ class controladorCompras extends Controller
     }
 
     /*
-     Actualiza los detalles de un proveedor existente y gestiona la actualización de sus documentos.
+      TODO: Actualiza los detalles de un proveedor existente y gestiona la actualización de sus documentos.
 
       Este método permite actualizar la información básica de un proveedor, como el nombre, contacto, dirección, RFC,
       y detalles bancarios. Además, maneja la validación, actualización y almacenamiento de documentos críticos como el
@@ -1196,7 +1239,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Desactiva un proveedor específico marcándolo como inactivo en la base de datos.
+      TODO: Desactiva un proveedor específico marcándolo como inactivo en la base de datos.
 
       En lugar de eliminar el registro del proveedor, este método actualiza el campo 'estatus' a 0,
       indicando que el proveedor está inactivo. Esta operación es crucial para mantener la integridad de los datos
@@ -1219,7 +1262,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Prepara y muestra la información necesaria para generar una orden de compra.
+      TODO: Prepara y muestra la información necesaria para generar una orden de compra.
 
       Este método recupera la cotización seleccionada para una requisición específica, identificada por su ID,
       incluyendo los documentos PDF asociados tanto a la cotización como a la requisición. También recopila los
@@ -1254,7 +1297,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Crea una orden de compra basada en una cotización específica y actualiza el estado de los artículos y la requisición correspondiente.
+      TODO: Crea una orden de compra basada en una cotización específica y actualiza el estado de los artículos y la requisición correspondiente.
 
       Este método recoge información desde un formulario que incluye notas, proveedor seleccionado, artículos, y condiciones de pago.
       Según las condiciones de pago (crédito o pago inmediato), ajusta los detalles de la orden. La información del empleado que realiza
@@ -1416,7 +1459,7 @@ class controladorCompras extends Controller
         }
 
     /*
-      Recupera y muestra una lista de todas las órdenes de compra activas.
+      TODO: Recupera y muestra una lista de todas las órdenes de compra activas.
 
       Este método consulta la base de datos para obtener información detallada sobre cada orden de compra, incluyendo
       el ID de la orden, detalles asociados de la requisición, el estado de la requisición, los nombres de los administradores
@@ -1450,7 +1493,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Elimina una orden de compra específica y revierte los cambios en los artículos y la requisición asociados.
+      TODO: Elimina una orden de compra específica y revierte los cambios en los artículos y la requisición asociados.
 
       Este método se encarga de gestionar la eliminación de una orden de compra específica, identificada por su ID.
       Además de eliminar la orden, el método recalcula y restaura las cantidades de los artículos que fueron parte
@@ -1504,7 +1547,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Finaliza una requisición específica actualizando su estado a "Finalizado".
+      TODO: Finaliza una requisición específica actualizando su estado a "Finalizado".
 
       Este método se encarga de marcar una requisición, identificada por su ID, como finalizada. Actualiza el estado
       de la requisición a "Finalizado" en la base de datos.  La actualización también incluye un registro de la fecha
@@ -1526,7 +1569,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Recupera y muestra información detallada sobre todos los pagos fijos, junto con listados de servicios y proveedores activos.
+      TODO: Recupera y muestra información detallada sobre todos los pagos fijos, junto con listados de servicios y proveedores activos.
 
       Este método consulta la base de datos para obtener un listado completo de todos los pagos fijos registrados en el sistema,
       incluyendo detalles como el ID del pago, comprobante de pago, y la información relacionada del servicio y del proveedor.
@@ -1750,7 +1793,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Prepara y muestra datos necesarios para la generación de reportes en la interfaz administrativa.
+      TODO: Prepara y muestra datos necesarios para la generación de reportes en la interfaz administrativa.
 
       Este método se encarga de mostrar la vista que contiene los formularios para solicitar los reportes.
 
@@ -1762,7 +1805,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Genera y sirve un reporte en archivo excel de requisiciones basado en el intervalo de tiempo especificado.
+      TODO: Genera y sirve un reporte en archivo excel de requisiciones basado en el intervalo de tiempo especificado.
 
       Este método maneja la solicitud de generación de reportes de requisiciones. Según el rango de fechas del reporte, recupera las
       requisiciones correspondientes de la base de datos. Finalmente, el método genera un archivo excel utilizando estos datos, que luego
@@ -1962,7 +2005,7 @@ class controladorCompras extends Controller
     }
 
     /*
-      Genera y sirve un reporte en archivo excel de las órdenes de compra basado en el intervalo de tiempo especificado.
+      TODO: Genera y sirve un reporte en archivo excel de las órdenes de compra basado en el intervalo de tiempo especificado.
 
       Este método maneja la solicitud de generación de reportes de órdenes de compra. Según el rango de fechas del reporte
       y los departamentos que se requiera consultar, recupera las órdenes de compra correspondientes de la base de datos,
@@ -2599,6 +2642,17 @@ class controladorCompras extends Controller
         return $response;
     }
 
+    /*
+      TODO: Genera y sirve un reporte en archivo excel de las órdenes de pago basado en el intervalo de tiempo especificado.
+
+      Este método maneja la solicitud de generación de reportes de órdenes de pago. Según el rango de fechas del reporte
+      y los departamentos que se requiera consultar, recupera las órdenes de pago correspondientes de la base de datos,
+      diferenciando entre órdenes pendientes y finalizadas. Finalmente, el método genera un archivo de excel utilizando estos datos,
+      que luego es enviado directamente al cliente para su descarga.
+
+      Sirve un archivo excel generado directamente a los archivos del usuario.
+    */
+
     public function reportePagos(Request $req){
 
         // Validar los datos recibidos
@@ -3097,11 +3151,8 @@ class controladorCompras extends Controller
 
         return $response;
     }
-
-
-
     /*
-      Genera y sirve un reporte en formato PDF de las unidades activas al momento.
+      TODO Genera y sirve un reporte en formato PDF de las unidades activas al momento.
 
       Este método maneja la solicitud de generación de reportes de unidades. Recupera las unidades activas
       correspondientes de la base de datos. Finalmente, el método genera un archivo en PDF utilizando estos datos,

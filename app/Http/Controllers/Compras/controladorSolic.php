@@ -521,7 +521,7 @@ class controladorSolic extends Controller
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         // Recuperación de detalles de la unidad asociada a la requisición
-        $unidad = Requisiciones::select('id_unidad','marca','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
+        $unidad = Requisiciones::select('id_unidad','marca','n_de_serie','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
         ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
         ->where('requisiciones.id_requisicion',$id)
         ->first();

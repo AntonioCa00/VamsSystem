@@ -133,16 +133,16 @@
         <div class="card-footer py-3">
             <form action="{{route('requisicion')}}" method="post">
                 @csrf
-                @if(session('departamento')=== "Mantenimiento")
+                @if(session('departamento') === "Mantenimiento")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         <select name="unidad" class="form-control" required>
                             <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
                             @foreach ($unidades as $unidad)
                             @if ($unidad->tipo != "AUTOMOVIL")
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_permiso}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} - {{$unidad->n_de_permiso}} {{$unidad->modelo}}</option>
                             @else
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} {{$unidad->id_unidad}} {{$unidad->modelo}}</option>
                             @endif
                             @endforeach
                         </select>
