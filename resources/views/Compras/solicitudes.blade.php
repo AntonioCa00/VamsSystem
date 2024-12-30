@@ -163,21 +163,26 @@
                                         <a class="btn btn-primary"
                                             href="{{ route('createCotiza', $solicitud->id_requisicion) }}">
                                             Subir cotizaciones
-                                        </a>
-                                        <a class="btn btn-success" href="#" data-toggle="modal"
-                                            data-target="#Finalizar{{ $solicitud->id_requisicion }}">
-                                            Finalizar
-                                        </a>
+                                        </a>                                        
                                     @elseif ($solicitud->estado === 'Validado' || $solicitud->estado === 'Comprado')
                                         <a class="btn btn-info"
                                             href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
                                             Orden de compra
+                                        </a>                                        
+                                    @else    
+                                        <a class="btn btn-primary" href="" onclick="return false;"
+                                            style="pointer-events: none; background-color: gray; cursor: not-allowed;">
+                                            Eliminar
                                         </a>
-                                        <a class="btn btn-success" href="#" data-toggle="modal"
-                                            data-target="#Finalizar{{ $solicitud->id_requisicion }}">
+                                        <a class="btn btn-sucess" href="" onclick="return false;"
+                                            style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                             Finalizar
                                         </a>
-                                        @else    
+                                    @endif
+                                    <a class="btn btn-success" href="#" data-toggle="modal"
+                                        data-target="#Finalizar{{ $solicitud->id_requisicion }}">
+                                        Finalizar
+                                    </a>
                                         <!-- Logout Modal-->
                                         <div class="modal fade" id="Finalizar{{ $solicitud->id_requisicion }}"
                                             tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -210,16 +215,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    
-                                        <a class="btn btn-primary" href="" onclick="return false;"
-                                            style="pointer-events: none; background-color: gray; cursor: not-allowed;">
-                                            Eliminar
-                                        </a>
-                                        <a class="btn btn-sucess" href="" onclick="return false;"
-                                            style="pointer-events: none; background-color: gray; cursor: not-allowed;">
-                                            Finalizar
-                                        </a>
-                                    @endif
                                 </th>
                                 </tr>
                             @endforeach
