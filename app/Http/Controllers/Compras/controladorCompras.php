@@ -172,12 +172,12 @@ class controladorCompras extends Controller
 
         // Suma total de costos para el mes actual
         $mesActual = now()->format('m');
-        $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->sum('costo_total');
+        $anioActual = now()->year;
+        $totalRequisicionesMes = Orden_compras::whereMonth('created_at', $mesActual)->whereYear('created_at', $anioActual)->sum('costo_total');
         $totalPagosMes = Pagos_Fijos::whereMonth('created_at', $mesActual)->sum('costo_total');
         $TotalMes = $totalRequisicionesMes + $totalPagosMes;
 
         // Suma total de costos para el año en curso
-        $anioActual = now()->year;
         $totalRequisicionesAnio =Orden_compras::whereYear('created_at', $anioActual)->sum('costo_total');
         $totalPagosAnio= Pagos_Fijos::whereYear('created_at', $anioActual)->sum('costo_total');
         $TotalAnio = $totalRequisicionesAnio + $totalPagosAnio;
