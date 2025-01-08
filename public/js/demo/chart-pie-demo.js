@@ -1,4 +1,5 @@
 function generarGraficarea(mantenimiento, almacen, logistica, rh, gestoria, contabilidad, sistemas, ventas) {
+
   // Asegúrate de que mantenimiento sea un número flotante válido
   mantenimiento = parseFloat(mantenimiento) || 0; // Convierte a flotante o usa 0 como valor predeterminado
   almacen = parseFloat(almacen) || 0; // Convierte a flotante o usa 0 como valor predeterminado
@@ -17,7 +18,7 @@ function generarGraficarea(mantenimiento, almacen, logistica, rh, gestoria, cont
       labels: ["Mantenimiento", "Almacen", "Logistica", "RH", "Gestoría", "Contabilidad", "Sistemas", "Ventas"],
       datasets: [{
         data: [
-          mantenimiento, // El valor flotante corregido
+          mantenimiento, 
           almacen,
           logistica,
           rh,

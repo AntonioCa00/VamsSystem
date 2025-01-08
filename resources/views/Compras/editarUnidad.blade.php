@@ -64,6 +64,10 @@
                     <label for="exampleFormControlInput1">Numero de permiso:</label>
                     <input name="permiso" type="text" value="{{$unidad->n_de_permiso}}" class="form-control" placeholder="Numero de permiso del vehiculo"required>
                 </div>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Kilometraje:</label>
+                    <input name="kilometraje" type="text" value="{{$unidad->kilometraje}}" class="form-control" placeholder="Ingresa el kilometraje actual de la unidad"required>
+                </div>
                 <button type="submit" class="btn btn-primary">Editar unidad</button>
             </form>
         </div>
