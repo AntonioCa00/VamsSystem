@@ -67,6 +67,10 @@
                         <input name="permiso" type="text" class="form-control"
                             placeholder="Numero de permiso del vehiculo"required>
                     </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Kilometraje:</label>
+                        <input name="kilometraje" type="text" class="form-control" placeholder="Ingresa el kilometraje actual de la unidad"required>
+                    </div>
                     <button type="submit" class="btn btn-primary">Registrar unidad</button>
                 </form>
             </div>

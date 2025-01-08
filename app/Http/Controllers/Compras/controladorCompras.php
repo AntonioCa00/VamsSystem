@@ -186,49 +186,49 @@ class controladorCompras extends Controller
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Mantenimiento')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $almacen = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Almacen')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $logistica = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Logistica')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $rh = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','RH')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $gestoria = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Gestoria')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $contabilidad = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Contabilidad')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $sistemas = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Sistemas')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         $ventas = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
         ->where('users.departamento','Ventas')
-        ->whereMonth('Orden_compras.created_at', $mesActual)->sum('costo_total');
+        ->whereMonth('Orden_compras.created_at', $mesActual)->whereYear('Orden_compras.created_at',$anio_actual)->sum('costo_total');
 
         // Conteo de requisiciones completas
         $completas = Requisiciones::join('users','requisiciones.usuario_id','=','users.id')
@@ -358,6 +358,7 @@ class controladorCompras extends Controller
         "n_de_serie"=>$req->input('serie'),
         "n_de_permiso"=>$req->input('permiso'),
         "estatus"=>"1",
+        "kilometraje"=>$req->input('kilometraje'),
         "created_at"=>Carbon::now(),
         "updated_at"=>Carbon::now()
         ]);
@@ -410,6 +411,7 @@ class controladorCompras extends Controller
             "n_de_serie"=>$req->input('serie'),
             "n_de_permiso"=>$req->input('permiso'),
             "estatus"=>"1",
+            "kilometraje"=>$req->input('kilometraje'),
             "updated_at"=>Carbon::now()
         ]);
 
