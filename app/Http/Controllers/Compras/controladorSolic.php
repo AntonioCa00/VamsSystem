@@ -1047,6 +1047,7 @@ class controladorSolic extends Controller
         // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
         $unidades = Unidades::where('estatus','1')
         ->where('id_unidad','!=','1')
+        ->where('id_unidad','!=','2')
         ->where('estado','Activo')->orderBy('id_unidad','asc')
         ->get();
 

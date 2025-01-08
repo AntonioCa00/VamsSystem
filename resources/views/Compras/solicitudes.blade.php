@@ -177,6 +177,7 @@
                                             data-target="#Finalizar{{ $solicitud->id_requisicion }}">
                                             Finalizar
                                         </a>
+                                        @else    
                                         <!-- Logout Modal-->
                                         <div class="modal fade" id="Finalizar{{ $solicitud->id_requisicion }}"
                                             tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -209,7 +210,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    @else
+                                    
                                         <a class="btn btn-primary" href="" onclick="return false;"
                                             style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                             Eliminar

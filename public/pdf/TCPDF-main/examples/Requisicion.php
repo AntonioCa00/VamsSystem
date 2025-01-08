@@ -39,7 +39,7 @@ $pdf->Cell(0, 10, "Requisicion n° " . $idcorresponde, 0, 1, 'L'); // Print the 
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Requsicion de insumos ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Requisicion de insumos ", 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
