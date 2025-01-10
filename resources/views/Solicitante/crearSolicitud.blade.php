@@ -133,10 +133,14 @@
         <div class="card-footer py-3">
             <form action="{{route('requisicion')}}" method="post">
                 @csrf
-                @if(session('departamento') === "Mantenimiento")
+                @if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
-                        <select name="unidad" class="form-control" required>
+                        @if (session('departamento') === "Mantenimiento")
+                            <select name="unidad" class="form-control" required>
+                        @else
+                            <select name="unidad" class="form-control">
+                        @endif 
                             <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
                             @foreach ($unidades as $unidad)
                             @if ($unidad->tipo != "AUTOMOVIL")
@@ -150,7 +154,11 @@
 
                     <div class="form-group">
                         <label for="exampleFormControlInput1">TIPO DE MANTENIMIENTO:</label>
-                        <select name="mantenimiento" class="form-control" required>
+                        @if (session('departamento') === "Mantenimiento")
+                            <select name="mantenimiento" class="form-control" required>
+                        @else
+                            <select name="mantenimiento" class="form-control">
+                        @endif 
                             <option value="" selected disabled>Selecciona el tipo de mantenimiento al que pertenece la requisición</option>
                             <option value="Preventivo">Preventivo</option>
                             <option value="Correctivo">Correctivo</option>

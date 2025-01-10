@@ -149,6 +149,22 @@
                 </li>
             @endif
 
+            @if (session('departamento') == "Almacen")
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Modulo de mantenimiento
+            </div>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{route('manteniento')}}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Mantenimiento</span></a>
+                </li>
+            @endif
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 

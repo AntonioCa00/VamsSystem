@@ -406,7 +406,7 @@ class controladorSolic extends Controller
 
             $Nota = $req->input('Notas');
 
-            $mantenimiento = $req->input('mantenimiento');
+            $mantenimiento = $req->input('  ');
 
             // Definición y serialización de los datos del empleado
             $datosEmpleado[] = [
@@ -427,7 +427,7 @@ class controladorSolic extends Controller
             }
 
             // Validar si la requisicion esta relacionada a una unidad, en caso de pertenecer a mantenimiento
-            if(session('departamento') === "Mantenimiento"){
+            if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen"){
                 $unidad = Unidades::where('id_unidad',$req->input('unidad'))->first();
             }else{
                 $unidad = null;
@@ -448,7 +448,7 @@ class controladorSolic extends Controller
             ob_end_clean();
 
             // Creación de la nueva requisición en la base de datos validando el departamento para así agregar o ignorar unidad
-            if(session('departamento') === "Mantenimiento"){
+            if(session('departamento') === "Mantenimiento" || session("departamento") === "Almacen"){
                 DB::table('requisiciones')->insert([
                     "id_requisicion"=>$idcorresponde,
                     "usuario_id"=>session('loginId'),
