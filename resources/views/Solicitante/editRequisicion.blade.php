@@ -82,6 +82,7 @@
                                                 <label>Descripcion:</label>
                                                 <input type="text" class="form-control" name="editDescripcion" value="{{ $articulo->descripcion}}">
                                             </div>
+                                            <button type="submit" class="btn btn-primary"> Editar articulo</button>
                                         </form>
                                     </div>
                                 </div>
