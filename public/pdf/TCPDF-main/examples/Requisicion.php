@@ -155,7 +155,7 @@ $pdf->Cell(0, 7, '   Solicitante Requisicion              Encargado área (Requi
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'requisicion_' . $idcorresponde . '.pdf';
 
-$rutaDescarga = 'C:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
-//$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+//$rutaDescarga = 'C:/laragon/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
+$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/requisiciones/' . $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');

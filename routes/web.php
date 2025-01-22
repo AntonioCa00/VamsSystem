@@ -135,6 +135,11 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('proveedores/GtArea',[controladorGtArea::class,'tableProveedores'])->name('proveedoresDir');
         Route::get('edit-proveedorD/{id}',[controladorGtArea::class,'editProveedor'])->name('editProveedorDir');
         Route::get('almacen/GtArea', [controladorGtArea::class, 'tableRefaccion'])->name('refaccionesDir');
+        Route::get('requisiciones/GtArea',[controladorGtArea::class,'tableRequisicion'])->name('requisicionesDir');
+        Route::get('solicitud/GtArea/form', [controladorGtArea::class, 'createSolicitud'])->name('createSolicitudDir');
+        Route::get('solicitud/edit/Dir/{id}',[controladorGtArea::class,'editReq'])->name('editReqDir');
+        Route::get('pagosF/GtArea',[controladorGtArea::class,'tablePagosFijos'])->name('pagosFDir');
+        Route::get('pagos/GtArea/form',[controladorGtArea::class,'createPago'])->name('crearPagosDir');
         Route::get('solicitudes/GtArea',[controladorGtArea::class,'tableSolicitud'])->name('solicitudesDir');
         Route::get('pagos/GtArea',[controladorGtArea::class,'tablePagos'])->name('pagosDir');
         Route::get('aprobar/articulos/{id}',[controladorGtArea::class,'aprobarArt'])->name('aprobarArt');
@@ -149,6 +154,22 @@ Route::middleware(['authcheck'])->group(function () {
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 
         //RUTAS GERENTES DE AREA
+        Route::post('array-solicitud/Dir',[controladorGtArea::class,'ArraySolicitud'])->name('arraySoliDir');
+        Route::post('edit-array/Dir/{index}',[controladorGtArea::class,'editArray'])->name('editArrayDir');
+        Route::delete('delete-array/Dir/{index}',[controladorGtArea::class,'deleteArray'])->name('eliminarElementoDir');
+        Route::post('requisicion/Dir', [controladorGtArea::class, 'requisicion'])->name('requisicionDir');
+        Route::put('update-solici/Dir/{id}',[controladorGtArea::class,'updateSolicitud'])->name('updateSolicitudDir');
+        Route::post('create-articulo/Dir/{id}',[controladorGtArea::class,'createArt'])->name('createArtDir');
+        Route::put('update-articulo/Dir/{id}',[controladorGtArea::class,'updateArt'])->name('updateArtDir');
+        Route::delete('delete-Articulo/Dir/{id}/{rid}',[controladorGtArea::class,'deleteArt'])->name('deleteArtDir');
+        Route::post('servicio',[controladorGtArea::class,'createServicio'])->name('createServicio');
+        Route::put('edit-servicio/{id}',[controladorGtArea::class,'editServicio'])->name('editServicio');
+        Route::delete('delete-servicio/{id}',[controladorGtArea::class,'deleteServicio'])->name('deleteServicio');
+        Route::post('pago',[controladorGtArea::class,'insertPago'])->name('createPago');
+        Route::put('update-pago/{id}',[controladorGtArea::class,'updatePago'])->name('updatePago');
+        Route::post('servicio/Dir',[controladorGtArea::class,'createServicio'])->name('createServicioDir');
+        Route::post('pago/dir',[controladorGtArea::class,'insertPago'])->name('createPagoDir');
+        Route::put('update-pago/Dir/{id}',[controladorGtArea::class,'updatePago'])->name('updatePagoDir');
         Route::put('update-proveedorD/{id}',[controladorGtArea::class,'updateProveedor'])->name('updateProveedorDir');
         Route::put('delete-proveedorD/{id}',[controladorGtArea::class,'deleteProveedor'])->name('deleteProveedorDir');
         Route::put('deleteReq/{id}',[controladorGtArea::class, 'deleteReq'])->name('deleteReq');
@@ -163,7 +184,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('rechazaFinanzas/{id}/{sid}',[controladorGtArea::class,'rechazarFin'])->name('rechazaFin');
         Route::delete('delete-cotizacion/{id}/{rid}',[controladorGtArea::class,'deleteCotiza'])->name('deleteCotizacion');
         Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
-        Route::put('delete-pago/{id}',[controladorGtArea::class,'deletePago'])->name('deletePago');
+        Route::put('delete-pago/Dir/{id}',[controladorGtArea::class,'deletePagos'])->name('deletePagoDir');
         Route::put('finalizarCompra/{id}',[controladorGtArea::class,'finalizarC'])->name('FinalizarC');
 
     });
