@@ -57,19 +57,40 @@
                     <span>Sistema de informacion</span></a>
             </li>
 
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Mis Solicitudes
+            </div>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('requisicionesDir')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Solicitudes</span></a>
+            </li>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{{route('pagosFDir')}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Pagos Fijos</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Consultar
+                Consultas Generales
             </div>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('solicitudesDir')}}">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Solicitudes</span></a>
+                    <span>Requisiciones</span></a>
             </li>
 
             @if (session('departamento') === "Finanzas" && session('rol') === "Gerente Area")
