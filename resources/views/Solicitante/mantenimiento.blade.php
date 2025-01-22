@@ -100,7 +100,7 @@
             <!-- Page Heading -->
             <div class="row">
                 @php
-                    // Ordenar la colección de unidades por el porcentaje de porcentaje (porcentaje)
+                    // Ordenar la colección de unidades por el porcentaje de mantenimiento
                     $unidadesOrdenadas = $unidades->sortBy('porcentaje')->values()->all();
                 @endphp
 
