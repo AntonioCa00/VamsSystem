@@ -38,16 +38,15 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID orden:</th>
-                            <th>Comprador:</th>
+                            <th>ID orden:</th>                    
                             <th>Requisicion:</th>
                             <th>Proveedor:</th>
                             <th>Costo total:</th>
                             <th>Orden de compra</th>
-                            <th>Fecha de creacion:</th>
+                            <th>Fecha de creacion:</th> 
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -55,7 +54,6 @@
                         @foreach ($ordenes as $orden)
                         <tr>
                             <th>{{$orden->id_orden}}</th>
-                            <th>{{$orden->nombres}}</th>
                             <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->proveedor}}</th>
                             <th>${{$orden->costo_total}}</th>
@@ -66,7 +64,7 @@
                             </th>
                             <th>{{$orden->created_at}}</th>
                             <th>
-                                @if($orden->estadoComp === null)
+                                @if($orden->comprobante_pago === null)
                                     <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
                                         Registrar pago
                                     </a>
