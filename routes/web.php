@@ -262,7 +262,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::delete('delete-servicio/{id}',[controladorSolic::class,'deleteServicio'])->name('deleteServicio');
         Route::post('pago',[controladorSolic::class,'insertPago'])->name('createPago');
         Route::put('update-pago/{id}',[controladorSolic::class,'updatePago'])->name('updatePago');
-        // Route::delete('delete-pago/{id}',[controladorSolic::class,'deletePago'])->name('deletePago');
+        Route::delete('delete-pago/{id}',[controladorSolic::class,'deletePago'])->name('deletePago');
         Route::post('array-solicitudAlm',[controladorSolic::class,'ArraySolicitudAlm'])->name('arraySoliAlm');
         Route::delete('delete-arraySolicAl/{index}',[controladorSolic::class,'deleteArraySolAlm'])->name('eliminarElementoSolic');
         Route::post('requisicion', [controladorSolic::class, 'requisicion'])->name('requisicion');
