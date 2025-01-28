@@ -86,14 +86,7 @@
                 Consultas Generales
             </div>
 
-            <!-- Nav Item - Tables -->
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('solicitudesDir')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Requisiciones</span></a>
-            </li>
-
-            @if (session('departamento') === "Finanzas" && session('rol') === "Gerente Area")
+            @if (session('departamento') === "Gestoría" && session('rol') === "Gerente Area")
                 <li class="nav-item active">
                     <a class="nav-link" href="{{route('pagosDir')}}">
                         <i class="fas fa-fw fa-table"></i>
