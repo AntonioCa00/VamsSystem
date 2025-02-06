@@ -72,10 +72,10 @@
                             <th>{{$orden->id_requisicion}}</th>
                             <th>{{$orden->proveedor}}</th>
                             <th>${{$orden->costo_total}}</th>
-                            @if ($orden->estado === "Pagado")
-                                <th class="text-success">{{$orden->estado}}</th>
+                            @if (empty($orden->comprobante_pago))
+                                <th class="text-warning">Pendiente</th>                                
                             @else
-                                <th class="text-warning">Pendiente</th>
+                                <th class="text-success">Pagado</th>
                             @endif
                             <th class="text-center">
                                 <a href="{{ asset($orden->ordPDF) }}" target="_blank">
