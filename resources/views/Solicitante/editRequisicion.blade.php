@@ -185,7 +185,7 @@
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary"><h6>Crear formato de requisición</h6></button>
+                    <button type="submit" class="btn btn-primary"><h6>Editar formato de requisición</h6></button>
                 </div>
             </form>
         </div>
