@@ -1474,7 +1474,7 @@ class controladorCompras extends Controller
     public function tableOrdenesCompras(){
         /* Obtención de información detallada para cada orden en donde se analizan la evolucion de la peticiónn
            desde requisición hasta orden de compra*/
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -3142,6 +3142,139 @@ class controladorCompras extends Controller
         $writer = new Xlsx($spreadsheet);
 
         // Crear una respuesta de transmisión para la descarga
+        $response = new StreamedResponse(function() use ($writer) {
+            $writer->save('php://output');
+        });
+
+        // Configurar los encabezados de la respuesta
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
+    }
+
+    public function reporteProveedores (){
+
+        $proveedores = Proveedores::where('estatus',1)
+        ->orderBY('nombre','asc')
+        ->get();
+
+        // Crear un nuevo archivo Excel para los datos de las requisiciones 
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Asignar nombre a la hoja
+        $sheet->setTitle('Proveedores');
+
+        // Añadir borde grueso a la celda A1
+        $sheet->getStyle('A1:G1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Combinar celdas de la fila 1 para el título
+        $sheet->mergeCells('A1:G1');
+        $sheet->setCellValue('A1', 'REPORTE GENERAL DE PROVEEDORES');
+
+        // Establecer el color de fondo de la celda A1
+        $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF69B0F3');
+
+        // Centrar los encabezados y ajustar tamaño de letra
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setSize(16);
+
+        // Escribir encabezados en el archivo Excel
+        $sheet->setCellValue('A3', 'Folio');
+        $sheet->setCellValue('B3', 'Nombre');
+        $sheet->setCellValue('C3', 'Telefono');
+        $sheet->setCellValue('D3', 'Telefono 2');
+        $sheet->setCellValue('E3', 'Contacto');
+        $sheet->setCellValue('F3', 'Direccion');
+        $sheet->setCellValue('G3', 'Domicilio');
+        $sheet->setCellValue('H3', 'RFC');
+        $sheet->setCellValue('I3', 'Correo');
+        $sheet->setCellValue('J3', 'CIF');
+        $sheet->setCellValue('K3', 'Banco');
+        $sheet->setCellValue('L3', 'Cuenta');
+        $sheet->setCellValue('M3', 'Clabe');
+        $sheet->setCellValue('N3', 'Estado Cuenta');
+
+        // Establecer el color de fondo de los encabezados
+        $sheet->getStyle('A3:N3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+
+        // Centrar los encabezados
+        $sheet->getStyle('A3:N3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Añadir bordes gruesos a los encabezados
+        $sheet->getStyle('A3:N3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+
+        // Ajustar el tamaño de las columnas al contenido
+        foreach (range('A', 'N') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Escribir los datos de los proveedores en el archivo Excel
+        // Comienza a escribir los datos desde la fila 4
+        $rowNumber = 4;
+
+        // Para cada proveedor que obtenga la consulta
+        foreach ($proveedores as $proveedor) {
+
+            $sheet->setCellValue('A' . $rowNumber, $proveedor->id_proveedor);
+            $sheet->setCellValue('B' . $rowNumber, $proveedor->nombre);
+            $sheet->setCellValue('C' . $rowNumber, $proveedor->telefono);
+            $sheet->setCellValue('D' . $rowNumber, $proveedor->telefono2);
+            $sheet->setCellValue('E' . $rowNumber, $proveedor->contacto);
+            $sheet->setCellValue('F' . $rowNumber, $proveedor->direccion);
+            $sheet->setCellValue('G' . $rowNumber, $proveedor->domicilio);
+            $sheet->setCellValue('H' . $rowNumber, $proveedor->rfc);
+            $sheet->setCellValue('I' . $rowNumber, $proveedor->correo);
+            if (empty($proveedor->CIF)) {
+                $sheet->setCellValue('J' . $rowNumber, $proveedor->CIF);
+            } else {
+                // Detectar protocolo (http o https)
+                $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                
+                // Construir URL base del sitio
+                $rutaBase = $protocolo . '://' . $_SERVER['HTTP_HOST'] . '/';
+                
+                // Construir URL del archivo CIF
+                $rutaArchivoCIF = $rutaBase . ltrim($proveedor->CIF, '/');
+            
+                // Insertar la fórmula con hipervínculo en Excel
+                $sheet->setCellValue('J' . $rowNumber, '=HYPERLINK("' . $rutaArchivoCIF . '", "Ver archivo")');
+            }
+            
+            $sheet->setCellValue('K' . $rowNumber, $proveedor->banco);
+            $sheet->setCellValue('L' . $rowNumber, $proveedor->n_cuenta);
+            $sheet->setCellValue('M' . $rowNumber, $proveedor->n_cuenta_clabe);
+            
+            if (empty($proveedor->estado_cuenta)) {
+                $sheet->setCellValue('N' . $rowNumber, $proveedor->estado_cuenta);
+            } else {
+                // Construir URL del archivo Estado de Cuenta
+                $rutaArchivoEC = $rutaBase . ltrim($proveedor->estado_cuenta, '/');
+                
+                // Insertar la fórmula con hipervínculo en Excel
+                $sheet->setCellValue('N' . $rowNumber, '=HYPERLINK("' . $rutaArchivoEC . '", "Ver archivo")');
+            }            
+
+            // Centrar las celdas de la fila actual
+            $sheet->getStyle('A' . $rowNumber . ':N' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Añadir bordes normales a las celdas de los datos
+            $sheet->getStyle('A' . $rowNumber . ':N' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            // Aumenta en 1 la fila.
+            $rowNumber++;
+        }
+        
+        // Aplicar filtros a la tabla de datos
+        $sheet->setAutoFilter('A3:N3');
+
+        // Configurar el archivo para descarga
+        $fileName = 'reporte_proveedores_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        //Crear una respuesta de transmisión para la descarga
         $response = new StreamedResponse(function() use ($writer) {
             $writer->save('php://output');
         });

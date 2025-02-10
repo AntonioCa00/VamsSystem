@@ -54,8 +54,8 @@
                     <thead>
                         <tr>
                             <th>ID orden:</th>
-                            <th>Comprador:</th>
                             <th>Requisicion:</th>
+                            <th>Folio Req:</th>
                             <th>Proveedor:</th>
                             <th>Costo total:</th>
                             <th>Estado:</th>
@@ -68,8 +68,13 @@
                         @foreach ($ordenes as $orden)
                         <tr>
                             <th>{{$orden->id_orden}}</th>
-                            <th>{{$orden->nombres}}</th>
-                            <th>{{$orden->id_requisicion}}</th>
+                            <th class="text-center"> 
+                                <a href="{{ asset($orden->reqPDF) }}" target="_blank">
+                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
+                                </a>
+                            </th>
+                            <th>{{$orden->id_requisicion}}                                 
+                            </th>
                             <th>{{$orden->proveedor}}</th>
                             <th>${{$orden->costo_total}}</th>
                             @if (empty($orden->comprobante_pago))
