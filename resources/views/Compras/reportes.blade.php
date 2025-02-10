@@ -84,18 +84,11 @@
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="Finanzas"
-                                                                        id="flexCheckFinanzas" checked>
-                                                                    <label class="form-check-label" for="flexCheckFinanzas">
-                                                                        Finanzas
-                                                                    </label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="RH"
-                                                                        id="flexCheckRH" checked>
-                                                                    <label class="form-check-label" for="flexCheckRH">
-                                                                        RH
+                                                                        name="departamentos[]" value="Almacen"
+                                                                        id="flexCheckAlmacen" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="flexCheckMantenimiento">
+                                                                        Almacen
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check">
@@ -106,7 +99,47 @@
                                                                         for="flexCheckLogistica">
                                                                         Logistica
                                                                     </label>
-                                                                </div>
+                                                                </div>                                                                
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="RH"
+                                                                        id="flexCheckRH" checked>
+                                                                    <label class="form-check-label" for="flexCheckRH">
+                                                                        RH
+                                                                    </label>
+                                                                </div>      
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Gestoria"
+                                                                        id="flexCheckGestoria" checked>
+                                                                    <label class="form-check-label" for="flexCheckGestoria">
+                                                                        Gestoría
+                                                                    </label>
+                                                                </div>          
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Contabilidad"
+                                                                        id="flexCheckContabilidad" checked>
+                                                                    <label class="form-check-label" for="flexCheckContabilidad">
+                                                                        Contabilidad
+                                                                    </label>
+                                                                </div>  
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Sistemas"
+                                                                        id="flexCheckSistemas" checked>
+                                                                    <label class="form-check-label" for="flexCheckSistemas">
+                                                                        Sistemas
+                                                                    </label>
+                                                                </div>       
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Ventas"
+                                                                        id="flexCheckVentas" checked>
+                                                                    <label class="form-check-label" for="flexCheckVentas">
+                                                                        Ventas
+                                                                    </label>
+                                                                </div>                                         
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="submit" class="btn btn-primary">Crear
@@ -205,19 +238,11 @@
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="Finanzas"
-                                                                        id="flexCheckFinanzas" checked>
+                                                                        name="departamentos[]" value="Almacen"
+                                                                        id="flexCheckAlmacen" checked>
                                                                     <label class="form-check-label"
-                                                                        for="flexCheckFinanzas">
-                                                                        Finanzas
-                                                                    </label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="RH"
-                                                                        id="flexCheckRH" checked>
-                                                                    <label class="form-check-label" for="flexCheckRH">
-                                                                        RH
+                                                                        for="flexCheckMantenimiento">
+                                                                        Almacen
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check">
@@ -228,7 +253,47 @@
                                                                         for="flexCheckLogistica">
                                                                         Logistica
                                                                     </label>
-                                                                </div>
+                                                                </div>                                                                
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="RH"
+                                                                        id="flexCheckRH" checked>
+                                                                    <label class="form-check-label" for="flexCheckRH">
+                                                                        RH
+                                                                    </label>
+                                                                </div>      
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Gestoria"
+                                                                        id="flexCheckGestoria" checked>
+                                                                    <label class="form-check-label" for="flexCheckGestoria">
+                                                                        Gestoría
+                                                                    </label>
+                                                                </div>          
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Contabilidad"
+                                                                        id="flexCheckContabilidad" checked>
+                                                                    <label class="form-check-label" for="flexCheckContabilidad">
+                                                                        Contabilidad
+                                                                    </label>
+                                                                </div>  
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Sistemas"
+                                                                        id="flexCheckSistemas" checked>
+                                                                    <label class="form-check-label" for="flexCheckSistemas">
+                                                                        Sistemas
+                                                                    </label>
+                                                                </div>       
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Ventas"
+                                                                        id="flexCheckVentas" checked>
+                                                                    <label class="form-check-label" for="flexCheckVentas">
+                                                                        Ventas
+                                                                    </label>
+                                                                </div>                                         
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="submit" class="btn btn-primary">Crear
@@ -326,18 +391,11 @@
                                                                 </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="Finanzas"
-                                                                        id="flexCheckFinanzas" checked>
-                                                                    <label class="form-check-label" for="flexCheckFinanzas">
-                                                                        Finanzas
-                                                                    </label>
-                                                                </div>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        name="departamentos[]" value="RH"
-                                                                        id="flexCheckRH" checked>
-                                                                    <label class="form-check-label" for="flexCheckRH">
-                                                                        RH
+                                                                        name="departamentos[]" value="Almacen"
+                                                                        id="flexCheckAlmacen" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="flexCheckMantenimiento">
+                                                                        Almacen
                                                                     </label>
                                                                 </div>
                                                                 <div class="form-check">
@@ -348,7 +406,47 @@
                                                                         for="flexCheckLogistica">
                                                                         Logistica
                                                                     </label>
-                                                                </div>
+                                                                </div>                                                                
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="RH"
+                                                                        id="flexCheckRH" checked>
+                                                                    <label class="form-check-label" for="flexCheckRH">
+                                                                        RH
+                                                                    </label>
+                                                                </div>      
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Gestoria"
+                                                                        id="flexCheckGestoria" checked>
+                                                                    <label class="form-check-label" for="flexCheckGestoria">
+                                                                        Gestoría
+                                                                    </label>
+                                                                </div>          
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Contabilidad"
+                                                                        id="flexCheckContabilidad" checked>
+                                                                    <label class="form-check-label" for="flexCheckContabilidad">
+                                                                        Contabilidad
+                                                                    </label>
+                                                                </div>  
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Sistemas"
+                                                                        id="flexCheckSistemas" checked>
+                                                                    <label class="form-check-label" for="flexCheckSistemas">
+                                                                        Sistemas
+                                                                    </label>
+                                                                </div>       
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Ventas"
+                                                                        id="flexCheckVentas" checked>
+                                                                    <label class="form-check-label" for="flexCheckVentas">
+                                                                        Ventas
+                                                                    </label>
+                                                                </div>                                         
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="submit" class="btn btn-primary">Crear
