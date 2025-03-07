@@ -165,10 +165,17 @@
                                             Subir cotizaciones
                                         </a>                                        
                                     @elseif ($solicitud->estado === 'Validado' || $solicitud->estado === 'Comprado')
+                                        @if ($solicitud->estado === 'Comprado')
+                                        <a class="btn btn-danger" style="background-color:#ea7346"
+                                            href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
+                                            Orden de compra
+                                        </a>
+                                        @else 
                                         <a class="btn btn-info"
                                             href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
                                             Orden de compra
-                                        </a>                                        
+                                        </a>
+                                        @endif                                                                                
                                     @else    
                                         <a class="btn btn-primary" href="" onclick="return false;"
                                             style="pointer-events: none; background-color: gray; cursor: not-allowed;">
