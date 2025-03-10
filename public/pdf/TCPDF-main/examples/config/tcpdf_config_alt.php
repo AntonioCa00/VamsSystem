@@ -60,7 +60,7 @@ define ('PDF_HEADER_TITLE', 'Formato');
 /**
  * Header description string.
  */
-define ('PDF_HEADER_STRING', "Transportes Vams \nTel: 4422301371 / 4461479575");
+define ('PDF_HEADER_STRING', "Transportes Vams \nTel: 4424674286 / 4422532162");
 
 /**
  * Document unit of measure [pt=point, mm=millimeter, cm=centimeter, in=inch].
