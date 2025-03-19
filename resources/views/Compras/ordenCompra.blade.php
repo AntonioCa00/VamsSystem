@@ -36,7 +36,8 @@
                         </tbody>
                     </table>
                 </div>
-
+                <form action="{{ route('createOrdenCompra', ['cid' => $cotizacion->id_cotizacion, 'rid' => $id]) }}" method="post">
+                    @csrf
                 <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered" width="100%" cellspacing="0">
@@ -48,37 +49,40 @@
                                 <th>Descripcion:</th>
                                 <th>Precio unitario SIN IVA:</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <form
-                                action="{{ route('createOrdenCompra', ['cid' => $cotizacion->id_cotizacion, 'rid' => $id]) }}"
-                                method="post">
-                                @csrf
+                        </thead>                                                    
+                                <tbody>                                
                                 @foreach ($articulos as $index => $articulo)
                                     <tr>
                                         <th>
-                                            <input checked type="checkbox" name="articulos_seleccionados[]"
-                                                value="{{ $articulo->id }}" onchange="toggleRequired(this)">
+                                            <input checked type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="{{ $articulo->id }}" onchange="calcularTotal()">
                                         </th>
-                                        <th><input type="hidden" name="articulos[{{ $articulo->id }}][id]"
-                                                value="{{ $articulo->id }}">
-                                            <input class="form-control" type="text"
-                                                name="articulos[{{ $articulo->id }}][cantidad]"
-                                                value="{{ $articulo->cantidad }}" required>
+                                        <th>
+                                            <input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
+                                            <input class="form-control cantidad" type="number" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required oninput="calcularTotal()">
                                         </th>
-                                        <th><input class="form-control" type="text"
-                                                name="articulos[{{ $articulo->id }}][unidad]"
-                                                value="{{ $articulo->unidad }}" required></th>
-                                        <th><input class="form-control" type="text"
-                                                name="articulos[{{ $articulo->id }}][descripcion]"
-                                                value="{{ $articulo->descripcion }}" required></th>
-
-                                        <th><input class="form-control" type="number"
-                                                name="articulos[{{ $articulo->id }}][precio_unitario]"
-                                                value="{{ $articulo->precio }}" step="0.01"></th>
+                                        <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
+                                        <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
+                                        <th>
+                                            <input class="form-control precio_unitario" type="number" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" step="0.01" oninput="calcularTotal()">
+                                        </th>
                                     </tr>
                                 @endforeach
+                            </form>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="3"></th>
+                                <th class="text-end">Descuento:</th>
+                                <th>
+                                    <input name="descuento" type="number" id="descuento" class="form-control" step="0.01" value="0" oninput="calcularTotal()">
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="3"></th>
+                                <th class="text-end">Total:</th>
+                                <th id="total_monto">0.00</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <div class="card-footer py-3">
@@ -179,5 +183,33 @@
                 datosBancarios.style.display = 'none';
             }
         });
+
+        function calcularTotal() {
+        let total = 0;
+        
+        document.querySelectorAll("tbody tr").forEach(row => {
+            let checkbox = row.querySelector(".check-articulo");
+            if (checkbox && checkbox.checked) { 
+                let cantidad = parseFloat(row.querySelector(".cantidad")?.value) || 0;
+                let precio = parseFloat(row.querySelector(".precio_unitario")?.value) || 0;
+                total += cantidad * precio;
+            }
+        });
+
+        // Obtener descuento
+        let descuento = parseFloat(document.getElementById("descuento").value) || 0;
+        let totalConDescuento = total - descuento;
+
+        // Evitar que el total sea negativo
+        if (totalConDescuento < 0) {
+            totalConDescuento = 0;
+        }
+
+        document.getElementById("total_monto").textContent = totalConDescuento.toFixed(2);
+    }
+
+    // Ejecutar el cálculo cuando la página cargue
+    document.addEventListener("DOMContentLoaded", calcularTotal);
+
     </script>
 @endsection

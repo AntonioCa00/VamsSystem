@@ -50,15 +50,41 @@
     <!-- Page Heading -->
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">PROVEEDORES</h1>
-        <a href="{{route('reportesProveedores')}}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> EXPORTAR PROVEEDORES </a>
+        <h1 class="h3 mb-0 text-gray-800">PROVEEDORES</h1>        
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
             <a class="btn btn-primary" href="{{route('createProveedor')}}">Registrar nuevo proveedor</a>
+            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm" data-toggle="modal" data-target="#RegistrarProv">
+                <img src="{{ asset('img/excel.png') }}" alt=""> IMPORTAR PROVEEDORES DESDE EXCEL
+            </a>
+
+            <div class="modal fade" id="RegistrarProv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">ACTUALIZACION MASIVA DE PROVEEDORES</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">X</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('actualizarProveedores') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    {!!method_field('PUT')!!}   
+                                    <div class="form-group">
+                                        <label>Favor de cargar excel con datos a actualizar:</label>
+                                        <input name="file" type="file" class="form-control">
+                                    </div>
+                                <button type="submit" class="btn btn-primary">Actualizar informacion</button>
+                            </form>
+                        </div>                                                
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
