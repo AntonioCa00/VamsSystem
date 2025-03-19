@@ -123,6 +123,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::post('reportesCompras/OrdenesCompra',[controladorCompras::class,'reporteOrd'])->name('reportesOrdCom');
         Route::post('reportesCompras/OrdenesPago',[controladorCompras::class,'reportePagos'])->name('reportesPagos');
         Route::get('reportesCompras/Proveedores',[controladorCompras::class, 'reporteProveedores'])->name('reportesProveedores');
+        Route::put('actuaizar/proveedores',[controladorCompras::class,'actualizarProveedores'])->name('actualizarProveedores');
     });
 
     Route::middleware(['check.role:Gerente Area'])->group(function () {

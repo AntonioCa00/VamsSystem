@@ -393,7 +393,6 @@ class controladorGerenciaGen extends Controller
       Redirige al usuario a la lista de encargados con una sesión flash que indica que el nuevo usuario ha sido creado exitosamente.
     */
     public function insertUser(Request $req){
-
         $departamento = null;
          // Validación condicional basada en el valor del campo 'rol'
         if ($req->rol === "Gerente Area") {
@@ -407,9 +406,9 @@ class controladorGerenciaGen extends Controller
             // Concatenar los departamentos en una sola cadena
             $departamento = implode(' / ', $departamentos);
 
-        } elseif($req->rol === "Otro") {
+        } elseif($req->rol === "General") {
             $req->validate([
-                'departamentos' => 'required|array|size:1', // Permite uno o más departamentos
+                'departamentos' => 'required|array|size:1', //Permite que solo contenga un departamento
             ],
             [
                 'departamentos.size' => 'El solicitante solo puede pertenecer a un departamento.',

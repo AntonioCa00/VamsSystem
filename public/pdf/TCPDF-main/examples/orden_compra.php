@@ -99,6 +99,14 @@ foreach ($articulosFiltrados as &$articulo) {
 // Calcular el total de montos totales dentro del bucle
 $totalGastos = array_sum(array_column($articulosFiltrados, 'monto_total'));
 
+if (!empty($descuento)){
+    $totalGastos = $totalGastos - $descuento;
+    // Imprimir el total de montos totales
+    $pdf->SetFont('helvetica', 'B', 11);
+    $pdf->Cell(155, 10, 'Descuento:', 1);
+    $pdf->Cell(25, 10, '$' . number_format($descuento , 2), 1, 1, 'R');
+}
+
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
 $pdf->Cell(155, 10, 'Subtotal (IVA/ Retenciones no incluido):', 1);

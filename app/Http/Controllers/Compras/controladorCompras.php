@@ -28,6 +28,8 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
 //-------DATABASE---------
 use DB;
 //-------FECHAS-----------
@@ -1263,14 +1265,81 @@ class controladorCompras extends Controller
         return back()->with('delete','delete');
     }
 
+    public function actualizarProveedores (Request $req){
+
+        ini_set('memory_limit','512M');
+
+        // Validar que se haya subido un archivo
+        $req->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        // Obtener el archivo subido
+        $file = $req->file('file');
+
+        // Cargar el archivo Excel
+        $spreadsheet = IOFactory::load($file);
+
+        // Obtener la primera hoja del archivo
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Obtener el número total de filas y columnas
+        $highestRow = $sheet->getHighestDataRow();
+        $highestColumn = $sheet->getHighestDataColumn();
+
+        // Iterar sobre las filas y leer los datos
+        for ($row = 4; $row <= $highestRow; $row++) {
+            // Crear el array con los datos del registro actual
+            $registro = [
+                'id_proveedor' => $sheet->getCell('A' . $row)->getValue(),
+                'nombre' => strtoupper($sheet->getCell('B' . $row)->getValue()),
+                'telefono' => $sheet->getCell('C' . $row)->getValue(),
+                'telefono2' => $sheet->getCell('D' . $row)->getValue(),
+                'contacto' => strtoupper($sheet->getCell('E' . $row)->getValue()),
+                'direccion' => strtoupper($sheet->getCell('F' . $row)->getValue()),
+                'domicilio' => strtoupper($sheet->getCell('G' . $row)->getValue()),
+                'rfc' => strtoupper($sheet->getCell('H' . $row)->getValue()),
+                'correo' => strtoupper($sheet->getCell('I' . $row)->getValue()),
+                'banco' => strtoupper($sheet->getCell('K' . $row)->getValue()),
+                'n_cuenta' => $sheet->getCell('L' . $row)->getValue(),
+                'n_cuenta_clabe' => $sheet->getCell('M' . $row)->getValue(),
+            ];
+
+            // Verificar si el proveedor existe en la base de datos
+            $proveedor = proveedores::where('id_proveedor', $registro['id_proveedor'])->first();
+
+            if ($proveedor) {
+                // Actualizar el registro existente
+                proveedores::where('id_proveedor', $registro['id_proveedor'])->update([
+                    "nombre" => $registro['nombre'],
+                    "telefono" => $registro['telefono'],
+                    "telefono2" => $registro['telefono2'],
+                    "contacto" => $registro['contacto'],
+                    "direccion" => $registro['direccion'],
+                    "domicilio" => $registro['domicilio'],
+                    "rfc" => $registro['rfc'],
+                    "correo" => $registro['correo'],
+                    "banco" => $registro['banco'],
+                    "n_cuenta" => $registro['n_cuenta'],
+                    "n_cuenta_clabe" => $registro['n_cuenta_clabe'],
+                ]);
+            } else {
+                // Crear un nuevo registro
+                proveedores::create($registro);
+            }
+        }
+
+        // Redirigir al usuario a la página anterior con una notificación de éxito
+        return back()->with('importado', 'importado');
+    }
+
     /*
       TODO: Prepara y muestra la información necesaria para generar una orden de compra.
 
       Este método recupera la cotización seleccionada para una requisición específica, identificada por su ID,
       incluyendo los documentos PDF asociados tanto a la cotización como a la requisición. También recopila los
       artículos asociados a la requisición que están pendientes (estatus 0) y un listado de proveedores activos
-      (estatus 1), facilitando la selección de un proveedor en el proceso de creación de la orden de compra.
-
+      (estatus 1), facilitando la xselección de un proveedor en el proceso de creación de la orden de compra.
 
       @param  int  $id  El ID de la requisición para la cual se preparará la orden de compra.
 
@@ -1317,6 +1386,8 @@ class controladorCompras extends Controller
             $Nota = $req->input('Notas');
             $proveedor = $req->input('Proveedor');
             $articulos = $req->input('articulos');
+
+            $descuento = $req->input('descuento');
 
             $condiciones = $req->input('condiciones');
 
