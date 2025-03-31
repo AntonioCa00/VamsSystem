@@ -1647,7 +1647,7 @@ class controladorGtArea extends Controller
 
             // Validar el archivo subido
             $req->validate([
-                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+                'comprobante_pago' => 'required|file|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
 
             // Se genera el nombre y ruta para guardar PDF
@@ -1756,7 +1756,7 @@ class controladorGtArea extends Controller
 
             // Validar el archivo subido
             $req->validate([
-                'comprobante_pago' => 'required|file|mimes:pdf|max:10240', // Ajusta el tamaño máximo según tus necesidades
+                'comprobante_pago' => 'required|file|max:10240', // Ajusta el tamaño máximo según tus necesidades
             ]);
 
             // Se genera el nombre y ruta para guardar PDF

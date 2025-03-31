@@ -125,7 +125,7 @@ $pdf->Cell(60, 7, $servicio->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
 $pdf->SetFont('helvetica', '', 10);
-if ((!empty($servicio->banco) && !empty($servicio->n_cuenta) && !empty($servicio->n_cuenta_clabe))){
+if (!empty($servicio->banco) && (!empty($servicio->n_cuenta) || !empty($servicio->n_cuenta_clabe))){
     $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
     $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
     $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);

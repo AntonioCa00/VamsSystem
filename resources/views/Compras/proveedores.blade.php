@@ -57,7 +57,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
             <a class="btn btn-primary" href="{{route('createProveedor')}}">Registrar nuevo proveedor</a>
-            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm" data-toggle="modal" data-target="#RegistrarProv">
+            <a onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;" href="#" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm" data-toggle="modal" data-target="#RegistrarProv">
                 <img src="{{ asset('img/excel.png') }}" alt=""> IMPORTAR PROVEEDORES DESDE EXCEL
             </a>
 
