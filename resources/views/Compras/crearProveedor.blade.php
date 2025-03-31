@@ -40,10 +40,24 @@
                 <form action="{{ route('insertProveedor') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="exampleFormControlInput1">Nombre y/o razón social de la empresa:<span
+                        <label for="exampleFormControlInput1">Razón social de la empresa:<span
                                 style="color: red;">*</span></label>
                         <input name="nombre" type="text" class="form-control"
                             placeholder="Nombre y/o razón social de la empresa proveedor"value="{{ old('nombre') }}"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Razón social de la empresa:<span
+                                style="color: red;">*</span></label>
+                        <input name="regimen" type="text" class="form-control"
+                            placeholder="Regimen Fiscal del proveedor"value="{{ old('regimen') }}"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Sobrenombre:<span
+                                style="color: red;">*</span></label>
+                        <input name="sobrenombre" type="text" class="form-control"
+                            placeholder="Sobrenombre de la empresa proveedor"value="{{ old('sobrenombre') }}"
                             required>
                     </div>
                     <div class="form-group">
