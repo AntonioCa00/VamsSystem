@@ -57,7 +57,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
             <a class="btn btn-primary" href="{{route('createProveedor')}}">Registrar nuevo proveedor</a>
-            <a onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;" href="#" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm" data-toggle="modal" data-target="#RegistrarProv">
+            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm" data-toggle="modal" data-target="#RegistrarProv">
                 <img src="{{ asset('img/excel.png') }}" alt=""> IMPORTAR PROVEEDORES DESDE EXCEL
             </a>
 
@@ -123,6 +123,14 @@
                                                     <div class="form-group">
                                                         <label for="exampleFormControlInput1">Nombre y/o razón social de la empresa:</span></label>
                                                         <h6>{{$proveedor->nombre}}</h6>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="exampleFormControlInput1">Regimen fiscal:</span></label>
+                                                        <h6>{{$proveedor->regimen_fiscal}}</h6>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="exampleFormControlInput1">Sobrenombre:</span></label>
+                                                        <h6>{{$proveedor->sobrenombre}}</h6>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="exampleFormControlInput1">Telefono:</label>

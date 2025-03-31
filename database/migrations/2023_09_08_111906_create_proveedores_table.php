@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('proveedores', function (Blueprint $table) {
             $table->bigIncrements('id_proveedor');
             $table->string('nombre');
+            $table->string('regimen_fiscal');
+            $table->string('sobrenombre');
             $table->string('telefono');
             $table->string('telefono2');
             $table->string('contacto');
@@ -24,7 +26,7 @@ return new class extends Migration
             $table->string('CIF');
             $table->string('banco')->nullable();
             $table->string('n_cuenta')->nullable();
-            $table->string('n_cuenra_clabe')->nullable();
+            $table->string('n_cuenta_clabe')->nullable();
             $table->string('estado_cuenta')->nullable();
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();

@@ -1007,6 +1007,8 @@ class controladorCompras extends Controller
             // Creación del registro de proveedor en la base de datos
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1037,6 +1039,8 @@ class controladorCompras extends Controller
             // Creación del registro de proveedor en la base de datos
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1064,6 +1068,8 @@ class controladorCompras extends Controller
             // Creación del registro de proveedor en la base de datos
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1084,6 +1090,8 @@ class controladorCompras extends Controller
             // Creación del registro de proveedor en la base de datos
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1159,6 +1167,8 @@ class controladorCompras extends Controller
             //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
             Proveedores::where('id_proveedor',$id)->update([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1186,6 +1196,8 @@ class controladorCompras extends Controller
             //Insertar el archivo CIF y datos actualizados
             Proveedores::where('id_proveedor',$id)->update([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1209,6 +1221,8 @@ class controladorCompras extends Controller
             //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
             Proveedores::where('id_proveedor',$id)->update([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1225,6 +1239,8 @@ class controladorCompras extends Controller
            //Insertar el archivo CIF y modificaciones junto con los datos bancarios modificados
            Proveedores::where('id_proveedor',$id)->update([
                 "nombre"=>$req->input('nombre'),
+                "regimen_fiscal"=>$req->input('regimen'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1293,16 +1309,18 @@ class controladorCompras extends Controller
             $registro = [
                 'id_proveedor' => $sheet->getCell('A' . $row)->getValue(),
                 'nombre' => strtoupper($sheet->getCell('B' . $row)->getValue()),
-                'telefono' => $sheet->getCell('C' . $row)->getValue(),
-                'telefono2' => $sheet->getCell('D' . $row)->getValue(),
-                'contacto' => strtoupper($sheet->getCell('E' . $row)->getValue()),
-                'direccion' => strtoupper($sheet->getCell('F' . $row)->getValue()),
-                'domicilio' => strtoupper($sheet->getCell('G' . $row)->getValue()),
-                'rfc' => strtoupper($sheet->getCell('H' . $row)->getValue()),
-                'correo' => strtoupper($sheet->getCell('I' . $row)->getValue()),
-                'banco' => strtoupper($sheet->getCell('K' . $row)->getValue()),
-                'n_cuenta' => $sheet->getCell('L' . $row)->getValue(),
-                'n_cuenta_clabe' => $sheet->getCell('M' . $row)->getValue(),
+                'regimen_fiscal' => strtoupper($sheet->getCell('C' . $row)->getValue()),
+                'sobrenombre'=> strtoupper($sheet->getCell('D' . $row)->getValue()),
+                'telefono' => $sheet->getCell('E' . $row)->getValue(),
+                'telefono2' => $sheet->getCell('F' . $row)->getValue(),
+                'contacto' => strtoupper($sheet->getCell('G' . $row)->getValue()),
+                'direccion' => strtoupper($sheet->getCell('H' . $row)->getValue()),
+                'domicilio' => strtoupper($sheet->getCell('I' . $row)->getValue()),
+                'rfc' => strtoupper($sheet->getCell('J' . $row)->getValue()),
+                'correo' => strtoupper($sheet->getCell('K' . $row)->getValue()),
+                'banco' => strtoupper($sheet->getCell('M' . $row)->getValue()),
+                'n_cuenta' => $sheet->getCell('N' . $row)->getValue(),
+                'n_cuenta_clabe' => $sheet->getCell('O' . $row)->getValue(),
             ];
 
             // Verificar si el proveedor existe en la base de datos
@@ -1312,6 +1330,8 @@ class controladorCompras extends Controller
                 // Actualizar el registro existente
                 proveedores::where('id_proveedor', $registro['id_proveedor'])->update([
                     "nombre" => $registro['nombre'],
+                    "regimen_fiscal" => $registro['regimen_fiscal'],
+                    "sobrenombre" => $registro['sobrenombre'],
                     "telefono" => $registro['telefono'],
                     "telefono2" => $registro['telefono2'],
                     "contacto" => $registro['contacto'],
