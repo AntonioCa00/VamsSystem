@@ -2568,6 +2568,23 @@ class controladorCompras extends Controller
             $sheet2->setCellValue('K' . $rowNumber, $orden->nombre);
             $sheet2->setCellValue('L' . $rowNumber, $orden->costo_total);
             $sheet2->setCellValue('M' . $rowNumber, $unidad);
+
+            // Aplicar formato de color a toda la fila
+            $sheet2->getStyle('A' . $rowNumber . ':M' . $rowNumber)->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => $colorFondo],
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ],
+                ],
+            ]);
+
             // Centrar las celdas de la fila actual
             $sheet2->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -2741,6 +2758,23 @@ class controladorCompras extends Controller
             $sheet3->setCellValue('K' . $rowNumber, $orden->nombre);
             $sheet3->setCellValue('L' . $rowNumber, $orden->costo_total);
             $sheet3->setCellValue('M' . $rowNumber, $unidad);
+
+            // Aplicar formato de color a toda la fila
+            $sheet3->getStyle('A' . $rowNumber . ':M' . $rowNumber)->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => $colorFondo],
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ],
+                ],
+            ]);
+
 
             // Centrar las celdas de la fila actual
             $sheet3->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
