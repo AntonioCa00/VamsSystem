@@ -2133,78 +2133,63 @@ class controladorCompras extends Controller
         // Obtener los departamentos seleccionados (si se ha implementado)
         $departamentos = $req->input('departamentos', []);
 
-        $queryTotal = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
-               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
-               'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
-               'proveedores.nombre')
-               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
-               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
-               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
-               ->where(function ($query) use ($fInicio, $fFin) {
-                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
-               })
-               ->where(function ($query) {
-                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
-                   $query->where(function ($query) {
-                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
-                             ->whereNotNull('orden_compras.id_orden');
-                   })
-                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
-                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
-               });
+        $queryTotal = Requisiciones::select(
+            'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
+            'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
+            'users.nombres', 'users.apellidoP', 'users.departamento',
+            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'proveedores.nombre'
+        )
+        ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+        ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+        ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+        ->whereBetween('requisiciones.created_at', [$fInicio, $fFin])
+        ->where(function ($query) {
+            $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                  ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+        });    
 
         // Construir la consulta con INNER JOIN
-        $queryPendientes = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
-               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
-               'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
-               'proveedores.nombre')
-               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
-               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
-               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
-               ->where(function ($query) use ($fInicio, $fFin) {
-                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
-               })
-               ->where(function ($query) {
-                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
-                   $query->where(function ($query) {
-                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
-                             ->whereNotNull('orden_compras.id_orden');
-                   })
-                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
-                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
-               })
-            ->where('orden_compras.estado', '=', null);
+        $queryPendientes = Requisiciones::select(
+            'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
+            'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
+            'users.nombres', 'users.apellidoP', 'users.departamento',
+            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'proveedores.nombre'
+        )
+        ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+        ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+        ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+        ->whereBetween('requisiciones.created_at', [$fInicio, $fFin])
+        ->where(function ($query) {
+            $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                  ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+        })
+        ->whereNull('orden_compras.estado');     
 
         // Construir la consulta con INNER JOIN
-        $queryPagados = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
-               'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
-               'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
-               'proveedores.nombre')
-               ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
-               ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
-               ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
-               ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
-               ->where(function ($query) use ($fInicio, $fFin) {
-                   $query->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
-               })
-               ->where(function ($query) {
-                   // Mostrar requisiciones con orden de compra si están en estado "Finalizado" o "Comprado"
-                   $query->where(function ($query) {
-                       $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
-                             ->whereNotNull('orden_compras.id_orden');
-                   })
-                   // O mostrar requisiciones que no tienen orden de compra si están en otros estados
-                   ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
-               })
-            ->where('orden_compras.estado', '=', 'Pagado');
+        $queryPagados = Requisiciones::select(
+            'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
+            'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
+            'users.nombres', 'users.apellidoP', 'users.departamento',
+            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'proveedores.nombre'
+        )
+        ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
+        ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
+        ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
+        ->whereBetween('requisiciones.created_at', [$fInicio, $fFin])
+        ->where(function ($query) {
+            $query->whereIn('requisiciones.estado', ['Finalizado', 'Comprado'])
+                  ->orWhereNotIn('requisiciones.estado', ['Finalizado', 'Comprado']);
+        })
+        ->where('orden_compras.estado', '=', 'Pagado');    
 
             // Si se han seleccionado departamentos, filtrar por ellos
         if (!empty($departamentos)) {
@@ -2356,7 +2341,7 @@ class controladorCompras extends Controller
             if (empty($orden->id_orden) || empty($orden->nombre) || empty($orden->costo_total) || empty($orden->fecha_orden)){
                 //
                 $numeroSemanaOrden = ''; // Cambia el texto a "Sin semana"
-                if ($orden->estadorReq != "Finalizado") {
+                if ($orden->estadoReq != "Finalizado") {
                     $colorFondo = 'FFFFFF'; // Fondo blanco si los datos están completos    
                 } else {
                     $colorFondo = 'FFFF99'; // Código de color amarillo pastel            
