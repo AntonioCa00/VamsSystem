@@ -2274,21 +2274,22 @@ class controladorCompras extends Controller
         $sheet->setCellValue('G7', 'Requisicion');
         $sheet->setCellValue('H7', 'Estado');
         $sheet->setCellValue('I7', 'orden compra');
-        $sheet->setCellValue('J7', 'Proveedor');
-        $sheet->setCellValue('K7', 'Costo');
-        $sheet->setCellValue('L7', 'Unidad');
+        $sheet->setCellValue('J7', 'Semana Pago');
+        $sheet->setCellValue('K7', 'Proveedor');
+        $sheet->setCellValue('L7', 'Costo');
+        $sheet->setCellValue('M7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A7:M7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A7:M7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A7:M7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'L') as $columnID) {
+         foreach (range('A', 'M') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -2315,6 +2316,12 @@ class controladorCompras extends Controller
 
             // Obtener el número de semana
             $numeroSemana = $fechaConvert->weekOfYear;
+
+            // Convertir la fecha de la orden a un objeto Carbon
+            $fechaOrden = Carbon::parse($orden->fecha_orden);
+
+            // Obtener el número de semana
+            $numeroSemanaOrden = $fechaOrden->weekOfYear;
 
             // Obtener la fecha del lunes y viernes de esa semana
             $lunes = $fechaConvert->startOfWeek(Carbon::MONDAY)->day;
@@ -2345,6 +2352,19 @@ class controladorCompras extends Controller
                 }
             }
 
+            // Validar si los datos están vacíos
+            if (empty($orden->id_orden) || empty($orden->nombre) || empty($orden->costo_total) || empty($orden->fecha_orden)){
+                //
+                $numeroSemanaOrden = ''; // Cambia el texto a "Sin semana"
+                if ($orden->estadorReq != "Finalizado") {
+                    $colorFondo = 'FFFFFF'; // Fondo blanco si los datos están completos    
+                } else {
+                    $colorFondo = 'FFFF99'; // Código de color amarillo pastel            
+                }                
+            } else {
+                $colorFondo = 'FFFFFF'; // Fondo blanco si los datos están completos
+            }
+
             $sheet->setCellValue('A' . $rowNumber, $nombreMes);
             $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
             $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
@@ -2354,35 +2374,52 @@ class controladorCompras extends Controller
             $sheet->setCellValue('G' . $rowNumber, $orden->id_requisicion);
             $sheet->setCellValue('H' . $rowNumber, $orden->estadoReq);
             $sheet->setCellValue('I' . $rowNumber, $orden->id_orden);
-            $sheet->setCellValue('J' . $rowNumber, $orden->nombre);
-            $sheet->setCellValue('K' . $rowNumber, $orden->costo_total);
-            $sheet->setCellValue('L' . $rowNumber, $unidad);
+            $sheet->setCellValue('J' . $rowNumber, $numeroSemanaOrden);
+            $sheet->setCellValue('K' . $rowNumber, $orden->nombre);
+            $sheet->setCellValue('L' . $rowNumber, $orden->costo_total);
+            $sheet->setCellValue('M' . $rowNumber, $unidad);
+
+            // Aplicar formato de color a toda la fila
+            $sheet->getStyle('A' . $rowNumber . ':M' . $rowNumber)->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => $colorFondo],
+                ],
+                'alignment' => [
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ],
+                ],
+            ]);
 
             // Centrar las celdas de la fila actual
-            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
         // Aplicar filtros a la tabla de datos
-        $sheet->setAutoFilter('A7:L7');
+        $sheet->setAutoFilter('A7:M7');
 
         // Calcular y escribir el total de los costos al final de la tabla
-        $sheet->setCellValue('J' . $rowNumber, 'Total');
-        $sheet->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
+        $sheet->setCellValue('K' . $rowNumber, 'Total');
+        $sheet->setCellValue('L' . $rowNumber, '=SUM(L8:L' . ($rowNumber - 1) . ')');
 
         // Formato de moneda para la celda del total
-        $sheet->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet->getStyle('L' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Centrar las celdas del total
-        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('K' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a la fila del total
-        $sheet->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('K' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Crear segunda hoja
         $sheet2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pendientes');
@@ -2437,21 +2474,22 @@ class controladorCompras extends Controller
         $sheet2->setCellValue('G7', 'Requisicion');
         $sheet2->setCellValue('H7', 'Estado');
         $sheet2->setCellValue('I7', 'orden compra');
-        $sheet2->setCellValue('J7', 'Proveedor');
-        $sheet2->setCellValue('K7', 'Costo');
-        $sheet2->setCellValue('L7', 'Unidad');
+        $sheet2->setCellValue('J7', 'Semana Pago');
+        $sheet2->setCellValue('K7', 'Proveedor');
+        $sheet2->setCellValue('L7', 'Costo');
+        $sheet2->setCellValue('M7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet2->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet2->getStyle('A7:M7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet2->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('A7:M7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet2->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet2->getStyle('A7:M7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'L') as $columnID) {
+         foreach (range('A', 'M') as $columnID) {
             $sheet2->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -2476,6 +2514,12 @@ class controladorCompras extends Controller
             // Convertir la fecha a un objeto Carbon
             $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
 
+            // Convertir la fecha de la orden a un objeto Carbon
+            $fechaOrden = Carbon::parse($orden->fecha_orden);
+
+            // Obtener el número de semana
+            $numeroSemanaOrden = $fechaOrden->weekOfYear;
+            
             // Obtener el mes en texto (en español)
             $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
 
@@ -2520,35 +2564,35 @@ class controladorCompras extends Controller
             $sheet2->setCellValue('G' . $rowNumber, $orden->id_requisicion);
             $sheet2->setCellValue('H' . $rowNumber, $orden->estadoReq);
             $sheet2->setCellValue('I' . $rowNumber, $orden->id_orden);
-            $sheet2->setCellValue('J' . $rowNumber, $orden->nombre);
-            $sheet2->setCellValue('K' . $rowNumber, $orden->costo_total);
-            $sheet2->setCellValue('L' . $rowNumber, $unidad);
-
+            $sheet2->setCellValue('J' . $rowNumber, $numeroSemanaOrden);
+            $sheet2->setCellValue('K' . $rowNumber, $orden->nombre);
+            $sheet2->setCellValue('L' . $rowNumber, $orden->costo_total);
+            $sheet2->setCellValue('M' . $rowNumber, $unidad);
             // Centrar las celdas de la fila actual
-            $sheet2->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet2->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet2->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet2->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
         // Aplicar filtros a la tabla de datos
-        $sheet2->setAutoFilter('A7:L7');
+        $sheet2->setAutoFilter('A7:M7');
 
         // Calcular y escribir el total de los costos al final de la tabla
-        $sheet2->setCellValue('J' . $rowNumber, 'Total');
-        $sheet2->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
+        $sheet2->setCellValue('K' . $rowNumber, 'Total');
+        $sheet2->setCellValue('L' . $rowNumber, '=SUM(L8:L' . ($rowNumber - 1) . ')');
 
         // Formato de moneda para la celda del total
-        $sheet2->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet2->getStyle('L' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Centrar las celdas del total
-        $sheet2->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet2->getStyle('K' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a la fila del total
-        $sheet2->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet2->getStyle('K' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Crear segunda hoja
         $sheet3 = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Ordenes Pagadas');
@@ -2603,21 +2647,22 @@ class controladorCompras extends Controller
         $sheet3->setCellValue('G7', 'Requisicion');
         $sheet3->setCellValue('H7', 'Estado');
         $sheet3->setCellValue('I7', 'orden compra');
-        $sheet3->setCellValue('J7', 'Proveedor');
-        $sheet3->setCellValue('K7', 'Costo');
-        $sheet3->setCellValue('L7', 'Unidad');
+        $sheet3->setCellValue('J7', 'Semana Pago');
+        $sheet3->setCellValue('K7', 'Proveedor');
+        $sheet3->setCellValue('L7', 'Costo');
+        $sheet3->setCellValue('M7', 'Unidad');
 
         // Establecer el color de fondo de los encabezados
-        $sheet3->getStyle('A7:L7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet3->getStyle('A7:M7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet3->getStyle('A7:L7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet3->getStyle('A7:M7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet3->getStyle('A7:L7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet3->getStyle('A7:M7')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
          // Ajustar el tamaño de las columnas al contenido
-         foreach (range('A', 'L') as $columnID) {
+         foreach (range('A', 'M') as $columnID) {
             $sheet3->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -2641,6 +2686,12 @@ class controladorCompras extends Controller
 
             // Convertir la fecha a un objeto Carbon
             $fechaConvert = Carbon::createFromFormat('d/m/Y', $fechaInput);
+
+            // Convertir la fecha de la orden a un objeto Carbon
+            $fechaOrden = Carbon::parse($orden->fecha_orden);
+
+            // Obtener el número de semana
+            $numeroSemanaOrden = $fechaOrden->weekOfYear;            
 
             // Obtener el mes en texto (en español)
             $nombreMes = $fechaConvert->locale('es')->translatedFormat('F');
@@ -2686,35 +2737,36 @@ class controladorCompras extends Controller
             $sheet3->setCellValue('G' . $rowNumber, $orden->id_requisicion);
             $sheet3->setCellValue('H' . $rowNumber, $orden->estadoReq);
             $sheet3->setCellValue('I' . $rowNumber, $orden->id_orden);
-            $sheet3->setCellValue('J' . $rowNumber, $orden->nombre);
-            $sheet3->setCellValue('K' . $rowNumber, $orden->costo_total);
-            $sheet3->setCellValue('L' . $rowNumber, $unidad);
+            $sheet3->setCellValue('J' . $rowNumber, $numeroSemanaOrden);
+            $sheet3->setCellValue('K' . $rowNumber, $orden->nombre);
+            $sheet3->setCellValue('L' . $rowNumber, $orden->costo_total);
+            $sheet3->setCellValue('M' . $rowNumber, $unidad);
 
             // Centrar las celdas de la fila actual
-            $sheet3->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet3->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet3->getStyle('A' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet3->getStyle('A' . $rowNumber . ':M' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // Aumenta en 1 la fila.
             $rowNumber++;
         }
 
         // Aplicar filtros a la tabla de datos
-        $sheet3->setAutoFilter('A7:L7');
+        $sheet3->setAutoFilter('A7:M7');
 
         // Calcular y escribir el total de los costos al final de la tabla
-        $sheet3->setCellValue('J' . $rowNumber, 'Total');
-        $sheet3->setCellValue('K' . $rowNumber, '=SUM(K8:K' . ($rowNumber - 1) . ')');
+        $sheet3->setCellValue('K' . $rowNumber, 'Total');
+        $sheet3->setCellValue('L' . $rowNumber, '=SUM(L8:L' . ($rowNumber - 1) . ')');
 
         // Formato de moneda para la celda del total
-        $sheet3->getStyle('K' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
+        $sheet3->getStyle('L' . $rowNumber)->getNumberFormat()->setFormatCode('$#,##0.00');
 
         // Centrar las celdas del total
-        $sheet3->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet3->getStyle('K' . $rowNumber . ':L' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a la fila del total
-        $sheet3->getStyle('J' . $rowNumber . ':K' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet3->getStyle('K' . $rowNumber . ':L' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         $spreadsheet->setActiveSheetIndex(0);
 
