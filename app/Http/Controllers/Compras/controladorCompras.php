@@ -1008,7 +1008,7 @@ class controladorCompras extends Controller
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "regimen_fiscal"=>$req->input('regimen'),
-                "sobrenombre"=>$req->input('sobrenombre'),
+                "sobrenombre"=>$req->input('Sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1040,7 +1040,7 @@ class controladorCompras extends Controller
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "regimen_fiscal"=>$req->input('regimen'),
-                "sobrenombre"=>$req->input('sobrenombre'),
+                "sobrenombre"=>$req->input('Sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1069,7 +1069,7 @@ class controladorCompras extends Controller
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "regimen_fiscal"=>$req->input('regimen'),
-                "sobrenombre"=>$req->input('sobrenombre'),
+                "sobrenombre"=>$req->input('Sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),
@@ -1091,7 +1091,7 @@ class controladorCompras extends Controller
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "regimen_fiscal"=>$req->input('regimen'),
-                "sobrenombre"=>$req->input('sobrenombre'),
+                "sobrenombre"=>$req->input('Sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),

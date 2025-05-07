@@ -406,7 +406,7 @@ class controladorSolic extends Controller
 
             $Nota = $req->input('Notas');
 
-            $mantenimiento = $req->input('  ');
+            $mantenimiento = $req->input('mantenimiento');
 
             // Definición y serialización de los datos del empleado
             $datosEmpleado[] = [
