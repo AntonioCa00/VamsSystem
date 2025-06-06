@@ -1704,6 +1704,29 @@ class controladorGtArea extends Controller
         return back()->with('eliminado','eliminado');
     }
 
+    public function deleteComprobantePago ($id){
+        // Recupera el pago fijo por su ID
+        $pago = Pagos_Fijos::where('id_pago',$id)->first();
+
+        // Verifica si el pago existe y tiene un comprobante de pago asociado
+        if ($pago && $pago->comprobante_pago) {
+            // Elimina el archivo del sistema de archivos
+            $fileToDelete = public_path($pago->comprobante_pago);
+            if (file_exists($fileToDelete)) {
+                unlink($fileToDelete);
+            }
+            // Actualiza el campo comprobante_pago a null en la base de datos
+            Pagos_Fijos::where('id_pago',$id)->update([
+                'comprobante_pago' => null,
+                'estado' => 'Solicitado', // Cambia el estado a "Solicitado" para permitir un nuevo registro
+                'updated_at' => Carbon::now()
+            ]);
+        }
+
+        // Redirige al usuario a la página anterior con un mensaje de confirmación
+        return back()->with('eliminadoC','eliminadoC');
+    }
+
     /*
       Recupera y muestra una lista detallada de todas las órdenes de compra activas que no están asociadas a requisiciones rechazadas.
 

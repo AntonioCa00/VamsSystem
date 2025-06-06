@@ -683,7 +683,7 @@ class controladorCompras extends Controller
         if($N_articulos == 0){
             //Si no hay ningun articulo automaticamente se cambia el estatus a incompleta.
             Requisiciones::where('id_requisicion',$rid)->update([
-                "estado"=>"Rechazada",
+                "estado"=>"Rechazado",
                 "updated_at"=>Carbon::now(),
             ]);
         }

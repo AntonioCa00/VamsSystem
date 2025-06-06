@@ -188,6 +188,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('registrar-pago/{id}',[controladorGtArea::class,'registrarPago'])->name('registrarPago');
         Route::put('delete-pago/Dir/{id}',[controladorGtArea::class,'deletePagos'])->name('deletePagoDir');
         Route::put('finalizarCompra/{id}',[controladorGtArea::class,'finalizarC'])->name('FinalizarC');
+        Route::put('deleteComprobante-pago/{id}',[controladorGtArea::class,'deleteComprobantePago'])->name('deleteComprobantePago');
 
     });
 
