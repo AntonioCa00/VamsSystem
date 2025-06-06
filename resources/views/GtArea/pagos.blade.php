@@ -26,6 +26,18 @@
     </script> 
 @endif
 
+@if(session()->has('eliminadoC'))
+    <script type="text/javascript">          
+        Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Comprobante de pago eliminado   !',
+        showConfirmButton: false,
+        timer: 1000
+        })
+    </script> 
+@endif
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
@@ -135,9 +147,34 @@
                                         </div>
                                     </th>
                                 @else
-                                    <th>
-                                        <a href="#" class="btn btn-primary" onclick="return false;" style="pointer-events: none; background-color: gray; cursor: not-allowed;">Registrar pago</a>                                                                     
-                                    </th>                            
+                                    <th>                                        
+                                        <a class="btn btn-warning" href="#" data-toggle="modal" data-target="#EliminarPago{{$pago->id_pago}}">
+                                            Eliminar Comprobante
+                                        </a>
+                                        <!-- Logout Modal-->
+                                        <div class="modal fade" id="EliminarPago{{$pago->id_pago}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">¿Ha tomado una decisión?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">X</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">Selecciona confirmar para eliminar el comprobante de pago de esta orden de pago.</div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                        <form action="{{route('deleteComprobantePago',$pago->id_pago)}}" method="POST">
+                                                            @csrf
+                                                            {!!method_field('PUT')!!}    
+                                                            <button type="submit" class="btn btn-primary">confirmar</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
                                 @endif                                
                             </tr>
                         @endforeach                        
