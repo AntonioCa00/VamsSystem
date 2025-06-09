@@ -3346,30 +3346,32 @@ class controladorCompras extends Controller
         // Escribir encabezados en el archivo Excel
         $sheet->setCellValue('A3', 'Folio');
         $sheet->setCellValue('B3', 'Nombre');
-        $sheet->setCellValue('C3', 'Telefono');
-        $sheet->setCellValue('D3', 'Telefono 2');
-        $sheet->setCellValue('E3', 'Contacto');
-        $sheet->setCellValue('F3', 'Direccion');
-        $sheet->setCellValue('G3', 'Domicilio');
-        $sheet->setCellValue('H3', 'RFC');
-        $sheet->setCellValue('I3', 'Correo');
-        $sheet->setCellValue('J3', 'CIF');
-        $sheet->setCellValue('K3', 'Banco');
-        $sheet->setCellValue('L3', 'Cuenta');
-        $sheet->setCellValue('M3', 'Clabe');
-        $sheet->setCellValue('N3', 'Estado Cuenta');
+        $sheet->setCellValue('C3', 'Sobrenombre');
+        $sheet->setCellValue('D3', 'Regimen Fiscal');
+        $sheet->setCellValue('E3', 'Telefono');
+        $sheet->setCellValue('F3', 'Telefono 2');
+        $sheet->setCellValue('G3', 'Contacto');
+        $sheet->setCellValue('H3', 'Direccion');
+        $sheet->setCellValue('I3', 'Domicilio');
+        $sheet->setCellValue('J3', 'RFC');
+        $sheet->setCellValue('K3', 'Correo');
+        $sheet->setCellValue('L3', 'CIF');
+        $sheet->setCellValue('M3', 'Banco');
+        $sheet->setCellValue('N3', 'Cuenta');
+        $sheet->setCellValue('O3', 'Clabe');
+        $sheet->setCellValue('P3', 'Estado Cuenta');
 
         // Establecer el color de fondo de los encabezados
-        $sheet->getStyle('A3:N3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
+        $sheet->getStyle('A3:P3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF99C6F1');
 
         // Centrar los encabezados
-        $sheet->getStyle('A3:N3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A3:P3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Añadir bordes gruesos a los encabezados
-        $sheet->getStyle('A3:N3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
+        $sheet->getStyle('A3:P3')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THICK);
 
         // Ajustar el tamaño de las columnas al contenido
-        foreach (range('A', 'N') as $columnID) {
+        foreach (range('A', 'P') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -3382,15 +3384,17 @@ class controladorCompras extends Controller
 
             $sheet->setCellValue('A' . $rowNumber, $proveedor->id_proveedor);
             $sheet->setCellValue('B' . $rowNumber, $proveedor->nombre);
-            $sheet->setCellValue('C' . $rowNumber, $proveedor->telefono);
-            $sheet->setCellValue('D' . $rowNumber, $proveedor->telefono2);
-            $sheet->setCellValue('E' . $rowNumber, $proveedor->contacto);
-            $sheet->setCellValue('F' . $rowNumber, $proveedor->direccion);
-            $sheet->setCellValue('G' . $rowNumber, $proveedor->domicilio);
-            $sheet->setCellValue('H' . $rowNumber, $proveedor->rfc);
-            $sheet->setCellValue('I' . $rowNumber, $proveedor->correo);
+            $sheet->setCellValue('C' . $rowNumber, $proveedor->sobrenombre);
+            $sheet->setCellValue('D' . $rowNumber, $proveedor->regimen_fiscal);
+            $sheet->setCellValue('E' . $rowNumber, $proveedor->telefono);
+            $sheet->setCellValue('F' . $rowNumber, $proveedor->telefono2);
+            $sheet->setCellValue('G' . $rowNumber, $proveedor->contacto);
+            $sheet->setCellValue('H' . $rowNumber, $proveedor->direccion);
+            $sheet->setCellValue('I' . $rowNumber, $proveedor->domicilio);
+            $sheet->setCellValue('J' . $rowNumber, $proveedor->rfc);
+            $sheet->setCellValue('K' . $rowNumber, $proveedor->correo);
             if (empty($proveedor->CIF)) {
-                $sheet->setCellValue('J' . $rowNumber, $proveedor->CIF);
+                $sheet->setCellValue('L' . $rowNumber, $proveedor->CIF);
             } else {
                 // Detectar protocolo (http o https)
                 $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -3402,35 +3406,35 @@ class controladorCompras extends Controller
                 $rutaArchivoCIF = $rutaBase . ltrim($proveedor->CIF, '/');
             
                 // Insertar la fórmula con hipervínculo en Excel
-                $sheet->setCellValue('J' . $rowNumber, '=HYPERLINK("' . $rutaArchivoCIF . '", "Ver archivo")');
+                $sheet->setCellValue('L' . $rowNumber, '=HYPERLINK("' . $rutaArchivoCIF . '", "Ver archivo")');
             }
             
-            $sheet->setCellValue('K' . $rowNumber, $proveedor->banco);
-            $sheet->setCellValue('L' . $rowNumber, $proveedor->n_cuenta);
-            $sheet->setCellValue('M' . $rowNumber, $proveedor->n_cuenta_clabe);
+            $sheet->setCellValue('M' . $rowNumber, $proveedor->banco);
+            $sheet->setCellValue('N' . $rowNumber, $proveedor->n_cuenta);
+            $sheet->setCellValue('O' . $rowNumber, $proveedor->n_cuenta_clabe);
             
             if (empty($proveedor->estado_cuenta)) {
-                $sheet->setCellValue('N' . $rowNumber, $proveedor->estado_cuenta);
+                $sheet->setCellValue('P' . $rowNumber, $proveedor->estado_cuenta);
             } else {
                 // Construir URL del archivo Estado de Cuenta
                 $rutaArchivoEC = $rutaBase . ltrim($proveedor->estado_cuenta, '/');
                 
                 // Insertar la fórmula con hipervínculo en Excel
-                $sheet->setCellValue('N' . $rowNumber, '=HYPERLINK("' . $rutaArchivoEC . '", "Ver archivo")');
+                $sheet->setCellValue('P' . $rowNumber, '=HYPERLINK("' . $rutaArchivoEC . '", "Ver archivo")');
             }            
 
             // Centrar las celdas de la fila actual
-            $sheet->getStyle('A' . $rowNumber . ':N' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowNumber . ':P' . $rowNumber)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Añadir bordes normales a las celdas de los datos
-            $sheet->getStyle('A' . $rowNumber . ':N' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+            $sheet->getStyle('A' . $rowNumber . ':P' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
             // Aumenta en 1 la fila.
             $rowNumber++;
         }
         
         // Aplicar filtros a la tabla de datos
-        $sheet->setAutoFilter('A3:N3');
+        $sheet->setAutoFilter('A3:P3');
 
         // Configurar el archivo para descarga
         $fileName = 'reporte_proveedores_' . Carbon::now()->format('Ymd_His') . '.xlsx';
