@@ -27,6 +27,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!--Ciclo reiterativo para mostrar las unidades inactivas-->
                         @foreach ($unidades as $unidad)
                         <tr>
                             <th>{{$unidad->id_unidad}}</th>
@@ -36,10 +37,11 @@
                             <th>{{$unidad->marca}}</th>
                             <th>{{$unidad->modelo}}</th>
                             <th>
+                                <!-- Botón activador del modal de confirmación -->
                                 <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
                                     Activar
                                 </a>
-                                <!-- Activate Modal-->
+                                <!-- Modal de confirmación-->
                                 <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -53,6 +55,7 @@
                                             <div class="modal-body">Selecciona confirmar para activar esta unidad</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
+                                                <!-- Formulario para activar la unidad -->
                                                 <form action="{{route('activateUnidad',$unidad->id_unidad)}}" method="POST">
                                                     @csrf
                                                     {!!method_field('PUT')!!}    

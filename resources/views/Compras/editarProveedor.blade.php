@@ -2,6 +2,7 @@
 
 @section('Contenido')
 
+<!-- Mensaje de error al no encontrar el estado de cuenta -->
 @if ($errors->has('archivo_estadoCuenta'))
     <script type="text/javascript">          
         Swal.fire({
@@ -75,7 +76,7 @@
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Correo:<span style="color: red;">*</span></label>
                     <input name="correo" type="text" class="form-control" placeholder="Correo electronico de la empresa"  value="{{$proveedor->correo}}">
-                </div>                
+                </div>                            
                 <div class="form-group">
                     <label for="exampleFormControlInput1">CIF en formato PDF:<a href="{{ asset($proveedor->CIF) }}" target="_blank">
                         <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
@@ -98,12 +99,15 @@
                         <input name="n_cuenta_clabe" type="text" class="form-control" value="{{$proveedor->n_cuenta_clabe}}" placeholder="Numero de cuenta clabe al que se le efectua el pago a la empresa">
                     </div>
                     <div class="form-group">
+                        <!-- Verifica si el proveedor tiene un estado de cuenta cargado -->
                         @if (!empty($proveedor->estado_cuenta))
                             <label for="exampleFormControlInput1">Caratula del estado de cuenta del banco:<a href="{{ asset($proveedor->estado_cuenta) }}" target="_blank">
                                 <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                             </a></label>
+                        <!-- Si tiene un estado de cuenta, muestra el enlace para descargar -->
                         @else
                             <label for="exampleFormControlInput1">Caratula del estado de cuenta del banco:</label>
+                        <!-- Si no tiene un estado de cuenta, muestra un mensaje -->
                         @endif                        
                         <input name="archivo_estadoCuenta" type="file" class="form-control">
                     </div>

@@ -2,6 +2,7 @@
 
 @section('Contenido')
 
+<!-- Mensaje de exito al registrar una orden de pago -->
 @if(session()->has('pago'))
     <script type="text/javascript">
         Swal.fire({
@@ -14,6 +15,7 @@
     </script>
 @endif
 
+<!-- Mensaje de exito al editar una orden de pago -->
 @if(session()->has('editado'))
     <script type="text/javascript">
         Swal.fire({
@@ -26,6 +28,7 @@
     </script>
 @endif
 
+<!-- Mensaje de exito al editar un servicio -->
 @if(session()->has('servEditado'))
     <script type="text/javascript">
         Swal.fire({
@@ -37,7 +40,7 @@
         })
     </script>
 @endif
-
+<!-- Mensaje de exito al eliminar un servicio -->
 @if(session()->has('servDelete'))
     <script type="text/javascript">
         Swal.fire({
@@ -50,6 +53,7 @@
     </script>
 @endif
 
+<!-- Mensaje de exito al eliminar una orden de pago -->
 @if(session()->has('eliminado'))
     <script type="text/javascript">
         Swal.fire({
@@ -94,16 +98,17 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <!--Iterar sobre los servicios y crear una fila para cada uno-->
                                         @foreach ($servicios as $servicio)
                                         <tr>
                                             <th>{{$servicio->nombre_servicio}}</th>
                                             <th>{{$servicio->nombre}}</th>
                                             <th>
-                                                <!-- Asumiendo que cada botón de editar dentro de tu tabla tiene una clase `btn-editar` -->
+                                                <!-- Botón para editar un servicio de los que registro el usuario loggeado -->
                                                 <a class="btn btn-success btn-editar" href="#" data-toggle="modal" data-target="#editarServ{{$servicio->id_servicio}}">
                                                     Editar
                                                 </a>
-                                                <!-- Logout Modal-->
+                                                <!-- Modal de edición de servicio-->
                                                 <div class="modal fade" id="editarServ{{$servicio->id_servicio}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                                 aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -142,7 +147,7 @@
                                                 <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#eliminarServ{{$servicio->id_servicio}}">
                                                     Eliminar
                                                 </a>
-                                                <!-- Logout Modal-->
+                                                <!-- Modal Eliminar servicio creado-->
                                                 <div class="modal fade" id="eliminarServ{{$servicio->id_servicio}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                                 aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -176,6 +181,8 @@
                 </div>
             </div>
         </div>
+
+        <!--Tarjeta de pagos-->
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -191,10 +198,12 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!--Iterar sobre los pagos y crear una fila para cada uno-->
                         @foreach ($pagos as $pago)
                             <tr>
                                 <th>{{$pago->id_pago}}</th>
                                 <th>{{$pago->nombre_servicio}}</th>
+                                <!-- Verificar el estado del pago y aplicar estilos según corresponda -->
                                 @if ($pago->estado === "Pagado")
                                     <th class="font-weight-bold text-success">{{$pago->estado}}</th>
                                 @else

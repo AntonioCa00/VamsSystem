@@ -1,5 +1,6 @@
 @extends('plantillaAdm')
 
+<!-- Mensaje de éxito al agregar un servicio -->
 @section('Contenido')
     @if (session()->has('servicio'))
         <script type="text/javascript">
@@ -33,7 +34,7 @@
                                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">X</span>
                                     </button>
-                                </div>
+                                </div>                        
                                 <div class="modal-body">
                                     <form action="{{ route('createServicioC') }}" method="POST">
                                         @csrf
@@ -46,6 +47,7 @@
                                             <label for="exampleFormControlInput1">Proveedor:</label>
                                             <select name="proveedor" class="form-control" id="" required>
                                                 <option value="" disabled selected>Selecciona un proveedor...</option>
+                                                <!-- Iterar sobre los proveedores y crear una opción para cada uno -->
                                                 @foreach ($proveedores as $proveedor)
                                                     <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nombre }}
                                                     </option>
@@ -75,6 +77,7 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Importe a pagar:</label>
+                        <!-- Campo para ingresar el importe a pagar con validación de dos decimales -->
                         <input name="importe" type="number" class="form-control" placeholder="Importe a pagar" required
                             step="0.01" pattern="^\d+(\.\d{2})?$"
                             title="El importe debe ser un número con dos decimales. Ejemplo: 123.45">
