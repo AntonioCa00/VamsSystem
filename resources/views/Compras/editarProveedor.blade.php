@@ -37,14 +37,14 @@
                     <label for="exampleFormControlInput1">Razón social de la empresa:<span
                             style="color: red;">*</span></label>
                     <input name="regimen" type="text" class="form-control"
-                        placeholder="Regimen Fiscal del proveedor"value="{{ $proveedor->nombre}}"
+                        placeholder="Regimen Fiscal del proveedor"value="{{ $proveedor->regimen_fiscal }}"
                         required>
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Sobrenombre:<span
                             style="color: red;">*</span></label>
                     <input name="sobrenombre" type="text" class="form-control"
-                        placeholder="Sobrenombre de la empresa proveedor"value="{{ $proveedor->nombre }}"
+                        placeholder="Sobrenombre de la empresa proveedor"value="{{ $proveedor->sobrenombre }}"
                         required>
                 </div>
                 <div class="form-group">

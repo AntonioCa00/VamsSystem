@@ -147,6 +147,8 @@ $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 $pdf->Cell(180, 7, 'Nombre', 1, 1, 'C', 1);
 $pdf->MultiCell(180, 7, $datosProveedor->nombre, 1,1);
+$pdf->Cell(180, 7, 'Sobrenombre', 1, 1, 'C', 1);
+$pdf->MultiCell(180, 7, $datosProveedor->sobrenombre, 1,1);
 $pdf->Cell(180, 7, 'Correo(s):', 1, 1, 'C', 1);
 $pdf->MultiCell(180, 7, $datosProveedor->correo, 1,1);
 $pdf->Cell(35, 7, 'Telefono', 1, 0, 'C', 1);
