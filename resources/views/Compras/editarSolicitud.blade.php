@@ -2,6 +2,7 @@
 
 @section('Contenido')
 
+<!-- Mensaje de error al intentar crear una requisicion vacia -->
 @if(session()->has('vacio'))
     <script type="text/javascript">
         Swal.fire({
@@ -37,6 +38,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Iterar sobre los articulos de la requisicion -->
                         @foreach($articulos as $articulo)
                         <tr>
                             <th>{{ $articulo->cantidad }}</th>
@@ -95,6 +97,7 @@
             </div>
         </div>
         <div class="card-footer py-3 text-center">
+            <!-- Botón para aprobar la requisición -->
             <form action="{{route('aprobarCompras',$articulos[0]->requisicion_id)}}" method="post">
                 @csrf
                 {!!method_field('PUT')!!}

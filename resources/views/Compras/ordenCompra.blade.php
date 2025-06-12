@@ -22,11 +22,13 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <!-- Mostrar archivo de requisición -->
                                 <th class="text-center">
                                     <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
                                         <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                     </a>
                                 </th>
+                                <!-- Mostrar cotización validada -->
                                 <th class="text-center">
                                     <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
                                         <img class="imagen-container" src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
@@ -50,10 +52,12 @@
                                 <th>Precio unitario SIN IVA:</th>
                             </tr>
                         </thead>                                                    
-                                <tbody>                                
+                                <tbody id="tablaArticulos">        
+                                <!-- Iterar sobre los artículos que pertenecen a la requisición -->                        
                                 @foreach ($articulos as $index => $articulo)
                                     <tr>
                                         <th>
+                                            <!-- Checkbox para seleccionar el artículo -->
                                             <input checked type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="{{ $articulo->id }}" onchange="calcularTotal()">
                                         </th>
                                         <th>
@@ -70,13 +74,17 @@
                             </form>
                         </tbody>
                         <tfoot>
+                            <!-- Fila para ingresar el descuento -->
                             <tr>
-                                <th colspan="3"></th>
+                                <th colspan="3">
+                                    <a href="#" class="btn btn-primary" id="agregarFila"> +</a>
+                                </th>                                
                                 <th class="text-end">Descuento:</th>
                                 <th>
                                     <input name="descuento" type="number" id="descuento" class="form-control" step="0.01" value="0" oninput="calcularTotal()">
                                 </th>
                             </tr>
+                            <!-- Fila para el total -->
                             <tr>
                                 <th colspan="3"></th>
                                 <th class="text-end">Total:</th>
@@ -90,6 +98,7 @@
                         <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA</label>
                         <select name="Proveedor" id="proveedor" class="form-control" required>
                             <option value="" selected disabled>Selecciona el proveedor de este articulo:</option>
+                            <!-- Iterar sobre los proveedores y crear una opción para cada uno -->
                             @foreach ($proveedores as $proveedor)
                                 <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nombre }}</option>
                             @endforeach
@@ -97,16 +106,19 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Condiciones de pago:</label>
+                        <!-- Campo para seleccionar la condición de pago acordada -->
                         <select name="condiciones" id="condicionPago" class="form-control" required>
                             <option value="" selected disabled>Selecciona la condicion de pago acordada:</option>
                             <option value="Contado">Contado</option>
                             <option value="Credito">Crédito</option>
                         </select>
                     </div>
+                    <!-- Campo para mostrar u ocultar los días de crédito acordados -->
                     <div id="datosBancarios" style="display: none;">
                         <label for="banco">Días de credito acordado:</label>
                         <input type="text" class="form-control" style="width: 60%" id="banco" name="dias"><br>
                     </div>
+                    <!-- Campo para ingresar los datos bancarios del proveedor -->
                     <div class="form-group mt-4">
                         <label for="exampleFormControlInput1">Notas:</label>
                         <input name="Notas" type="text" class="form-control" value=""
@@ -122,6 +134,7 @@
     </div>
 
     <script>
+        // Esperar a que el DOM esté completamente cargado
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener el checkbox universal
             var checkTodos = document.getElementById('checkTodos');
@@ -158,6 +171,7 @@
                         allChecked = false;
                     }
                 });
+                // Actualizar el estado del checkbox universal
                 checkTodos.checked = allChecked;
             }
 
@@ -174,9 +188,11 @@
 
         // Mostrar u ocultar campo de días de crédito según la condición de pago seleccionada
         document.getElementById('condicionPago').addEventListener('change', function() {
+            // Obtener el valor seleccionado
             var valor = this.value;
             var datosBancarios = document.getElementById('datosBancarios');
 
+            // Mostrar u ocultar el campo de datos bancarios según la condición de pago
             if (valor == 'Credito') {
                 datosBancarios.style.display = 'block';
             } else {
@@ -184,12 +200,16 @@
             }
         });
 
+        // Función para calcular el total basado en los artículos seleccionados
         function calcularTotal() {
         let total = 0;
         
+        // Iterar sobre cada fila de la tabla para calcular el total solo de los artículos seleccionados
         document.querySelectorAll("tbody tr").forEach(row => {
             let checkbox = row.querySelector(".check-articulo");
+            // Verificar si el checkbox está marcado
             if (checkbox && checkbox.checked) { 
+                // Obtener cantidad y precio unitario de los inputs correspondientes
                 let cantidad = parseFloat(row.querySelector(".cantidad")?.value) || 0;
                 let precio = parseFloat(row.querySelector(".precio_unitario")?.value) || 0;
                 total += cantidad * precio;
@@ -205,11 +225,48 @@
             totalConDescuento = 0;
         }
 
+        // Actualizar el total en la vista
         document.getElementById("total_monto").textContent = totalConDescuento.toFixed(2);
     }
 
     // Ejecutar el cálculo cuando la página cargue
     document.addEventListener("DOMContentLoaded", calcularTotal);
+
+
+    document.getElementById('agregarFila').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const tbody = document.getElementById('tablaArticulos');
+        const idUnico = 'nuevo_' + Date.now(); // Para evitar conflictos con los ids originales
+
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.innerHTML = `
+        <th>
+            <input type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="${idUnico}" onchange="calcularTotal()" checked>
+            <button type="button" class="btn btn-danger btn-sm mt-1 eliminar-fila">Eliminar</button>
+        </th>
+        <th>
+            <input type="hidden" name="articulos[${idUnico}][id]" value="${idUnico}">
+            <input class="form-control cantidad" type="number" name="articulos[${idUnico}][cantidad]" value="1" required oninput="calcularTotal()">
+        </th>
+        <th><input class="form-control" type="text" name="articulos[${idUnico}][unidad]" value="Servicios" required></th>
+        <th>
+            <input class="form-control" type="text" name="articulos[${idUnico}][descripcion]" value="" required>            
+        </th>
+        <th>
+            <input class="form-control precio_unitario" type="number" name="articulos[${idUnico}][precio_unitario]" value="0" step="0.01" oninput="calcularTotal()">
+        </th>
+    `;
+        tbody.appendChild(nuevaFila);
+    });
+
+        document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('eliminar-fila')) {
+            const fila = e.target.closest('tr');
+            if (fila) fila.remove();
+            calcularTotal(); // opcional si quieres actualizar el total al eliminar
+        }
+    });
 
     </script>
 @endsection

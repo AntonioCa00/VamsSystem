@@ -1704,6 +1704,20 @@ class controladorGtArea extends Controller
         return back()->with('eliminado','eliminado');
     }
 
+    /*
+        TODO: Elimina el comprobante de pago asociado a un pago fijo específico y actualiza su estado.
+        Este método se encarga de eliminar el archivo del comprobante de pago asociado a un pago fijo específico,
+        identificado por su ID. Si el pago existe y tiene un comprobante de pago asociado, el archivo se elimina
+        del sistema de archivos y el campo `comprobante_pago` en la base de datos se actualiza a `null`. Además,
+        el estado del pago se cambia a "Solicitado" para permitir que se registre un nuevo comprobante de pago en el futuro.
+
+        NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos
+
+        @param int $id El ID del pago fijo cuyo comprobante de pago se va a eliminar.
+
+        Redirige al usuario a la página anterior con un mensaje de confirmación de que el comprobante ha sido eliminado.
+    */
+
     public function deleteComprobantePago ($id){
         // Recupera el pago fijo por su ID
         $pago = Pagos_Fijos::where('id_pago',$id)->first();
@@ -1728,7 +1742,7 @@ class controladorGtArea extends Controller
     }
 
     /*
-      Recupera y muestra una lista detallada de todas las órdenes de compra activas que no están asociadas a requisiciones rechazadas.
+      TODO: Recupera y muestra una lista detallada de todas las órdenes de compra activas que no están asociadas a requisiciones rechazadas.
 
       Este método consulta la base de datos para obtener un listado completo de las órdenes de compra en el sistema,
       excluyendo aquellas relacionadas con requisiciones que han sido rechazadas. Los datos recopilados incluyen el ID de la orden,
@@ -1829,6 +1843,7 @@ class controladorGtArea extends Controller
         ->where('id_unidad','!=','1')
         ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
 
+        // Calcula el porcentaje de vida útil restante de varios componentes de mantenimiento para cada unidad activa.
         $unidades->each(function ($unidad) {
             $filtro_aireG = 100-((($unidad->kilometraje-$unidad->filtro_aire_grande)/30000)*100);
             $filtro_aireC = 100-((($unidad->kilometraje-$unidad->filtro_aire_chico)/45000)*100);
@@ -1855,7 +1870,7 @@ class controladorGtArea extends Controller
     }
 
     /*
-      Calcula y muestra el estado del mantenimiento preventivo de una unidad específica.
+      TODO: Calcula y muestra el estado del mantenimiento preventivo de una unidad específica.
 
       Este método se encarga de obtener los datos de kilometraje de una unidad y combinarlos con registros históricos de mantenimiento
       para calcular la vida útil restante de varios componentes según su uso y los intervalos de mantenimiento recomendados.

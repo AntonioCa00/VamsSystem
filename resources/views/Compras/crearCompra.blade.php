@@ -21,6 +21,7 @@
                     <label for="exampleFormControlSelect1">Solicitud:</label>
                     <select id="solicitud-id" name="solicitudId" class="form-control">
                         <option selected disabled value="">Selecciona la solicitud que requiere la compra</option>
+                        <!-- Iterar sobre las solicitudes y crear una opción para cada una -->
                         @foreach ($solicitudes as $solicitud)
                             <option value="{{ $solicitud->id_solicitud }}">{{ $solicitud->descripcion }}</option>
                         @endforeach
@@ -44,10 +45,14 @@
     </div>
 </div>
 
+<!-- jQuery para manejar el cambio de la solicitud seleccionada -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    // Esperar a que el documento esté listo
     $(document).ready(function() {
+        // Manejar el cambio en el select de solicitudes
         $('#solicitud-id').change(function() {
+            // Obtener el ID de la solicitud seleccionada
             var solicitudId = $(this).val();
 
             // Buscar la solicitud seleccionada en el arreglo de solicitudes
@@ -55,12 +60,13 @@
                 return solicitud.id_solicitud == solicitudId;
             });
 
+            // Si se encuentra la solicitud, actualizar los campos correspondientes
             if (solicitud) {
                 $('#unidad-id').val(solicitud.unidad_id);
                 $('#descripcion').val(solicitud.descripcion);
-                $('#refaccion').val(solicitud.refaccion);
+                $('#refaccion').val(solicitud.refaccion);                
             } else {
-                // Manejar el caso si no se encuentra la solicitud seleccionada
+                // Si no se encuentra la solicitud, limpiar los campos
                 $('#unidad-id').val('');
                 $('#descripcion').val('');
                 $('#refaccion').val('');

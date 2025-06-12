@@ -2,6 +2,7 @@
 
 @section('Contenido')
 
+<!-- Mensaje de error para mostrar que no se ha cargado el PDF correctamente -->
 @if(session()->has('error'))
     <script type="text/javascript">
         Swal.fire({
@@ -14,6 +15,7 @@
     </script>
 @endif
 
+<!-- Mensaje de error para mostrar que se ha eliminado el archivo de cotización correctamente -->
 @if(session()->has('eliminado'))
     <script type="text/javascript">
         Swal.fire({
@@ -26,6 +28,7 @@
     </script>
 @endif
 
+<!-- Mensaje de éxito para mostrar que se ha registrado la cotización correctamente -->
 @if(session()->has('cotizacion'))
     <script type="text/javascript">
         Swal.fire({
@@ -38,6 +41,7 @@
     </script>
 @endif
 
+<!-- Mensaje de éxito para mostrar que se ha actualizado la cotización correctamente -->
 @if(session()->has('actualizacion'))
     <script type="text/javascript">
         Swal.fire({
@@ -72,20 +76,22 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Ciclo reiterativo para mostrar las cotizaciones -->
                         @foreach ($cotizaciones as $cotizacion)
                         <tr class="text-center">
-                        <th class="text-center">{{ $loop->iteration }}</th>
+                        <th class="text-center">{{ $loop->iteration }}</th> <!-- Muestra el número de cotización -->
                             <th>
-                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank">
+                                <a href="{{ asset($cotizacion->reqPDF) }}" target="_blank"> <!-- Enlace para abrir el PDF de la requisición -->
                                     <img class="imagen-container"  src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
-                                <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank">
+                                <a href="{{ asset($cotizacion->cotPDF) }}" target="_blank"><!-- Enlace para abrir el PDF de la cotización -->
                                     <img class="imagen-container"  src="{{ asset('img/cot.jpg') }}" alt="Abrir PDF">
                                 </a>
                             </th>
                             <th>
+                                <!-- Botón para eliminar la cotización -->
                                 <form action="{{ route('deleteCotiza', ['id' => $cotizacion->id_cotizacion, 'rid' => $cotizacion->id_requisicion]) }}" method="POST">
                                     @csrf
                                     {!!method_field('DELETE')!!}
@@ -101,6 +107,7 @@
                 <h5 class="text-center">Datos de registro</h5>
                 <form action="{{route('insertCotiza')}}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <!-- Campo oculto para enviar el ID de la requisición -->
                     <input type="hidden" name="requisicion" value="{{$id}}">
                     <div class="form-group">
                         <label for="exampleFormControlInput1">Archivo de cotización:</label>

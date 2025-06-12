@@ -1,5 +1,6 @@
 @extends('plantillaAdm')
 
+<!-- Mensaje de error al cargar el CIF o estado de cuenta -->
 @section('Contenido')
     @if ($errors->has('archivo_CIF'))
         <script type="text/javascript">
@@ -13,6 +14,7 @@
         </script>
     @endif
 
+    <!-- Mensaje de error al cargar el estado de cuenta o datos bancarios incompletos -->
     @if ($errors->has('archivo_estadoCuenta'))
         <script type="text/javascript">
             Swal.fire({

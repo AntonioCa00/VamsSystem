@@ -1509,19 +1509,22 @@ class controladorCompras extends Controller
             for ($i = 0; $i < $articulosCount; $i++) {
                 // Aquí puedes acceder a cada elemento del array $articulo
                 $articuloUnico = Articulos::where('id', $articulosArray[$i]['id'])->first();
-                $cantidad_total = $articuloUnico->cantidad - $articulosArray[$i]['cantidad'];
+                if (!empty($articuloUnico)) {
+                    // Calcula la cantidad total restando la cantidad comprada de la cantidad actual
+                    $cantidad_total = $articuloUnico->cantidad - $articulosArray[$i]['cantidad'];                    
 
-                //Determina el estatus antes de la actualización
-                $estatus = $cantidad_total == 0 ? 1 : 0;
-                Articulos::where('id', $articulosArray[$i]['id'])->update([
-                    'cantidad' => $cantidad_total,
-                    'unidad' => $articulosArray[$i]['unidad'],
-                    'descripcion' => $articulosArray[$i]['descripcion'],
-                    'precio_unitario' => $articulosArray[$i]['precio_unitario'],
-                    'ult_compra' => $articulosArray[$i]['cantidad'],
-                    'estatus' => $estatus, // Usa la variable $estatus aquí
-                    'orden_id' => $idnuevaorden
-                ]);
+                    //Determina el estatus antes de la actualización
+                    $estatus = $cantidad_total == 0 ? 1 : 0;
+                    Articulos::where('id', $articulosArray[$i]['id'])->update([
+                        'cantidad' => $cantidad_total,
+                        'unidad' => $articulosArray[$i]['unidad'],
+                        'descripcion' => $articulosArray[$i]['descripcion'],
+                        'precio_unitario' => $articulosArray[$i]['precio_unitario'],
+                        'ult_compra' => $articulosArray[$i]['cantidad'],
+                        'estatus' => $estatus, // Usa la variable $estatus aquí
+                        'orden_id' => $idnuevaorden
+                    ]);
+                }                
             }
 
             //Conteo de articulos que no se han generado orden de compra
@@ -1714,6 +1717,16 @@ class controladorCompras extends Controller
         return view('Compras.crearPago',compact('servicios','proveedores'));
     }
 
+    /*
+      TODO: Crea un nuevo servicio en la base de datos y redirige al usuario con un mensaje de éxito.
+      Este método recibe una solicitud con los datos necesarios para crear un nuevo servicio, incluyendo el nombre del servicio,
+      el proveedor asociado y el usuario que lo crea. Utiliza el modelo `Servicios` para insertar un nuevo registro en la base de datos,
+      estableciendo el estatus del servicio como activo (1) y registrando las marcas de tiempo de creación y actualización.
+
+      @param Request $req La solicitud que contiene los datos del nuevo servicio.
+
+      Redirige al usuario a la página anterior con un mensaje de éxito indicando que el servicio ha sido creado correctamente.     
+    */ 
     public function createServicio (Request $req){
         // Crea un nuevo registro de servicio en la base de datos con los datos proporcionados en la solicitud
         Servicios::create([
@@ -1729,6 +1742,18 @@ class controladorCompras extends Controller
         return back()->with('servicio','servicio');
     }
 
+    /* 
+        TODO: Actualiza un servicio existente en la base de datos con los nuevos datos proporcionados.
+        Este método recibe una solicitud con los datos actualizados del servicio, incluyendo el nombre del servicio y el proveedor asociado.
+        Utiliza el modelo `Servicios` para actualizar el registro correspondiente en la base de datos, estableciendo la fecha y hora de actualización
+        mediante `Carbon::now()`. El ID del servicio a actualizar se pasa como parámetro en la URL.
+
+        @param Request $req La solicitud que contiene los datos actualizados del servicio.
+        @param int $id El ID del servicio que se va a actualizar.
+
+        Redirige al usuario a la página anterior con un mensaje de éxito indicando que el servicio ha sido editado correctamente.
+    */
+
     public function editServicio(Request $req, $id){
         // Actualiza el registro del servicio en la base de datos con los datos proporcionados
         Servicios::where('id_servicio',$id)->update([
@@ -1741,7 +1766,19 @@ class controladorCompras extends Controller
         return back()->with('servEditado','servEditado');
     }
 
+    /*
+        TODO: Desactiva un servicio específico marcándolo como inactivo en la base de datos.
+        Este método actualiza el registro del servicio especificado por su ID, estableciendo el campo 'estatus' a 0,
+        lo que indica que el servicio está inactivo. También actualiza el campo 'updated_at' para reflejar la fecha y hora
+        de la desactivación. Esta operación es importante para mantener la integridad de los datos y permite que el servicio
+        pueda ser reactivado en el futuro si es necesario, sin eliminar el registro de la base de datos.
+
+        @param int $id El ID del servicio que se va a desactivar.
+
+        Redirige al usuario a la página anterior con un mensaje de éxito indicando que el servicio ha sido desactivado correctamente.
+    */
     public function deleteServicioC($id){
+        // Actualiza el registro del servicio específico para marcarlo como inactivo
         Servicios::where('id_servicio',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now(),
@@ -1751,10 +1788,23 @@ class controladorCompras extends Controller
         return back()->with('servDelete','servDelete');
     }
 
+    /*
+        TODO: Crea un nuevo pago fijo en la base de datos y genera un PDF con los detalles del pago.
+        Este método recibe una solicitud con los datos necesarios para crear un nuevo pago fijo, incluyendo el ID del servicio,
+        las notas, el importe y otros detalles del empleado. Utiliza el modelo `Pagos_Fijos` para insertar un nuevo registro en la base de datos,
+        estableciendo el estado del pago como 'Solicitado' y registrando las marcas de tiempo de creación y actualización.
+        Además, genera un PDF con los detalles del pago utilizando la biblioteca TCPDF, guardando el archivo en una ruta específica.
+        
+        @param Request $req La solicitud que contiene los datos del nuevo pago fijo.
+        
+        Redirige al usuario a la página de pagos fijos con un mensaje de éxito.
+    */
     public function createPago(Request $req){
+        // Validación de los datos de entrada
         $servicio_id = $req->input('servicio');
         $Nota = $req->input('Notas');
         $importe = $req->input('importe');
+
         // Definición y serialización de los datos del empleado
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),
@@ -1773,6 +1823,7 @@ class controladorCompras extends Controller
             $idcorresponde = $ultimoPago->id_pago + 1;
         }
 
+        // Obtención de los detalles del servicio y proveedor
         $servicio = Servicios::select('servicios.nombre_servicio','proveedores.*')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->where('servicios.id_servicio',$servicio_id)
@@ -1792,6 +1843,7 @@ class controladorCompras extends Controller
         include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
         ob_end_clean();
 
+        // Crear un nuevo registro de pago fijo en la base de datos
         Pagos_Fijos::create([
             "id_pago"=>$idcorresponde,
             "servicio_id"=>$servicio_id,
@@ -1804,13 +1856,29 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirigir al usuario a la página de pagos fijos con un mensaje de éxito
         return redirect()->route('pagosFijos')->with('pago','pago');
     }
 
+    /*
+        TODO: Actualiza un pago fijo existente en la base de datos y genera un nuevo PDF con los detalles actualizados.
+        Este método recibe una solicitud con los datos necesarios para actualizar un pago fijo, incluyendo el ID del servicio,
+        las notas, el importe y otros detalles del empleado. Utiliza el modelo `Pagos_Fijos` para actualizar el registro correspondiente
+        en la base de datos, estableciendo el estado del pago como 'Solicitado' y registrando las marcas de tiempo de actualización.
+        Además, genera un nuevo PDF con los detalles actualizados del pago utilizando la biblioteca TCPDF, guardando el archivo en una ruta específica.
+
+        @param Request $req La solicitud que contiene los datos del pago fijo a actualizar.
+        @param int $id El ID del pago fijo que se va a actualizar.
+
+        Redirige al usuario a la página de pagos fijos con un mensaje de éxito.
+        
+    */
     public function updatePago(Request $req, $id){
+        // Validación de los datos de entrada
         $servicio_id = $req->input('servicio');
         $Nota = $req->input('Notas');
         $importe = $req->input('importe');
+
         // Definición y serialización de los datos del empleado
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),
@@ -1821,11 +1889,13 @@ class controladorCompras extends Controller
             'dpto' =>session('departamento')
         ];
 
+        // Obtiene el ID que le corresponde al pago fijo
         $idcorresponde = $id;
         $pdf = Pagos_Fijos::select('pdf')
         ->where('id_pago',$id)
         ->first();
 
+        // Obtiene los detalles del servicio y proveedor
         $servicio = Servicios::select('servicios.nombre_servicio','proveedores.*')
         ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
         ->where('servicios.id_servicio',$servicio_id)
@@ -1853,6 +1923,7 @@ class controladorCompras extends Controller
         include(public_path('/pdf/TCPDF-main/examples/orden_pago.php'));
         ob_end_clean();
 
+        // Actualizar el registro del pago fijo en la base de datos con los datos proporcionados
         Pagos_Fijos::where('id_pago',$id)->update([
             "servicio_id"=>$servicio_id,
             "usuario_id"=>session('loginId'),
@@ -1864,10 +1935,23 @@ class controladorCompras extends Controller
             "updated_at"=>Carbon::now()
         ]);
 
+        // Redirigir al usuario a la página de pagos fijos con un mensaje de éxito
         return back()->with('editado','editado');
     }
 
+    /*
+        TODO: Elimina un pago fijo específico de la base de datos y elimina el archivo PDF asociado.
+        Este método se encarga de eliminar un pago fijo específico, identificado por su ID. Primero, recupera el registro del pago
+        y obtiene la ruta del archivo PDF asociado. Si el archivo existe, lo elimina del sistema de archivos. Luego, procede a
+        eliminar el registro del pago fijo de la base de datos. Finalmente, redirige al usuario a la página anterior con un mensaje
+        de confirmación de que el pago ha sido eliminado exitosamente.
+
+        @param int $id El ID del pago fijo que se va a eliminar.
+        
+        Redirige al usuario a la página anterior con un mensaje de éxito indicando que el pago ha sido eliminado correctamente.
+    */
     public function deletePago($id){
+        // Recupera el pago fijo específico por su ID
         $pago = Pagos_fijos::where('id_pago',$id)->first();
 
         //Guarda la ruta del archivo PDF de la orden
@@ -2058,6 +2142,7 @@ class controladorCompras extends Controller
                     $unidad = $requisicion->id_unidad;
                 }
             }
+            // Escribir los datos de la requisición en las celdas correspondientes
             $sheet->setCellValue('A' . $rowNumber, $nombreMes);
             $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
             $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
@@ -2074,6 +2159,7 @@ class controladorCompras extends Controller
             // Añadir bordes normales a las celdas de los datos
             $sheet->getStyle('A' . $rowNumber . ':I' . $rowNumber)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
+            // Incrementar el número de fila para la siguiente requisición
             $rowNumber++;
         }
 
@@ -2082,6 +2168,8 @@ class controladorCompras extends Controller
 
         // Configurar el archivo para descarga
         $fileName = 'reporte_requisiciones_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+
+        // Crear un objeto Spreadsheet de PhpSpreadsheet
         $writer = new Xlsx($spreadsheet);
 
         // Crear una respuesta de transmisión para la descarga
@@ -2094,6 +2182,7 @@ class controladorCompras extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
         $response->headers->set('Cache-Control', 'max-age=0');
 
+        // Enviar la respuesta al navegador
         return $response;
     }
 
@@ -2350,6 +2439,7 @@ class controladorCompras extends Controller
                 $colorFondo = 'FFFFFF'; // Fondo blanco si los datos están completos
             }
 
+            // Escribir los datos de la orden de compra en las celdas correspondientes
             $sheet->setCellValue('A' . $rowNumber, $nombreMes);
             $sheet->setCellValue('B' . $rowNumber, $numeroSemana);
             $sheet->setCellValue('C' . $rowNumber, $lunes.' - '.$viernes);
@@ -2803,6 +2893,7 @@ class controladorCompras extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
         $response->headers->set('Cache-Control', 'max-age=0');
 
+        // Devolver la respuesta para descargar el archivo
         return $response;
     }
 
@@ -3313,11 +3404,22 @@ class controladorCompras extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
         $response->headers->set('Cache-Control', 'max-age=0');
 
+        // Enviar la respuesta
         return $response;
     }
 
+    /*
+        TODO: Generar reporte de proveedores
+
+        Este método maneja la solicitud de generación de reporte de proveedores actual. Consulta, recupera 
+        los datos registrados a cerca de los proveedores correspondientes de la base de datos. Finalmente, 
+        el método genera un archivo de excel utilizando estos datos, que luego es enviado directamente al cliente para su descarga.
+
+        Sirve un archivo excel generado directamente a los archivos del usuario.
+    */
     public function reporteProveedores (){
 
+        // Obtener los proveedores activos de la base de datos
         $proveedores = Proveedores::where('estatus',1)
         ->orderBY('nombre','asc')
         ->get();
@@ -3450,6 +3552,7 @@ class controladorCompras extends Controller
         $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName . '"');
         $response->headers->set('Cache-Control', 'max-age=0');
 
+        // Enviar la respuesta
         return $response;
     }
     /*
@@ -3476,6 +3579,5 @@ class controladorCompras extends Controller
         $pdfContent = ob_get_clean();
         header('Content-Type: application/pdf');
         echo $pdfContent;
-
     }
 }

@@ -2,6 +2,7 @@
 
 @section('Contenido')
 
+<!-- Mensaje de éxito al iniciar sesion -->
 @if(session()->has('entra'))
     <script type="text/javascript">
         Swal.fire({
@@ -183,6 +184,7 @@
     </div>
 </div>
 <script defer>
+    // Generación de gráficos combinados y de área
     document.addEventListener("DOMContentLoaded", function() {
     var enero = {{ $enero }};
     var febrero = {{ $febrero }};
@@ -207,8 +209,10 @@
     var ventas = parseFloat({{ $ventas }}) || 0; // Convierte el valor a flotante o usa 0 como predeterminado
 
 
+    // Llama a las funciones de generación de gráficos
     generarGraficaCombinada(enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre);
 
+    // Generación de gráficos de área
     generarGraficarea( mantenimiento, almacen, logistica, rh, gestoria, contabilidad, sistemas, ventas);
 
     });    

@@ -28,12 +28,16 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Ciclo reiterativo para mostrar las requisiciones -->
                                 @foreach ($corte as $req)
+                                    <!-- Verifica si la requisición tiene urgencia. Si tiene urgencia, resalta la fila en rojo -->
                                     @if (!empty($req->urgencia))
                                         <tr class="text-center text-danger">
-                                        @else
+                                    <!-- Si no tiene urgencia, muestra la fila normal -->
+                                    @else
                                         <tr class="text-center">
                                     @endif
+                                    <!-- Checkbox para seleccionar la requisición -->
                                     <td>
                                         <input type="checkbox"
                                             name="requisiciones[{{ $req->id_requisicion }}][seleccionado]" value="1"
@@ -44,18 +48,21 @@
                                     <td>{{ $req->id_requisicion }}</td>
                                     <td>{{ $req->nombres }} {{ $req->apellidoP }}</td>
                                     <td>{{ $req->departamento }}</td>
+                                    <!-- Enlace para abrir el PDF de la requisición -->
                                     <td class="text-center">
                                         <a href="{{ asset($req->pdf) }}" target="_blank">
                                             <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
                                         </a>
                                     </td>
                                     <td>{{ $req->created_at }}</td>
+                                    <!-- Botón para editar la requisición -->
                                     <td><a href="{{ route('editarArtComp', $req->id_requisicion) }}"
                                             class="btn btn-success">Editar</a></td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        <!-- Botones para procesar las requisiciones (Procesar requisiciones o procesar solo urgencias) -->
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <button type="submit" value="Corte" name="action" class="btn btn-primary">Procesar
                                 Requisiciones</button>
@@ -72,6 +79,7 @@
     </div>
 
     <script>
+        // Esperar a que el DOM esté completamente cargado
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener el checkbox universal
             var checkTodos = document.getElementById('checkTodos');
