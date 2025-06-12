@@ -52,7 +52,7 @@
                                 <th>Precio unitario SIN IVA:</th>
                             </tr>
                         </thead>                                                    
-                                <tbody>        
+                                <tbody id="tablaArticulos">        
                                 <!-- Iterar sobre los artículos que pertenecen a la requisición -->                        
                                 @foreach ($articulos as $index => $articulo)
                                     <tr>
@@ -76,7 +76,9 @@
                         <tfoot>
                             <!-- Fila para ingresar el descuento -->
                             <tr>
-                                <th colspan="3"></th>
+                                <th colspan="3">
+                                    <a href="#" class="btn btn-primary" id="agregarFila"> +</a>
+                                </th>                                
                                 <th class="text-end">Descuento:</th>
                                 <th>
                                     <input name="descuento" type="number" id="descuento" class="form-control" step="0.01" value="0" oninput="calcularTotal()">
@@ -229,6 +231,42 @@
 
     // Ejecutar el cálculo cuando la página cargue
     document.addEventListener("DOMContentLoaded", calcularTotal);
+
+
+    document.getElementById('agregarFila').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const tbody = document.getElementById('tablaArticulos');
+        const idUnico = 'nuevo_' + Date.now(); // Para evitar conflictos con los ids originales
+
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.innerHTML = `
+        <th>
+            <input type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="${idUnico}" onchange="calcularTotal()" checked>
+            <button type="button" class="btn btn-danger btn-sm mt-1 eliminar-fila">Eliminar</button>
+        </th>
+        <th>
+            <input type="hidden" name="articulos[${idUnico}][id]" value="${idUnico}">
+            <input class="form-control cantidad" type="number" name="articulos[${idUnico}][cantidad]" value="1" required oninput="calcularTotal()">
+        </th>
+        <th><input class="form-control" type="text" name="articulos[${idUnico}][unidad]" value="Servicios" required></th>
+        <th>
+            <input class="form-control" type="text" name="articulos[${idUnico}][descripcion]" value="" required>            
+        </th>
+        <th>
+            <input class="form-control precio_unitario" type="number" name="articulos[${idUnico}][precio_unitario]" value="0" step="0.01" oninput="calcularTotal()">
+        </th>
+    `;
+        tbody.appendChild(nuevaFila);
+    });
+
+        document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('eliminar-fila')) {
+            const fila = e.target.closest('tr');
+            if (fila) fila.remove();
+            calcularTotal(); // opcional si quieres actualizar el total al eliminar
+        }
+    });
 
     </script>
 @endsection

@@ -1509,19 +1509,22 @@ class controladorCompras extends Controller
             for ($i = 0; $i < $articulosCount; $i++) {
                 // Aquí puedes acceder a cada elemento del array $articulo
                 $articuloUnico = Articulos::where('id', $articulosArray[$i]['id'])->first();
-                $cantidad_total = $articuloUnico->cantidad - $articulosArray[$i]['cantidad'];
+                if (!empty($articuloUnico)) {
+                    // Calcula la cantidad total restando la cantidad comprada de la cantidad actual
+                    $cantidad_total = $articuloUnico->cantidad - $articulosArray[$i]['cantidad'];                    
 
-                //Determina el estatus antes de la actualización
-                $estatus = $cantidad_total == 0 ? 1 : 0;
-                Articulos::where('id', $articulosArray[$i]['id'])->update([
-                    'cantidad' => $cantidad_total,
-                    'unidad' => $articulosArray[$i]['unidad'],
-                    'descripcion' => $articulosArray[$i]['descripcion'],
-                    'precio_unitario' => $articulosArray[$i]['precio_unitario'],
-                    'ult_compra' => $articulosArray[$i]['cantidad'],
-                    'estatus' => $estatus, // Usa la variable $estatus aquí
-                    'orden_id' => $idnuevaorden
-                ]);
+                    //Determina el estatus antes de la actualización
+                    $estatus = $cantidad_total == 0 ? 1 : 0;
+                    Articulos::where('id', $articulosArray[$i]['id'])->update([
+                        'cantidad' => $cantidad_total,
+                        'unidad' => $articulosArray[$i]['unidad'],
+                        'descripcion' => $articulosArray[$i]['descripcion'],
+                        'precio_unitario' => $articulosArray[$i]['precio_unitario'],
+                        'ult_compra' => $articulosArray[$i]['cantidad'],
+                        'estatus' => $estatus, // Usa la variable $estatus aquí
+                        'orden_id' => $idnuevaorden
+                    ]);
+                }                
             }
 
             //Conteo de articulos que no se han generado orden de compra
