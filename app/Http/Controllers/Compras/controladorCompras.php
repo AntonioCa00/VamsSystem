@@ -19,6 +19,7 @@ use App\Models\Orden_Compras;
 use App\Models\Servicios;
 use App\Models\Logs;
 use App\Models\Pagos_Fijos;
+use App\Models\unidadServicio;
 //-------PHPOFFICE---------
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -363,6 +364,14 @@ class controladorCompras extends Controller
         "kilometraje"=>$req->input('kilometraje'),
         "created_at"=>Carbon::now(),
         "updated_at"=>Carbon::now()
+        ]);
+
+        unidadServicio::create([
+            "unidad_id" => $req->input('id_unidad'),
+            "km_mantenimiento"=> $req->input('kilometraje'),
+            "contador"=> 0,
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
         ]);
 
         // Redirige al usuario a la vista de unidades
