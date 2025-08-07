@@ -49,7 +49,7 @@
                             required>
                     </div>
                     <div class="form-group">
-                        <label for="exampleFormControlInput1">Razón social de la empresa:<span
+                        <label for="exampleFormControlInput1">Regimen fiscal de la empresa:<span
                                 style="color: red;">*</span></label>
                         <input name="regimen" type="text" class="form-control"
                             placeholder="Regimen Fiscal del proveedor"value="{{ old('regimen') }}"

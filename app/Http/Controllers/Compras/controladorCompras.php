@@ -862,7 +862,7 @@ class controladorCompras extends Controller
 
                 // Actualización del estado de la requisición asociada
                 Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
-                    "estado" => "Cotizado",
+                    "estado" => "Validado",
                     "updated_at" => Carbon::now()
                 ]);
 
@@ -891,7 +891,7 @@ class controladorCompras extends Controller
 
                 // Actualización del estado de la requisición asociada
                 Requisiciones::where('id_requisicion',$req->input('requisicion'))->update([
-                    "estado" => "Cotizado",
+                    "estado" => "Validado",
                     "updated_at" => Carbon::now()
                 ]);
 
@@ -1091,7 +1091,7 @@ class controladorCompras extends Controller
             Proveedores::create([
                 "nombre"=>$req->input('nombre'),
                 "regimen_fiscal"=>$req->input('regimen'),
-                "sobrenombre"=>$req->input('Sobrenombre'),
+                "sobrenombre"=>$req->input('sobrenombre'),
                 "telefono"=>$req->input('telefono'),
                 "telefono2"=>$req->input('telefono2'),
                 "contacto"=>$req->input('contacto'),

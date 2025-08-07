@@ -1723,16 +1723,23 @@ class controladorGtArea extends Controller
         $pago = Pagos_Fijos::where('id_pago',$id)->first();
 
         // Verifica si el pago existe y tiene un comprobante de pago asociado
-        if ($pago && $pago->comprobante_pago) {
+        if (!empty($pago->comprobante_pago)) {
             // Elimina el archivo del sistema de archivos
             $fileToDelete = public_path($pago->comprobante_pago);
             if (file_exists($fileToDelete)) {
                 unlink($fileToDelete);
-            }
+            } 
             // Actualiza el campo comprobante_pago a null en la base de datos
             Pagos_Fijos::where('id_pago',$id)->update([
                 'comprobante_pago' => null,
-                'estado' => 'Solicitado', // Cambia el estado a "Solicitado" para permitir un nuevo registro
+                'estado' => "Solicitado", // Cambia el estado a "Solicitado" para permitir un nuevo registro
+                'updated_at' => Carbon::now()
+            ]);   
+        }else{
+            // Actualiza el campo comprobante_pago a null en la base de datos
+            Pagos_Fijos::where('id_pago',$id)->update([
+                'comprobante_pago' => null,
+                'estado' => "Solicitado", // Cambia el estado a "Solicitado" para permitir un nuevo registro
                 'updated_at' => Carbon::now()
             ]);
         }

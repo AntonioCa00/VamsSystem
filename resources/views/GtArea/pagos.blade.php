@@ -59,6 +59,7 @@
                             <th>Importe:</th>
                             <th>Proveedor:</th>
                             <th>Orden Pago:</th>
+                            <th>Fecha:</th>
                             <th>Comprobante:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -76,6 +77,7 @@
                                         <img class="imagen-container" src="{{ asset('img/pago.jpg') }}" alt="Abrir PDF">
                                     </a>
                                 </th>
+                                <th> {{$pago->created_at}}</th>
                                 <th class="text-center">
                                     @if (empty($pago->comprobante_pago))
                                         @if ($pago->estado === "Pagado")
