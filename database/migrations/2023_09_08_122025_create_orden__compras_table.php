@@ -20,6 +20,8 @@ return new class extends Migration
             $table->bigInteger('proveedor_id')->unsigned();
             $table->foreign('proveedor_id')->references('id_proveedor')->on('proveedores')->onDelete('cascade');
             $table->float('costo_total',10,2);
+            $table->enum('tipo_pago',['0','1']);
+            $table->date('dia_credito')->nullable();
             $table->string('pdf');
             $table->string('estado')->nullable();
             $table->timestamps();

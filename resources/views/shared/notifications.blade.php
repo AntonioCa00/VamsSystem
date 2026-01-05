@@ -1,23 +1,37 @@
 @php
-    $notifications = DB::table('logs')
-        ->orderBy('logs.created_at','desc')
-        ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
-        ->where('requisiciones.usuario_id',session('loginId'))
+    use Carbon\Carbon;
+
+    // Fecha de hoy
+    $hoy = Carbon::today();
+
+    // Notificaciones
+    $notifications = DB::table('orden_compras as orders')
+        ->orderBy('orders.dia_credito', 'desc')
+        ->join('proveedores', 'orders.proveedor_id', '=', 'proveedores.id_proveedor')
+        ->whereNotNull('orders.dia_credito')
         ->limit(6)
-    ->get();
-    $count= DB::table('logs')->select(DB::raw('COUNT(*) as total'))
-        ->join('requisiciones','logs.requisicion_id','=','requisiciones.id_requisicion')
-        ->where('requisiciones.usuario_id',session('loginId'))
-    ->get();
+        ->get();
+
+    // Calcular días restantes
+    foreach ($notifications as $notification) {
+        $fechaCredito = Carbon::parse($notification->dia_credito);
+        $notification->dias_restantes = $hoy->diffInDays($fechaCredito, false);
+    }
+
+    // Contador
+    $count = DB::table('orden_compras')
+        ->select(DB::raw('COUNT(*) as total'))
+        ->where('orden_compras.dia_credito', '!=', null)
+        ->get();
 @endphp
 
 <!-- Nav Item - Alerts -->
 <li class="nav-item dropdown no-arrow mx-1">
-    <a class="nav-link dropdown-toggle" id="alertsDropdown" role="button"
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
         <i class="fas fa-bell fa-fw"></i>
         <!-- Counter - Alerts -->
-        <span class="badge badge-danger badge-counter">{{$count[0]->total}}+</span>
+        <span class="badge badge-danger badge-counter">{{ $count[0]->total }}+</span>
     </a>
     <!-- Dropdown - Alerts -->
     <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -25,7 +39,7 @@
         <h6 class="dropdown-header">
             Nuevos movimientos
         </h6>
-        @foreach($notifications as $notification)
+        @foreach ($notifications as $notification)
             <a class="dropdown-item d-flex align-items-center" href="#">
                 <div class="mr-3">
                     <div class="icon-circle bg-primary">
@@ -33,8 +47,16 @@
                     </div>
                 </div>
                 <div>
-                    <div class="small text-gray-500">{{$notification->created_at}}</div>
-                    <span class="font-weight-bold">{{$notification->action}}</span>
+                    <div class="small text-gray-500">{{ $notification->created_at }}</div>
+                    @if ($notification->dias_restantes < 0)
+                        <span class="font-weight-bold text-danger">¡La orden #{{ $notification->id_orden }} está
+                            vencida, el día
+                            {{ $notification->dia_credito ? \Carbon\Carbon::parse($notification->dia_credito)->format('d/m/Y') : '' }}
+                            !</span>
+                    @else
+                        <span class="font-weight-bold">Faltan {{ $notification->dias_restantes }} días para pagar tu
+                            orden #{{ $notification->id_orden }}</span>
+                    @endif
                 </div>
             </a>
         @endforeach

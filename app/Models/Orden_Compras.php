@@ -15,6 +15,8 @@ class Orden_Compras extends Model
         'cotizacion_id',
         'proveedor_id',
         'costo_total',
+        'tipo_pago',
+        'dia_credito',
         'pdf',
         'estado',
         'created_at',        

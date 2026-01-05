@@ -56,14 +56,13 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID orden:</th>
-                            <th>Folio Req:</th>
-                            <th>Requisicion:</th>                            
-                            <th>Proveedor:</th>
-                            <th>Costo total:</th>
-                            <th>Estado:</th>
-                            <th>Orden de compra</th>
-                            <th>Fecha de creacion:</th>
+                            <th class="col-1">Folio orden:</th>
+                            <th class="col-1">Folio Req:</th>                          
+                            <th class="col-3">Proveedor:</th>
+                            <th class="col-1">Costo total:</th>
+                            <th class="col-1">Estado:</th>
+                            <th class="col-1">Orden Compra</th>
+                            <th class="col-1">Fecha de creacion:</th>
                             <th>Opciones:</th>
                         </tr>
                     </thead>
@@ -72,13 +71,7 @@
                         @foreach ($ordenes as $orden)
                         <tr>
                             <th>{{$orden->id_orden}}</th>
-                            <th class="text-center">{{$orden->id_requisicion}}</th>
-                            <th class="text-center"> 
-                                <!-- Enlace para abrir el PDF de la requisicion -->
-                                <a href="{{ asset($orden->reqPDF) }}" target="_blank">
-                                    <img class="imagen-container" src="{{ asset('img/req.jpg') }}" alt="Abrir PDF">
-                                </a>
-                            </th>                        
+                            <th class="text-center">{{$orden->id_requisicion}}</th>                      
                             <th>{{$orden->proveedor}}</th>
                             <th>${{$orden->costo_total}}</th>
                             <!-- Mostrar si la orden de compra esta pagada o pendiente -->
@@ -97,10 +90,40 @@
                             <th>
                                 <!-- Validar si la orden de compra esta pendiente -->
                                 @if($orden->estadoComp === null)     
-                                    <!--Si la orden de compra esta pendiente, mostrar botones para pagar o eliminar -->                       
+                                    <!--Si la orden de compra esta pendiente, mostrar botones para pagar o eliminar -->           
+                                    @if ($orden->tipo_pago == 1)
+                                        <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
+                                            Registrar pago
+                                        </a>
+                                        <!-- Logout Modal-->
+                                        <div class="modal fade" id="Finalizar{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Registrar pago de orden de compra</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">X</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{route('FinalizarCompra',$orden->id_orden)}}" method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            {!!method_field('PUT')!!}
+                                                            <div class="form-group">
+                                                                <label>Favor de cargar su comprobante de pago:</label>
+                                                                <input name="comprobante_pago" type="file" class="form-control">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Registrar pago</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                  
+                                    @endif            
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
                                         Eliminar
-                                    </a>
+                                    </a>                                    
                                     <!-- Logout Modal-->
                                     <div class="modal fade" id="eliminarOrd{{$orden->id_orden}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                     aria-hidden="true">
