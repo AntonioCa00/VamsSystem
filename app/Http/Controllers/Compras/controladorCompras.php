@@ -1318,8 +1318,8 @@ class controladorCompras extends Controller
             $registro = [
                 'id_proveedor' => $sheet->getCell('A' . $row)->getValue(),
                 'nombre' => strtoupper($sheet->getCell('B' . $row)->getValue()),
-                'regimen_fiscal' => strtoupper($sheet->getCell('C' . $row)->getValue()),
-                'sobrenombre'=> strtoupper($sheet->getCell('D' . $row)->getValue()),
+                'sobrenombre'=> strtoupper($sheet->getCell('C' . $row)->getValue()),
+                'regimen_fiscal' => strtoupper($sheet->getCell('D' . $row)->getValue()),     
                 'telefono' => $sheet->getCell('E' . $row)->getValue(),
                 'telefono2' => $sheet->getCell('F' . $row)->getValue(),
                 'contacto' => strtoupper($sheet->getCell('G' . $row)->getValue()),
@@ -2359,6 +2359,7 @@ class controladorCompras extends Controller
         $datosGastosPendientes = $queryPendientes->get();
         $datosGastos = $queryTotal->get();
 
+        return 
         // Crear un nuevo archivo Excel para los datos de las requisiciones
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -3001,7 +3002,7 @@ class controladorCompras extends Controller
         // Obtener los departamentos seleccionados (si se ha implementado)
         $departamentos = $req->input('departamentos', []);
 
-        $queryTotal = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
+        $queryTotal = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','pagos_fijos.costo_total','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
                 'users.nombres as usuario','users.apellidoP','users.departamento')
                ->join('users', 'pagos_fijos.usuario_id', '=', 'users.id')
                ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
@@ -3011,7 +3012,7 @@ class controladorCompras extends Controller
                });
 
         // Construir la consulta con INNER JOIN
-        $queryPendientes = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
+        $queryPendientes = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','pagos_fijos.costo_total','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
                 'users.nombres as usuario','users.apellidoP','users.departamento')
                 ->join('users', 'pagos_fijos.usuario_id', '=', 'users.id')
                 ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
@@ -3022,7 +3023,7 @@ class controladorCompras extends Controller
             ->where('pagos_fijos.estado', '=', 'Solicitado');
 
         // Construir la consulta con INNER JOIN
-        $queryPagados = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
+        $queryPagados = Pagos_Fijos::select('pagos_fijos.id_pago','pagos_fijos.estado','pagos_fijos.created_at','pagos_fijos.costo_total','servicios.nombre_servicio as servicio','proveedores.nombre as proveedor',
                 'users.nombres as usuario','users.apellidoP','users.departamento')
                 ->join('users', 'pagos_fijos.usuario_id', '=', 'users.id')
                 ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')

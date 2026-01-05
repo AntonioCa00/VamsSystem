@@ -40,7 +40,7 @@ $pdf->SetFont('helvetica', 'B', 19);
 
 $pdf->Cell(0, 10, "Orden de compra #".$idnuevaorden, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(7); // Salto de línea antes de la tabla
 
 $pdf->Cell(0, 10, "Solicitante", 0, 1, 'C',0);
 // Definir la fuente y el tamaño de la fuente
