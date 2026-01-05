@@ -33,13 +33,12 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, 'Requisicion n° '.$datos['id_requisicion'] , 0, 1, 'L'); // Print the number "123" at the top left of the page
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Requisicion de insumos ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Requisicion de insumos #". $id, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
@@ -59,7 +58,7 @@ $nombreEmpleado = $datos['nombres'];
 $apepatEmpleado = $datos['apellidoP'];
 $posicionEmpleado = $datos['departamento'];
 $idEmpleado = $datos['usuario_id'];
-$fechaEmpleado = $datos['created_at'];
+$fechaEmpleado = date("Y/m/d");
 
 $pdf->Cell(40, 5, $nombreEmpleado.' '.$apepatEmpleado, 1);
 $pdf->Cell(40, 5, $posicionEmpleado, 1);

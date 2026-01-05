@@ -33,15 +33,14 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Orden de compra n° ". $idnuevaorden, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Orden de compra ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Orden de compra #" . $idnuevaorden, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(7); // Salto de línea antes de la tabla
 
 $pdf->Cell(0, 10, "Solicitante", 0, 1, 'C',0);
 // Definir la fuente y el tamaño de la fuente

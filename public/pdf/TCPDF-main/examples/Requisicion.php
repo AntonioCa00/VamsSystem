@@ -33,15 +33,14 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Requisicion n° " . $idcorresponde, 0, 1, 'L'); // Print the number "123" at the top left of the page
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Requisicion de insumos ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Requisicion de insumos #". $idcorresponde, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(7); // Salto de línea antes de la tabla
 
 $pdf->Cell(0, 10, "Solicitante", 0, 1, 'C',0);
 // Definir la fuente y el tamaño de la fuente

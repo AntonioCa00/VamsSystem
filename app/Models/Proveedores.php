@@ -11,8 +11,8 @@ class Proveedores extends Model
     protected $fillable = [
         'id_proveedor',
         'nombre',
-        'regimen_fiscal',
         'sobrenombre',
+        'regimen_fiscal',
         'telefono',
         'telefono2',
         'contacto',
