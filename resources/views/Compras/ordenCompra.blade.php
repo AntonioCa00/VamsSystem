@@ -38,99 +38,131 @@
                         </tbody>
                     </table>
                 </div>
-                <form action="{{ route('createOrdenCompra', ['cid' => $cotizacion->id_cotizacion, 'rid' => $id]) }}" method="post">
+                <form action="{{ route('createOrdenCompra', ['cid' => $cotizacion->id_cotizacion, 'rid' => $id]) }}"
+                    method="post">
                     @csrf
-                <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th><input checked type="checkbox" id="checkTodos" /> Seleccionar:</th>
-                                <th>Cantidad:</th>
-                                <th>Unidad de medida:</th>
-                                <th>Descripcion:</th>
-                                <th>Precio unitario SIN IVA:</th>
-                            </tr>
-                        </thead>                                                    
-                                <tbody id="tablaArticulos">        
-                                <!-- Iterar sobre los artículos que pertenecen a la requisición -->                        
+                    <h6 class="m-0 font-weight-bold text-primary">Articulos de la requisicion</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th><input checked type="checkbox" id="checkTodos" /> Seleccionar:</th>
+                                    <th>Cantidad:</th>
+                                    <th>Unidad de medida:</th>
+                                    <th>Descripcion:</th>
+                                    <th>Precio unitario SIN IVA:</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaArticulos">
+                                <!-- Iterar sobre los artículos que pertenecen a la requisición -->
                                 @foreach ($articulos as $index => $articulo)
                                     <tr>
                                         <th>
                                             <!-- Checkbox para seleccionar el artículo -->
-                                            <input checked type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="{{ $articulo->id }}" onchange="calcularTotal()">
+                                            <input checked type="checkbox" class="check-articulo"
+                                                name="articulos_seleccionados[]" value="{{ $articulo->id }}"
+                                                onchange="calcularTotal()">
                                         </th>
                                         <th>
-                                            <input type="hidden" name="articulos[{{ $articulo->id }}][id]" value="{{ $articulo->id }}">
-                                            <input class="form-control cantidad" type="number" name="articulos[{{ $articulo->id }}][cantidad]" value="{{ $articulo->cantidad }}" required oninput="calcularTotal()">
+                                            <input type="hidden" name="articulos[{{ $articulo->id }}][id]"
+                                                value="{{ $articulo->id }}">
+                                            <input class="form-control cantidad" type="number"
+                                                name="articulos[{{ $articulo->id }}][cantidad]"
+                                                value="{{ $articulo->cantidad }}" required oninput="calcularTotal()">
                                         </th>
-                                        <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][unidad]" value="{{ $articulo->unidad }}" required></th>
-                                        <th><input class="form-control" type="text" name="articulos[{{ $articulo->id }}][descripcion]" value="{{ $articulo->descripcion }}" required></th>
+                                        <th><input class="form-control" type="text"
+                                                name="articulos[{{ $articulo->id }}][unidad]"
+                                                value="{{ $articulo->unidad }}" required></th>
+                                        <th><input class="form-control" type="text"
+                                                name="articulos[{{ $articulo->id }}][descripcion]"
+                                                value="{{ $articulo->descripcion }}" required></th>
                                         <th>
-                                            <input class="form-control precio_unitario" type="number" name="articulos[{{ $articulo->id }}][precio_unitario]" value="{{ $articulo->precio }}" step="0.01" oninput="calcularTotal()">
+                                            <input class="form-control precio_unitario" type="number"
+                                                name="articulos[{{ $articulo->id }}][precio_unitario]"
+                                                value="{{ $articulo->precio }}" step="0.01" oninput="calcularTotal()">
                                         </th>
                                     </tr>
                                 @endforeach
-                            </form>
-                        </tbody>
-                        <tfoot>
-                            <!-- Fila para ingresar el descuento -->
-                            <tr>
-                                <th colspan="3">
-                                    <a href="#" class="btn btn-primary" id="agregarFila"> +</a>
-                                </th>                                
-                                <th class="text-end">Descuento:</th>
-                                <th>
-                                    <input name="descuento" type="number" id="descuento" class="form-control" step="0.01" value="0" oninput="calcularTotal()">
-                                </th>
-                            </tr>
-                            <!-- Fila para el total -->
-                            <tr>
-                                <th colspan="3"></th>
-                                <th class="text-end">Total:</th>
-                                <th id="total_monto">0.00</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                </form>
+                </tbody>
+                <tfoot>
+                    <!-- Fila para ingresar el descuento -->
+                    <tr>
+                        <th colspan="3">
+                            <a href="#" class="btn btn-primary" id="agregarFila"> +</a>
+                        </th>
+                        <th class="text-end">Descuento:</th>
+                        <th>
+                            <input name="descuento" type="number" id="descuento" class="form-control" step="0.01"
+                                value="0" oninput="calcularTotal()">
+                        </th>
+                    </tr>
+                    <!-- Fila para el total -->
+                    <tr>
+                        <th colspan="3"></th>
+                        <th class="text-end">Total:</th>
+                        <th id="total_monto">0.00</th>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+            <div class="card-footer py-3">
+                <div class="form-group">
+                    <div class="row">
+                        <!-- Columna izquierda -->
+                        <div class="col-md-9">
+                            <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA:</label>
+                            <select name="Proveedor" id="proveedor" class="form-control" required>
+                                <option value="" selected disabled>Selecciona el proveedor de este articulo...</option>
+                                <!-- Iterar sobre los proveedores y crear una opción para cada uno -->
+                                @foreach ($proveedores as $proveedor)
+                                    <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Columna derecha -->
+                        <div class="col-md-3 d-flex align-items-center">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" name="tipo_pago" id="tipo_pago" class="form-check-input">
+                                <label for="tipo_pago" class="form-check-label">Pago con tarjeta</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-footer py-3">
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">PROVEEDOR PARA ORDEN DE COMPRA</label>
-                        <select name="Proveedor" id="proveedor" class="form-control" required>
-                            <option value="" selected disabled>Selecciona el proveedor de este articulo:</option>
-                            <!-- Iterar sobre los proveedores y crear una opción para cada uno -->
-                            @foreach ($proveedores as $proveedor)
-                                <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nombre }}</option>
-                            @endforeach
-                        </select>
+                <div class="form-group">
+                    <div class="row">
+                        <!-- Columna izquierda -->
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1">Condiciones de pago:</label>
+                            <!-- Campo para seleccionar la condición de pago acordada -->
+                            <select name="condiciones" id="condicionPago" class="form-control" required>
+                                <option value="" selected disabled>Selecciona la condicion de pago acordada:</option>
+                                <option value="Contado">Contado</option>
+                                <option value="Credito">Crédito</option>
+                            </select>
+                        </div>
+                        <!-- Columna derecha -->
+                        <div class="col-md-6" id="datosBancarios" style="display: none;">
+                            <label for="banco">Días de credito acordado:</label>
+                            <input type="date" class="form-control" id="banco" name="dia_credito"
+                                placeholder="Ingresa los días de crédito acordados">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1">Condiciones de pago:</label>
-                        <!-- Campo para seleccionar la condición de pago acordada -->
-                        <select name="condiciones" id="condicionPago" class="form-control" required>
-                            <option value="" selected disabled>Selecciona la condicion de pago acordada:</option>
-                            <option value="Contado">Contado</option>
-                            <option value="Credito">Crédito</option>
-                        </select>
-                    </div>
-                    <!-- Campo para mostrar u ocultar los días de crédito acordados -->
-                    <div id="datosBancarios" style="display: none;">
-                        <label for="banco">Días de credito acordado:</label>
-                        <input type="text" class="form-control" style="width: 60%" id="banco" name="dias"><br>
-                    </div>
-                    <!-- Campo para ingresar los datos bancarios del proveedor -->
-                    <div class="form-group mt-4">
-                        <label for="exampleFormControlInput1">Notas:</label>
-                        <input name="Notas" type="text" class="form-control" value=""
-                            placeholder="Agrega notas si necesario">
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <h6>Crear formato de orden de compra</h6>
-                    </button>
-                    </form>
                 </div>
+                <!-- Campo para ingresar los datos bancarios del proveedor -->
+                <div class="form-group mt-4">
+                    <label for="exampleFormControlInput1">Notas:</label>
+                    <input name="Notas" type="text" class="form-control" value=""
+                        placeholder="Ingresa cuenta de pago del recurso..." required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <h6>Crear formato de orden de compra</h6>
+                </button>
+                </form>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -195,52 +227,54 @@
             // Mostrar u ocultar el campo de datos bancarios según la condición de pago
             if (valor == 'Credito') {
                 datosBancarios.style.display = 'block';
+                datosBancarios.querySelector('input').required = true;
             } else {
-                datosBancarios.style.display = 'none';
+               datosBancarios.style.display = 'none';
+               datosBancarios.value = '';
             }
         });
 
         // Función para calcular el total basado en los artículos seleccionados
         function calcularTotal() {
-        let total = 0;
-        
-        // Iterar sobre cada fila de la tabla para calcular el total solo de los artículos seleccionados
-        document.querySelectorAll("tbody tr").forEach(row => {
-            let checkbox = row.querySelector(".check-articulo");
-            // Verificar si el checkbox está marcado
-            if (checkbox && checkbox.checked) { 
-                // Obtener cantidad y precio unitario de los inputs correspondientes
-                let cantidad = parseFloat(row.querySelector(".cantidad")?.value) || 0;
-                let precio = parseFloat(row.querySelector(".precio_unitario")?.value) || 0;
-                total += cantidad * precio;
+            let total = 0;
+
+            // Iterar sobre cada fila de la tabla para calcular el total solo de los artículos seleccionados
+            document.querySelectorAll("tbody tr").forEach(row => {
+                let checkbox = row.querySelector(".check-articulo");
+                // Verificar si el checkbox está marcado
+                if (checkbox && checkbox.checked) {
+                    // Obtener cantidad y precio unitario de los inputs correspondientes
+                    let cantidad = parseFloat(row.querySelector(".cantidad")?.value) || 0;
+                    let precio = parseFloat(row.querySelector(".precio_unitario")?.value) || 0;
+                    total += cantidad * precio;
+                }
+            });
+
+            // Obtener descuento
+            let descuento = parseFloat(document.getElementById("descuento").value) || 0;
+            let totalConDescuento = total - descuento;
+
+            // Evitar que el total sea negativo
+            if (totalConDescuento < 0) {
+                totalConDescuento = 0;
             }
-        });
 
-        // Obtener descuento
-        let descuento = parseFloat(document.getElementById("descuento").value) || 0;
-        let totalConDescuento = total - descuento;
-
-        // Evitar que el total sea negativo
-        if (totalConDescuento < 0) {
-            totalConDescuento = 0;
+            // Actualizar el total en la vista
+            document.getElementById("total_monto").textContent = totalConDescuento.toFixed(2);
         }
 
-        // Actualizar el total en la vista
-        document.getElementById("total_monto").textContent = totalConDescuento.toFixed(2);
-    }
-
-    // Ejecutar el cálculo cuando la página cargue
-    document.addEventListener("DOMContentLoaded", calcularTotal);
+        // Ejecutar el cálculo cuando la página cargue
+        document.addEventListener("DOMContentLoaded", calcularTotal);
 
 
-    document.getElementById('agregarFila').addEventListener('click', function(e) {
-        e.preventDefault();
+        document.getElementById('agregarFila').addEventListener('click', function(e) {
+            e.preventDefault();
 
-        const tbody = document.getElementById('tablaArticulos');
-        const idUnico = 'nuevo_' + Date.now(); // Para evitar conflictos con los ids originales
+            const tbody = document.getElementById('tablaArticulos');
+            const idUnico = 'nuevo_' + Date.now(); // Para evitar conflictos con los ids originales
 
-        const nuevaFila = document.createElement('tr');
-        nuevaFila.innerHTML = `
+            const nuevaFila = document.createElement('tr');
+            nuevaFila.innerHTML = `
         <th>
             <input type="checkbox" class="check-articulo" name="articulos_seleccionados[]" value="${idUnico}" onchange="calcularTotal()" checked>
             <button type="button" class="btn btn-danger btn-sm mt-1 eliminar-fila">Eliminar</button>
@@ -257,16 +291,15 @@
             <input class="form-control precio_unitario" type="number" name="articulos[${idUnico}][precio_unitario]" value="0" step="0.01" oninput="calcularTotal()">
         </th>
     `;
-        tbody.appendChild(nuevaFila);
-    });
+            tbody.appendChild(nuevaFila);
+        });
 
         document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('eliminar-fila')) {
-            const fila = e.target.closest('tr');
-            if (fila) fila.remove();
-            calcularTotal(); // opcional si quieres actualizar el total al eliminar
-        }
-    });
-
+            if (e.target && e.target.classList.contains('eliminar-fila')) {
+                const fila = e.target.closest('tr');
+                if (fila) fila.remove();
+                calcularTotal(); // opcional si quieres actualizar el total al eliminar
+            }
+        });
     </script>
 @endsection

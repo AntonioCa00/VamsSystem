@@ -1411,23 +1411,24 @@ class controladorCompras extends Controller
       Redirige al usuario a la lista de órdenes de compra con un mensaje de confirmación de que la operación fue exitosa.
     */
     public function insertOrdenCom(Request $req, $cid,$rid){
+
             //Variables a utilizar en pdf
             $Nota = $req->input('Notas');
             $proveedor = $req->input('Proveedor');
             $articulos = $req->input('articulos');
-
             $descuento = $req->input('descuento');
-
             $condiciones = $req->input('condiciones');
+            $tipoPago = $req->has('tipo_pago') ? '1' : '0';
 
             //Si se condiciona a credito guarda el valor de los días acordados
             if($condiciones === "Credito"){
-                $dias = $req->input('dias');
+                $dias = date('d-m-Y', strtotime($req->input('dia_credito')));
+                $dia = $req->input('dia_credito');
             } else{
                 //si no, pasa la variable con pago inmediato
-                $dias = "Pago inmediato";
+                $dias = null;
+                $dia = null;
             }
-
             //Guarda en un arreglo los datos de la sesion activa
             $datosEmpleado[] = [
                 'idEmpleado' => session('loginId'),
@@ -1503,6 +1504,8 @@ class controladorCompras extends Controller
                 "cotizacion_id" => $cid,
                 "proveedor_id"=>$req->input('Proveedor'),
                 "costo_total"=>$totalGastos,
+                "tipo_pago"=>$tipoPago,
+                "dia_credito"=>$dia,                
                 "pdf" => $rutaDescargas,
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now(),
@@ -1577,7 +1580,7 @@ class controladorCompras extends Controller
     public function tableOrdenesCompras(){
         /* Obtención de información detallada para cada orden en donde se analizan la evolucion de la peticiónn
            desde requisición hasta orden de compra*/
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.tipo_pago','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -1671,6 +1674,61 @@ class controladorCompras extends Controller
 
         // Redirige al usuario con un mensaje de confirmación
         return back()->with('finalizada','finalizada');
+    }
+
+    /*
+      Finaliza una orden de compra subiendo un comprobante de pago y actualizando su estado a "Pagado".
+
+      Este método permite a los usuarios cargar un comprobante de pago en formato PDF para una orden de compra específica.
+      Si el archivo se carga correctamente y cumple con los criterios especificados (tipo de archivo y tamaño máximo), el archivo se almacena,
+      y se actualiza el registro de la orden de compra para incluir la ruta del archivo y cambiar el estado de la orden a "Pagado".
+      Si no se carga un archivo, el método maneja esta situación proporcionando un mensaje de error adecuado y actualizando
+      el estado de la orden a "Pagado" sin almacenar ningún comprobante.
+
+      @param int $id El ID de la orden de compra que se está actualizando.
+
+      NOTA: Esta función unicamente está habilitada para el jefe de área de Finanzas ya que es quien puede registrar los pagos
+
+      Devuelve una redirección a la página anterior con una notificación que indica si la orden fue finalizada exitosamente o
+      devuelve un mensaje de error si el archivo no es reconocido.
+    */
+    public function FinalizarCompra(Request $req, $id){
+        // Verifica que se haya subido un archivo y que sea válido
+        if ($req->hasFile('comprobante_pago') && $req->file('comprobante_pago')->isValid()){
+
+            // Validar el archivo subido
+            $req->validate([
+                'comprobante_pago' => 'required|file|max:10240', // Ajusta el tamaño máximo según tus necesidades
+            ]);
+
+            // Se genera el nombre y ruta para guardar PDF
+            $nombreArchivo = 'comprobantePagoOrden_' . $id . '.pdf';
+            $rutaDescargas = 'comprobantesPagosOrden/' . $nombreArchivo;
+
+            // Almacenar el archivo en el sistema de archivos
+            $archivo = $req->file('comprobante_pago');
+            $archivo->storeAs('comprobantesPagosOrden', $nombreArchivo, 'public');
+
+            // Actualizar el registro de la orden con la ruta del comprobante y cambiar el estado a "Pagado"
+            Orden_compras::where('id_orden',$id)->update([
+                "comprobante_pago"=>$rutaDescargas,
+                "estado"=>"Pagado",
+                "updated_at"=>Carbon::now()
+            ]);
+
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
+            return back()->with('pagado','pagado');
+
+        } else{
+            //Registra el pago sin coprobante en caso de que no se cargue archivo.
+            Orden_compras::where('id_orden',$id)->update([
+                "estado"=>"Pagado",
+                "updated_at"=>Carbon::now()
+            ]);
+
+            // Redirige al usuario a la página anterior con un mensaje de confirmación
+            return back()->with('pagado','pagado');
+        }
     }
 
     /*

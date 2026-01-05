@@ -163,20 +163,20 @@
                                         <a class="btn btn-primary"
                                             href="{{ route('createCotiza', $solicitud->id_requisicion) }}">
                                             Subir cotizaciones
-                                        </a>                                        
+                                        </a>
                                     @elseif ($solicitud->estado === 'Validado' || $solicitud->estado === 'Comprado')
                                         @if ($solicitud->estado === 'Comprado')
-                                        <a class="btn btn-danger" style="background-color:#ea7346"
-                                            href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
-                                            Orden de compra
-                                        </a>
-                                        @else 
-                                        <a class="btn btn-info"
-                                            href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
-                                            Orden de compra
-                                        </a>
-                                        @endif                                                                                
-                                    @else    
+                                            <a class="btn btn-danger" style="background-color:#ea7346"
+                                                href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
+                                                Orden de compra
+                                            </a>
+                                        @else
+                                            <a class="btn btn-info"
+                                                href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
+                                                Orden de compra
+                                            </a>
+                                        @endif
+                                    @else
                                         <a class="btn btn-primary" href="" onclick="return false;"
                                             style="pointer-events: none; background-color: gray; cursor: not-allowed;">
                                             Eliminar
@@ -190,38 +190,35 @@
                                         data-target="#Finalizar{{ $solicitud->id_requisicion }}">
                                         Finalizar
                                     </a>
-                                        <!-- Logout Modal-->
-                                        <div class="modal fade" id="Finalizar{{ $solicitud->id_requisicion }}"
-                                            tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">¿Se ha completado
-                                                            la
-                                                            requisicion?</h5>
-                                                        <button class="close" type="button" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">X</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">Selecciona confirmar para finalizar proceso
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button class="btn btn-secondary" type="button"
-                                                            data-dismiss="modal">cancelar</button>
-                                                        <form
-                                                            action="{{ route('FinalizarReq', $solicitud->id_requisicion) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            {!! method_field('PUT') !!}
-                                                            <button type="submit"
-                                                                class="btn btn-primary">Confirmar</button>
-                                                        </form>
-                                                    </div>
+                                    <!-- Logout Modal-->
+                                    <div class="modal fade" id="Finalizar{{ $solicitud->id_requisicion }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">¿Se ha completado
+                                                        la
+                                                        requisicion?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">X</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Selecciona confirmar para finalizar proceso
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button"
+                                                        data-dismiss="modal">cancelar</button>
+                                                    <form action="{{ route('FinalizarReq', $solicitud->id_requisicion) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        {!! method_field('PUT') !!}
+                                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                 </th>
                                 </tr>
                             @endforeach

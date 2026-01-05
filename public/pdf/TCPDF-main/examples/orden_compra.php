@@ -33,13 +33,12 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Orden de compra n° ". $idnuevaorden, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Orden de compra ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Orden de compra #".$idnuevaorden, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
@@ -160,18 +159,34 @@ $pdf->Cell(60, 7, $datosProveedor->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
 $pdf->SetFont('helvetica', '', 10);
-if ((!empty($datosProveedor->banco) && (!empty($datosProveedor->n_cuenta) || !empty($datosProveedor->n_cuenta_clabe)))){
-    $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
-    $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
-    $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
-    $pdf->Cell(60, 7, $datosProveedor->banco, 1);
-    $pdf->Cell(60, 7, $datosProveedor->n_cuenta, 1);
-    $pdf->Cell(60, 7, $datosProveedor->n_cuenta_clabe, 1,1);
-    $pdf->Cell(50, 7, 'Condicion de pago: '.$condiciones, 1, 0, 'C', 1);
-    $pdf->Cell(130, 7, 'Días de credito acordados: '. $dias, 1, 1, 'C', 1);
-}else{
-    $pdf->Cell(180, 7, 'No se han cargado los datos bancarios de este proveedor', 1, 1, 'C', 1);
+if ($tipoPago == 1) {
+    // Pago con tarjeta → NO mostrar datos bancarios
+    $pdf->Cell(180, 7, 'Pago con tarjeta', 1, 1, 'C', 1);
+} else {
+    // Pago NO es con tarjeta → validar datos bancarios
+    if (
+        !empty($datosProveedor->banco) &&
+        (!empty($datosProveedor->n_cuenta) || !empty($datosProveedor->n_cuenta_clabe))
+    ) {
+        $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
+        $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
+        $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
+
+        $pdf->Cell(60, 7, $datosProveedor->banco, 1);
+        $pdf->Cell(60, 7, $datosProveedor->n_cuenta, 1);
+        $pdf->Cell(60, 7, $datosProveedor->n_cuenta_clabe, 1, 1);
+
+        $pdf->Cell(50, 7, 'Condicion de pago: ' . $condiciones, 1, 0, 'C', 1);
+        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->Cell(130, 7, 'Dia de pago acordado: ' . $dias, 1, 1, 'C', 1);
+        $pdf->SetFont('helvetica', '', 10);
+
+    } else {
+
+        $pdf->Cell(180,7,'No se han cargado los datos bancarios de este proveedor',1,1,'C',1);
+    }
 }
+
 
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
