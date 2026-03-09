@@ -1497,6 +1497,10 @@ class controladorCompras extends Controller
                 }
             }
 
+            if (!empty($descuento)){
+                $totalGastos = $totalGastos - $descuento;                
+            }
+
             //Crea una orden de compra en la base de datos basandose en las variables obtenidas.
             Orden_compras::create([
                 "id_orden"=>$idnuevaorden,
@@ -2359,7 +2363,6 @@ class controladorCompras extends Controller
         $datosGastosPendientes = $queryPendientes->get();
         $datosGastos = $queryTotal->get();
 
-        return 
         // Crear un nuevo archivo Excel para los datos de las requisiciones
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
