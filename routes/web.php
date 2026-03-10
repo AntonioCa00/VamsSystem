@@ -244,6 +244,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('validaciones',[controladorSolic::class,'validaciones'])->name('validaciones');
         Route::get('ordenes/Compras',[controladorSolic::class,'tableOrdenes'])->name('ordenesdecompras');
         Route::get('ordenes/Pagos',[controladorSolic::class,'tablePagos'])->name('ordenesdePago');
+        Route::get('reporte/pagos',[controladorSolic::class,'reportePagos'])->name('reportePagos');
 
         //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
@@ -278,7 +279,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('activ-unidadSoli/{id}',[controladorSolic::class,'activateUnidad'])->name('activateUnidadSoli');
         Route::put('select-cotiza/Solic/{id}/{sid}',[controladorSolic::class,'selectCotiza'])->name('selectCotizaSolic');
         Route::put('rechazaContabilidad/{id}/{sid}',[controladorSolic::class,'rechazarCont'])->name('rechazarCont');
-        Route::post('validaciones',[controladorSolic::class,'crearValidacion'])->name('crearValidacion');
+        Route::post('validaciones',[controladorSolic::class,'crearValidacion'])->name('crearValidacion');     
+        Route::post('reporte/OC/Conta',[controladorSolic::class,'reporteOrd'])->name('reporteOCConta'); 
+        Route::post('reporte/OP/Conta',[controladorSolic::class,'reportePag'])->name('reporteOPConta');  
 
         //------------------------RUTAS MANTENIMIENTO CON ACCIONES EN BD------------------------//
         Route::post('actualizar-kms',[controladorMante::class,'actualizarkms'])->name('kilometrajes');
