@@ -244,7 +244,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('validaciones',[controladorSolic::class,'validaciones'])->name('validaciones');
         Route::get('ordenes/Compras',[controladorSolic::class,'tableOrdenes'])->name('ordenesdecompras');
         Route::get('ordenes/Pagos',[controladorSolic::class,'tablePagos'])->name('ordenesdePago');
-        Route::get('reporte/pagos',[controladorSolic::class,'reportePagos'])->name('reportePagos');
+        Route::get('reporte/pagos',[controladorSolic::class,'reportePagos'])->name('reportePagosCont');
 
         //------------------------VISTAS MODULO DE MANTENIMIENTO--------------------------//
         Route::get('mantenimiento',[controladorMante::class,'mantenimiento'])->name('manteniento');
