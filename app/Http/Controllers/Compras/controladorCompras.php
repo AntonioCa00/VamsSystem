@@ -553,6 +553,7 @@ class controladorCompras extends Controller
         ->where('requisiciones.estado', '!=', 'Finalizado')
         ->where('requisiciones.estado', '!=', 'Rechazado')
         ->where('requisiciones.estado', '!=', 'Solicitado')
+        ->where('requisiciones.estado', '!=', 'Cancelado')
         ->groupBy('requisiciones.id_requisicion')
         ->orderBy('requisiciones.created_at', 'desc')
         ->get();
@@ -1670,10 +1671,19 @@ class controladorCompras extends Controller
     */
     public function FinalizarReq($id){
         // Actualiza el estado de la requisición a "Finalizado"
-        Requisiciones::where('id_requisicion',$id)->update([
-            "estado"=>"Finalizado",
-            "updated_at"=>Carbon::now(),
+        $estado = Requisiciones::where('id_requisicion',$id)->first();
+
+        if ($estado->estado != "Comprado"){
+            Requisiciones::where('id_requisicion',$id)->update([
+                "estado"=>"Cancelado",
+                "updated_at"=>Carbon::now(),
         ]);
+        } else{
+            Requisiciones::where('id_requisicion',$id)->update([
+                "estado"=>"Finalizado",
+                "updated_at"=>Carbon::now(),
+            ]);
+        }
 
         // Redirige al usuario con un mensaje de confirmación
         return back()->with('finalizada','finalizada');
