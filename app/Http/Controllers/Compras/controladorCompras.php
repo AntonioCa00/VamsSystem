@@ -29,7 +29,6 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-
 use PhpOffice\PhpSpreadsheet\IOFactory;
 //-------DATABASE---------
 use DB;
