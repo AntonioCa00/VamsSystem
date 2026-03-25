@@ -251,17 +251,17 @@ class controladorGtArea extends Controller
       TODO: Recupera y muestra las unidades activas con ciertos criterios de filtrado.
 
       Este método realiza una consulta a la tabla 'Unidades' para obtener las unidades que cumplen con
-      los siguientes criterios: tener un estatus '1' (que indica unidades activas), no ser la unidad con 'id_unidad' igual a 1,
-      y tener un estado 'Activo'. Las unidades recuperadas son ordenadas en orden ascendente por su 'id_unidad'.
+      los siguientes criterios: tener un estatus '1' (que indica unidades activas), no ser la unidad con 'id' igual a 1,
+      y tener un estado 'Activo'. Las unidades recuperadas son ordenadas en orden ascendente por su 'id'.
 
       Retorna la vista 'GtArea.unidad', pasando los datos de las unidades filtradas.
     */
     public function tableUnidad()
     {
-        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
+        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id'
         $unidades = Unidades::where('estatus','1')
-        ->where('id_unidad','!=','1')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+        ->where('id','!=','1')
+        ->where('estado','Activo')->orderBy('id','asc')->get();
 
         // Retorna la vista 'GtArea.unidad', pasando la lista de unidades filtradas
         return view('GtArea.unidad',compact('unidades'));
@@ -597,7 +597,7 @@ class controladorGtArea extends Controller
 
             // Validar si la requisicion esta relacionada a una unidad, en caso de pertenecer a mantenimiento
             if(session('departamento') === "Mantenimiento"){
-                $unidad = Unidades::where('id_unidad',$req->input('unidad'))->first();
+                $unidad = Unidades::where('id',$req->input('unidad'))->first();
             }else{
                 $unidad = null;
             }
@@ -690,8 +690,8 @@ class controladorGtArea extends Controller
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         // Recuperación de detalles de la unidad asociada a la requisición
-        $unidad = Requisiciones::select('id_unidad','marca','n_de_serie','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
-        ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
+        $unidad = Requisiciones::select('id','marca','n_de_serie','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
+        ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id')
         ->where('requisiciones.id_requisicion',$id)
         ->first();
 
@@ -856,7 +856,7 @@ class controladorGtArea extends Controller
 
             //Valida si la requisicion tiene una unidad asignada y recupera su información
             if(!empty($datos->unidad_id)){
-                $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+                $unidad = Unidades::where('id',$datos->unidad_id)->first();
             }
 
             // Generar el nombre y ruta del nuevo archivo PDF
@@ -1282,7 +1282,7 @@ class controladorGtArea extends Controller
 
         //Valida si la requisicion tiene una unidad asignada y recupera su información
         if(!empty($datos->unidad_id)){
-            $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+            $unidad = Unidades::where('id',$datos->unidad_id)->first();
         }
 
         // Nombre y ruta del archivo en laravel
@@ -1844,11 +1844,11 @@ class controladorGtArea extends Controller
       Retorna la vista 'GtArea.mantenimiento', pasando el listado de unidades activas para su visualización y gestión.
     */
     public function mantenimiento (){
-        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
-        $unidades = Unidades::leftJoin('camion_servicios_preventivos as servicios','unidades.id_unidad','=','servicios.unidad_id')
+        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id'
+        $unidades = Unidades::leftJoin('camion_servicios_preventivos as servicios','unidades.id','=','servicios.unidad_id')
         ->where('estatus','1')
-        ->where('id_unidad','!=','1')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')->get();
+        ->where('id','!=','1')
+        ->where('estado','Activo')->orderBy('id','asc')->get();
 
         // Calcula el porcentaje de vida útil restante de varios componentes de mantenimiento para cada unidad activa.
         $unidades->each(function ($unidad) {
@@ -1891,7 +1891,7 @@ class controladorGtArea extends Controller
     */
     public function infoMantenimiento ($id){
         // Obtener los detalles de la unidad y el último servicio registrado
-        $unidad = Unidades::where('id_unidad',$id)->first();
+        $unidad = Unidades::where('id',$id)->first();
         $kmInicial = $unidad->kilometraje;
         $servicio = CamionServicioPreventivo::where('unidad_id',$id)->first();
 
@@ -1968,7 +1968,7 @@ class controladorGtArea extends Controller
 
         $idUnidad = $req->unidad;
 
-        $unidad = Unidades::where('id_unidad',$idUnidad)->first();
+        $unidad = Unidades::where('id',$idUnidad)->first();
 
         $datosEmpleado[] = [
             'idEmpleado' => session('loginId'),

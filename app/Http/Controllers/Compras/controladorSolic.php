@@ -318,6 +318,7 @@ class controladorSolic extends Controller
         // Consulta y recupera todas las unidades con estado 'Activo' y estatus '1'
         $unidades = Unidades::where('estado','Activo')
         ->where('estatus','1')
+        ->orderBy('Numero_ec','asc')
         ->get();
 
         // Retorna la vista para crear una nueva solicitud, pasando las unidades y los datos de sesión a la vista
@@ -498,7 +499,7 @@ class controladorSolic extends Controller
 
             // Validar si la requisicion esta relacionada a una unidad, en caso de pertenecer a mantenimiento
             if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen"){
-                $unidad = Unidades::where('id_unidad',$req->input('unidad'))->first();
+                $unidad = Unidades::where('id',$req->input('unidad'))->first();
             }else{
                 $unidad = null;
             }
@@ -593,8 +594,8 @@ class controladorSolic extends Controller
         $articulos = Articulos::where('requisicion_id',$id)->get();
 
         // Recuperación de detalles de la unidad asociada a la requisición
-        $unidad = Requisiciones::select('id_unidad','marca','n_de_serie','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
-        ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id_unidad')
+        $unidad = Requisiciones::select('id','marca','n_de_serie','modelo','notas','requisiciones.mantenimiento as mant','urgencia','fecha_programada')
+        ->leftJoin('unidades','requisiciones.unidad_id','=','unidades.id')
         ->where('requisiciones.id_requisicion',$id)
         ->first();
 
@@ -761,7 +762,7 @@ class controladorSolic extends Controller
 
             //Valida si la requisicion tiene una unidad asignada y recupera su información
             if(!empty($datos->unidad_id)){
-                $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+                $unidad = Unidades::where('id',$datos->unidad_id)->first();
             }
 
             // Generar el nombre y ruta del nuevo archivo PDF
@@ -1168,11 +1169,11 @@ class controladorSolic extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -1187,11 +1188,11 @@ class controladorSolic extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -1207,11 +1208,11 @@ class controladorSolic extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -1344,13 +1345,13 @@ class controladorSolic extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1364,7 +1365,7 @@ class controladorSolic extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -1548,13 +1549,13 @@ class controladorSolic extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1568,7 +1569,7 @@ class controladorSolic extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -1738,13 +1739,13 @@ class controladorSolic extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1758,7 +1759,7 @@ class controladorSolic extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -2381,9 +2382,9 @@ class controladorSolic extends Controller
     public function tableUnidades(){
         // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
         $unidades = Unidades::where('estatus','1')
-        ->where('id_unidad','!=','1')
-        ->where('id_unidad','!=','2')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')
+        ->where('id','!=','1')
+        ->where('id','!=','2')
+        ->where('estado','Activo')->orderBy('id','asc')
         ->get();
 
         // Carga y muestra la vista con el listado de unidades activas
@@ -2418,7 +2419,7 @@ class controladorSolic extends Controller
     public function insertUnidad(Request $req){
         // Crea la nueva unidad con los datos proporcionados
         Unidades::create([
-        "id_unidad"=>$req->input('id_unidad'),
+        "id"=>$req->input('id'),
         "tipo"=>$req->input('tipo'),
         "estado"=>$req->input('estado'),
         "anio_unidad"=>$req->input('anio_unidad'),
@@ -2450,7 +2451,7 @@ class controladorSolic extends Controller
     */
     public function editUnidad($id, $from){
         // Recupera los detalles de la unidad específica por su ID
-        $unidad= Unidades::where('id_unidad',$id)->first();
+        $unidad= Unidades::where('id',$id)->first();
 
         // Almacenar la URL de origen en la sesión
         session(['url_origen' => $from]);
@@ -2472,8 +2473,8 @@ class controladorSolic extends Controller
     */
     public function updateUnidad(Request $req, $id ){
         // Actualiza el registro de la unidad específico con los datos proporcionados
-        Unidades::where('id_unidad',$id)->update([
-            "id_unidad"=>$req->input('id_unidad'),
+        Unidades::where('id',$id)->update([
+            "id"=>$req->input('id'),
             "tipo"=>$req->input('tipo'),
             "estado"=>$req->input('estado'),
             "anio_unidad"=>$req->input('anio_unidad'),
@@ -2511,7 +2512,7 @@ class controladorSolic extends Controller
     */
     public function deleteUnidad($id){
         // Actualiza el registro de la unidad específica para marcarla como inactiva
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now()
         ]);
@@ -2533,7 +2534,7 @@ class controladorSolic extends Controller
     */
     public function bajaUnidad($id){
         // Actualiza el registro de la unidad específica para marcarla como inactiva
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estado"=>"Inactivo",
             "updated_at"=>Carbon::now()
         ]);
@@ -2570,7 +2571,7 @@ class controladorSolic extends Controller
     */
     public function activateUnidad($id){
         // Actualiza el estado de la unidad específica a "Activo"
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estado"=>"Activo",
             "updated_at"=>Carbon::now()
         ]);

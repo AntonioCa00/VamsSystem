@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class unidadServicio extends Model
 {
     protected $fillable = [
-        'id_unidad_serv',
+        'id_serv',
         'unidad_id',
         'km_mantenimiento',
         'contador',

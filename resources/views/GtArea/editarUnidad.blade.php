@@ -14,12 +14,12 @@
         </div>
         <div class="card-body">
             <h3 class="text-center">Datos de registro</h3>
-            <form action="{{route('updateUnidad',$unidad->id_unidad)}}" method="POST">
+            <form action="{{route('updateUnidad',$unidad->id)}}" method="POST">
                 @csrf
                 {!!method_field('PUT')!!}
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Codigo de la unidad:</label>
-                    <input name="id_unidad" type="text" value="{{$unidad->id_unidad}}" class="form-control"placeholder="Placas de la unidad">
+                    <input name="id" type="text" value="{{$unidad->id}}" class="form-control"placeholder="Placas de la unidad">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Tipo de vehiculo</label>

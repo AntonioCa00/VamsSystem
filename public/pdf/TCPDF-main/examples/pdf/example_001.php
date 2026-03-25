@@ -88,13 +88,13 @@ $pdf->Cell(25, 5, 'Año', 1, 0, 'C', 1);
 $pdf->Cell(25, 5, 'Marca', 1, 1, 'C', 1);
 
 // Datos del empleado (simulados)
-$id_unidad = "MK-4093-98";
+$id = "MK-4093-98";
 $tipo_unidad = "Autobus";
 $estado = "Activo";
 $año = "2002";
 $marca = "mercedes";
 
-$pdf->Cell(30, 7, $id_unidad, 1);
+$pdf->Cell(30, 7, $id, 1);
 $pdf->Cell(25, 7, $tipo_unidad, 1);
 $pdf->Cell(25, 7, $estado, 1);
 $pdf->Cell(25, 7, $año, 1, 0, 'C');

@@ -98,12 +98,8 @@ if(!empty($unidad)){
     $pdf->Cell(125, 7, 'Unidad', 1, 0, 'C', 1);
     $pdf->Cell(35, 7, 'Mantenimiento', 1, 1, 'C', 1);
 
-    // notas que agrega el solicitante
-    if ($unidad->tipo === "AUTOMOVIL" ){
-        $pdf->Cell(125, 6,'N° serie: '.$unidad->n_de_serie.' - Descripcion: '.$unidad->id_unidad, 1 );
-    } else {
-        $pdf->Cell(125, 6,'N° serie: '.$unidad->n_de_serie.' - Descripcion: '.$unidad->n_de_permiso, 1);
-    }
+    $pdf->Cell(50, 6,'N° economico: '.$unidad->Numero_ec, 1 );
+    $pdf->Cell(75, 6,'N° serie: '.$unidad->n_de_serie, 1 );
 
     $pdf->Cell(35, 6, $mantenimiento, 1, 1, 'C');
 

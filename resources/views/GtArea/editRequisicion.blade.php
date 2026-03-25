@@ -138,13 +138,13 @@
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         <select name="unidad" class="form-control" required>
-                            <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} {{$unidad->marca}} {{$unidad->modelo}}</option>
+                            <option value="{{$unidad->id}}">{{$unidad->n_de_serie}} {{$unidad->marca}} {{$unidad->modelo}}</option>
                             <option disabled>Selecciona una unidad en caso de cambiar de unidad la requisicion</option>
                             @foreach ($unidades as $unidade)
                             @if ($unidad->tipo != "AUTOMOVIL")
-                            <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} - {{$unidad->n_de_permiso}} {{$unidad->modelo}}</option>
+                            <option value="{{$unidad->id}}">{{$unidad->n_de_serie}} - {{$unidad->n_de_permiso}} {{$unidad->modelo}}</option>
                         @else
-                            <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} {{$unidad->id_unidad}} {{$unidad->modelo}}</option>
+                            <option value="{{$unidad->id}}">{{$unidad->n_de_serie}} {{$unidad->id}} {{$unidad->modelo}}</option>
                         @endif
                             @endforeach
                         </select>
