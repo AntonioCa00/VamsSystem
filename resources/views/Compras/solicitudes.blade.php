@@ -168,26 +168,24 @@
                                             data-target="#Finalizar{{ $solicitud->id_requisicion }}">
                                             Cancelar
                                         </a>
-                                    @elseif ($solicitud->estado === 'Validado' || $solicitud->estado === 'Comprado')
-                                        @if ($solicitud->estado === 'Comprado')
-                                            <a class="btn btn-danger" style="background-color:#ea7346"
-                                                href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
-                                                Orden de compra
-                                            </a>
-                                            <a class="btn btn-success" href="#" data-toggle="modal"
-                                                data-target="#Finalizar{{ $solicitud->id_requisicion }}">
-                                                Finalizar
-                                            </a>
-                                        @else
-                                            <a class="btn btn-info"
-                                                href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
-                                                Orden de compra
-                                            </a>
-                                            <a class="btn btn-danger" href="#" data-toggle="modal"
-                                                data-target="#Finalizar{{ $solicitud->id_requisicion }}">
-                                                Finalizar
-                                            </a>
-                                        @endif
+                                    @elseif ($solicitud->estado === 'Validado')                                        
+                                        <a class="btn btn-danger" style="background-color:#ea7346"
+                                            href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
+                                            Orden de compra
+                                        </a>
+                                        <a class="btn btn-danger" href="#" data-toggle="modal"
+                                            data-target="#Finalizar{{ $solicitud->id_requisicion }}">
+                                            Cancelar
+                                        </a>
+                                    @elseif ($solicitud->estado === 'Comprado')
+                                        <a class="btn btn-info"
+                                            href="{{ route('ordenCompra', $solicitud->id_requisicion) }}">
+                                            Orden de compra
+                                        </a>
+                                        <a class="btn btn-success" href="#" data-toggle="modal"
+                                            data-target="#Finalizar{{ $solicitud->id_requisicion }}">
+                                            Finalizar
+                                        </a>                                    
                                     @else
                                         <a class="btn btn-primary" href="" onclick="return false;"
                                             style="pointer-events: none; background-color: gray; cursor: not-allowed;">
