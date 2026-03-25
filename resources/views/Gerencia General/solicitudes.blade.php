@@ -67,7 +67,7 @@
                                 <th>{{$solicitudes->unidad_id}}</th>
                             @endif
                             <th>
-                                <a href="{{ asset($solicitudes->pdf) }}" target="_blank">
+                                <a href="{{ asset($solicitudes->pdf) }}" target="_blank" type="application/pdf">
                                     <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
                                 </a>
                             </th>
