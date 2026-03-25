@@ -129,7 +129,7 @@ $pdf->Cell(20, 7, 'Estado', 1, 1, 'C', 1);
 
 $datosUnidades = $unidades;
 foreach ($datosUnidades as $datos) {
-    $pdf->Cell(25, 7, $datos->id_unidad, 1);
+    $pdf->Cell(25, 7, $datos->id, 1);
     $pdf->Cell(25, 7, $datos->tipo, 1);
     $pdf->Cell(20, 7, $datos->anio_unidad, 1);
     $pdf->Cell(30, 7, $datos->marca, 1);

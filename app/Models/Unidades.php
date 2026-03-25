@@ -9,8 +9,10 @@ class Unidades extends Model
 {
 
     protected $fillable = [
-        'id_unidad',
+        'id',
+        'id',
         'tipo',
+        'Numero_ec',
         'estado',
         'anio_unidad',
         'marca',
@@ -21,7 +23,7 @@ class Unidades extends Model
         'estatus',
         'kilometraje',
         'created_at',
-        'updated_at'
+        'updated_at',        
     ];
 
     use HasFactory;

@@ -111,33 +111,33 @@
                                 @if($unidad->tipo != "AUTOMOVIL")
                                     <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->n_de_permiso }}</h6>
                                 @else 
-                                   <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->id_unidad }}</h6>
+                                   <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->id }}</h6>
                                 @endif
-                                @include('shared.alertUni',['unidad_id'=>$unidad->id_unidad])
+                                @include('shared.alertUni',['unidad_id'=>$unidad->id])
                             </div> <!-- Fin de la clase card-header py-3 -->
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <a class="btn bg-gradient-info text-white" style="width: 100%; font-size: 12px;"
-                                            href="{{ route('infoMantenimiento', $unidad->id_unidad) }}">
+                                            href="{{ route('infoMantenimiento', $unidad->id) }}">
                                             Información
                                         </a>
                                     </div> <!-- Fin de la clase col-md-6 -->
                                     <div class="col-md-6">
                                         <a class="btn bg-gradient-success text-white" style="width: 100%; font-size: 12px;"
                                             href="#" data-toggle="modal"
-                                            data-target="#Actualizar{{ $unidad->id_unidad }}">
+                                            data-target="#Actualizar{{ $unidad->id }}">
                                             Actualizar km
                                         </a>
                                         <!-- Rechazar Modal-->
-                                        <div class="modal fade" id="Actualizar{{ $unidad->id_unidad }}" tabindex="-1"
+                                        <div class="modal fade" id="Actualizar{{ $unidad->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="exampleModalLabel">Actualizar
                                                             kilometraje de la unidad:</h5>
-                                                        <h4 class="font-weight-bold"> {{ $unidad->id_unidad }}</4>
+                                                        <h4 class="font-weight-bold"> {{ $unidad->id }}</4>
                                                             <button class="close" type="button" data-dismiss="modal"
                                                                 aria-label="Close">
                                                                 <span aria-hidden="true">X</span>
@@ -147,7 +147,7 @@
                                                         El ultimo kilometraje registrado de la unidad es: <label
                                                             class="font-weight-bold text-primary">
                                                             {{ number_format($unidad->kilometraje, 0, '.', ',') }}</label>
-                                                        <form action="{{ route('updateKilom', $unidad->id_unidad) }}"
+                                                        <form action="{{ route('updateKilom', $unidad->id) }}"
                                                             method="POST" class="mt-4">
                                                             @csrf
                                                             {!! method_field('PUT') !!}

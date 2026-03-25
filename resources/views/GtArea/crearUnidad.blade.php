@@ -18,7 +18,7 @@
                 @csrf
                 <div class="form-group">
                     <label for="exampleFormControlInput1">Codigo de la unidad:</label>
-                    <input name="id_unidad" type="text" class="form-control" placeholder="Placas de la unidad">
+                    <input name="id" type="text" class="form-control" placeholder="Placas de la unidad">
                 </div>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1">Tipo de vehiculo</label>

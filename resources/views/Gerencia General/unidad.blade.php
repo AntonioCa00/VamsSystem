@@ -92,7 +92,7 @@
                     <tbody>
                         @foreach ($unidades as $unidad)
                         <tr>
-                            <th>{{$unidad->id_unidad}}</th>
+                            <th>{{$unidad->id}}</th>
                             <th>{{$unidad->tipo}}</th>
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>

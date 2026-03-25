@@ -555,9 +555,9 @@ class controladorGerenciaGen extends Controller
     public function unidadesGerGen(){
         // Recupera las unidades activas al momento
         $unidades = Unidades::where('estatus','1')
-        ->where('id_unidad','!=','1')
+        ->where('id','!=','1')
         ->where('estado','Activo')
-        ->orderBy('id_unidad','asc')->get();
+        ->orderBy('id','asc')->get();
 
         // Redirecciona a la vista para mostrar las unidades
         return view('Gerencia General.unidad',compact('unidades'));
@@ -716,8 +716,8 @@ class controladorGerenciaGen extends Controller
 
         // Construir la consulta con INNER JOIN
         $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
-            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
-            ->select('requisiciones.*','unidades.id_unidad','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
+            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id')
+            ->select('requisiciones.*','unidades.id','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
             ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
         // Si se han seleccionado departamentos, filtrar por ellos
@@ -838,7 +838,7 @@ class controladorGerenciaGen extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $requisicion->id_unidad;
+                    $unidad = $requisicion->id;
                 }
             }
             $sheet->setCellValue('A' . $rowNumber, $nombreMes);
@@ -919,10 +919,10 @@ class controladorGerenciaGen extends Controller
         $queryTotal = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
                'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
                'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'unidades.id','unidades.tipo','unidades.n_de_permiso',
                'proveedores.nombre')
                ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
                ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
                ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
                ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -943,10 +943,10 @@ class controladorGerenciaGen extends Controller
         $queryPendientes = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
                'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
                'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'unidades.id','unidades.tipo','unidades.n_de_permiso',
                'proveedores.nombre')
                ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
                ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
                ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
                ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -968,10 +968,10 @@ class controladorGerenciaGen extends Controller
         $queryPagados = Requisiciones::select('requisiciones.id_requisicion','requisiciones.notas','requisiciones.estado as estadoReq','requisiciones.created_at as fechaReq',
                'orden_compras.id_orden','orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd','orden_compras.costo_total',
                'users.nombres', 'users.apellidoP', 'users.departamento',
-               'unidades.id_unidad','unidades.tipo','unidades.n_de_permiso',
+               'unidades.id','unidades.tipo','unidades.n_de_permiso',
                'proveedores.nombre')
                ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+               ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
                ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
                ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
                ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -1104,13 +1104,13 @@ class controladorGerenciaGen extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1124,7 +1124,7 @@ class controladorGerenciaGen extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -1270,13 +1270,13 @@ class controladorGerenciaGen extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1290,7 +1290,7 @@ class controladorGerenciaGen extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -1436,13 +1436,13 @@ class controladorGerenciaGen extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -1456,7 +1456,7 @@ class controladorGerenciaGen extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 

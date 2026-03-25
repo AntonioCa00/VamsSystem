@@ -30,7 +30,7 @@
                 @if($unidad->tipo != "AUTOMOVIL")
                     <h6 class="m-0 font-weight-bold text-primary">Unidad: {{ $unidad->n_de_permiso }}</h6>
                 @else 
-                    <h6 class="m-0 font-weight-bold text-primary">Unidad {{ $unidad->id_unidad }}</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Unidad {{ $unidad->id }}</h6>
                 @endif        
             </div> <!-- Fin de la clase card-header py-3 -->
             <div class="card-body justify-content-between">
@@ -103,7 +103,7 @@
                                                             </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form action="{{route('programar',$unidad->id_unidad)}}" method="POST">
+                                                        <form action="{{route('programar',$unidad->id)}}" method="POST">
                                                             @csrf
                                                             <label>Seleccione la fecha en que realizará el siguiente mantenimiento:</label>
                                                             <div class="form-group">                                                                
@@ -138,7 +138,7 @@
                                                             </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form action="{{route('reprogramar',['unidad'=>$unidad->id_unidad, 'progra' =>$programacion->id_programacion])}}" method="POST">
+                                                        <form action="{{route('reprogramar',['unidad'=>$unidad->id, 'progra' =>$programacion->id_programacion])}}" method="POST">
                                                             @csrf
                                                             <label>Seleccione la fecha en que realizará el siguiente mantenimiento:</label>
                                                             <div class="form-group">                                                                                                                            

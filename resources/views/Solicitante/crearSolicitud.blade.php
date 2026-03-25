@@ -144,9 +144,9 @@
                             <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
                             @foreach ($unidades as $unidad)
                             @if ($unidad->tipo != "AUTOMOVIL")
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} - {{$unidad->n_de_permiso}} {{$unidad->modelo}}</option>
+                                <option value="{{$unidad->id}}">{{$unidad->Numero_ec}} - {{$unidad->n_de_permiso}}</option>
                             @else
-                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_serie}} {{$unidad->id_unidad}} {{$unidad->modelo}}</option>
+                                <option value="{{$unidad->id}}">{{$unidad->Numero_ec}} {{$unidad->modelo}}</option>
                             @endif
                             @endforeach
                         </select>

@@ -314,8 +314,8 @@ class controladorCompras extends Controller
     public function tableUnidad(){
         // Recupera las unidades activas, excluyendo la unidad con ID '1' y ordenándolas por ID de manera ascendente
         $unidades = Unidades::where('estatus','1')
-        ->where('id_unidad','!=','1')
-        ->where('estado','Activo')->orderBy('id_unidad','asc')
+        ->where('id','!=','1')
+        ->where('estado','Activo')->orderBy('id','asc')
         ->get();
 
         // Carga y muestra la vista con el listado de unidades activas
@@ -350,7 +350,7 @@ class controladorCompras extends Controller
     public function insertUnidad(Request $req){
         // Crea la nueva unidad con los datos proporcionados
         Unidades::create([
-        "id_unidad"=>$req->input('id_unidad'),
+        "id"=>$req->input('id'),
         "tipo"=>$req->input('tipo'),
         "estado"=>$req->input('estado'),
         "anio_unidad"=>$req->input('anio_unidad'),
@@ -366,7 +366,7 @@ class controladorCompras extends Controller
         ]);
 
         unidadServicio::create([
-            "unidad_id" => $req->input('id_unidad'),
+            "unidad_id" => $req->input('id'),
             "km_mantenimiento"=> $req->input('kilometraje'),
             "contador"=> 0,
             "created_at"=>Carbon::now(),
@@ -391,7 +391,7 @@ class controladorCompras extends Controller
     */
     public function editUnidad($id){
         // Recupera los detalles de la unidad específica por su ID
-        $unidad = Unidades::where('id_unidad',$id)->first();
+        $unidad = Unidades::where('id',$id)->first();
 
         // Carga y muestra la vista con el formulario de edición de unidad, pasando los detalles de la unidad
         return view('Compras.editarUnidad',compact('unidad'));
@@ -410,8 +410,8 @@ class controladorCompras extends Controller
     */
     public function updateUnidad(Request $req, $id){
         // Actualiza el registro de la unidad específico con los datos proporcionados
-        Unidades::where('id_unidad',$id)->update([
-            "id_unidad"=>$req->input('id_unidad'),
+        Unidades::where('id',$id)->update([
+            "id"=>$req->input('id'),
             "tipo"=>$req->input('tipo'),
             "estado"=>$req->input('estado'),
             "anio_unidad"=>$req->input('anio_unidad'),
@@ -443,7 +443,7 @@ class controladorCompras extends Controller
     */
     public function deleteUnidad($id){
         // Actualiza el registro de la unidad específica para marcarla como inactiva
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estatus"=>"0",
             "updated_at"=>Carbon::now()
         ]);
@@ -465,7 +465,7 @@ class controladorCompras extends Controller
     */
     public function bajaUnidad($id){
         // Actualiza el registro de la unidad específica para marcarla como inactiva
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estado"=>"Inactivo",
             "updated_at"=>Carbon::now()
         ]);
@@ -502,7 +502,7 @@ class controladorCompras extends Controller
     */
     public function activateUnidad($id){
         // Actualiza el estado de la unidad específica a "Activo"
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "estado"=>"Activo",
             "updated_at"=>Carbon::now()
         ]);
@@ -756,7 +756,7 @@ class controladorCompras extends Controller
 
         //Valida si la requisicion tiene una unidad asignada y recupera su información
         if(!empty($datos->unidad_id)){
-            $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+            $unidad = Unidades::where('id',$datos->unidad_id)->first();
         }
 
         // Nombre y ruta del archivo en laravel
@@ -1457,7 +1457,7 @@ class controladorCompras extends Controller
 
             //Si existe unidad guarda todos sus datos para mostrarlos en pdf
             if(!empty($datos->unidad_id)){
-                $unidad = Unidades::where('id_unidad',$datos->unidad_id)->first();
+                $unidad = Unidades::where('id',$datos->unidad_id)->first();
             }
 
             $articulosSeleccionados = $req->input('articulos_seleccionados');
@@ -2097,8 +2097,8 @@ class controladorCompras extends Controller
 
         // Construir la consulta con INNER JOIN
         $query = Requisiciones::join('users', 'requisiciones.usuario_id', '=', 'users.id')
-            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id_unidad')
-            ->select('requisiciones.*','unidades.id_unidad','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
+            ->leftJoin('unidades','requisiciones.unidad_id','unidades.id')
+            ->select('requisiciones.*','unidades.id','unidades.tipo','n_de_permiso', 'users.nombres', 'users.apellidoP', 'users.departamento')
             ->whereBetween('requisiciones.created_at', [$fInicio, $fFin]);
 
         // Si se han seleccionado departamentos, filtrar por ellos
@@ -2219,7 +2219,7 @@ class controladorCompras extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $requisicion->id_unidad;
+                    $unidad = $requisicion->id;
                 }
             }
             // Escribir los datos de la requisición en las celdas correspondientes
@@ -2306,11 +2306,11 @@ class controladorCompras extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -2325,11 +2325,11 @@ class controladorCompras extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -2345,11 +2345,11 @@ class controladorCompras extends Controller
             'requisiciones.id_requisicion', 'requisiciones.notas', 'requisiciones.estado as estadoReq', 'requisiciones.created_at as fechaReq',
             'orden_compras.id_orden', 'orden_compras.created_at as fecha_orden', 'orden_compras.estado as estadoOrd', 'orden_compras.costo_total',
             'users.nombres', 'users.apellidoP', 'users.departamento',
-            'unidades.id_unidad', 'unidades.tipo', 'unidades.n_de_permiso',
+            'unidades.id', 'unidades.tipo', 'unidades.n_de_permiso',
             'proveedores.nombre'
         )
         ->leftJoin('users', 'requisiciones.usuario_id', '=', 'users.id')
-        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id_unidad')
+        ->leftJoin('unidades', 'requisiciones.unidad_id', '=', 'unidades.id')
         ->leftJoin('cotizaciones', 'cotizaciones.requisicion_id', '=', 'requisiciones.id_requisicion')
         ->leftJoin('orden_compras', 'orden_compras.cotizacion_id', '=', 'cotizaciones.id_cotizacion')
         ->leftJoin('proveedores', 'orden_compras.proveedor_id', '=', 'proveedores.id_proveedor')
@@ -2482,13 +2482,13 @@ class controladorCompras extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -2502,7 +2502,7 @@ class controladorCompras extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -2686,13 +2686,13 @@ class controladorCompras extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -2706,7 +2706,7 @@ class controladorCompras extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -2876,13 +2876,13 @@ class controladorCompras extends Controller
             $viernes = $fechaConvert->endOfWeek(Carbon::FRIDAY)->day;
 
             // Valida si la requisición pertenece a una unidad
-            if (empty($orden->id_unidad)) {
+            if (empty($orden->id)) {
                 // Si no tiene una unidad asignada, entonces el valor de unidad es 'NA'
                 $unidad = 'NA';
             }
 
             // Valida si la requisición pertenece a la unidad 1 o 2
-            elseif($orden->id_unidad == 1 || $orden->id_unidad == 2){
+            elseif($orden->id == 1 || $orden->id == 2){
                 // Si pertenece, entonces el valor de unidad es 'No signada'
                 $unidad = 'No asignada';
 
@@ -2896,7 +2896,7 @@ class controladorCompras extends Controller
 
                 } else{
                     // Si no, son sus placas (unidad_id)
-                    $unidad = $orden->id_unidad;
+                    $unidad = $orden->id;
                 }
             }
 
@@ -3649,8 +3649,8 @@ class controladorCompras extends Controller
         // Consultar las unidades que se encuentren activas al momento
         $unidades = Unidades::where('estatus',1)
         ->orderBY('n_de_permiso','asc')
-        ->where('id_unidad','!=',1)
-        ->where('id_unidad','!=',2)
+        ->where('id','!=',1)
+        ->where('id','!=',2)
         ->get();
 
         // Incluir el archivo Requisicion.php y pasar la ruta del archivo como una variable

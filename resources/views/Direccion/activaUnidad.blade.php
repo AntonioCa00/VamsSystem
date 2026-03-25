@@ -17,7 +17,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID_unidad:</th>
+                            <th>id:</th>
                             <th>Tipo:</th>
                             <th>Estado:</th>
                             <th>Año Unidad:</th>
@@ -29,18 +29,18 @@
                     <tbody>
                         @foreach ($unidades as $unidad)
                         <tr>
-                            <th>{{$unidad->id_unidad}}</th>
+                            <th>{{$unidad->id}}</th>
                             <th>{{$unidad->tipo}}</th>
                             <th>{{$unidad->estado}}</th>
                             <th>{{$unidad->anio_unidad}}</th>
                             <th>{{$unidad->marca}}</th>
                             <th>{{$unidad->kilometraje}} kms</th>
                             <th>
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id_unidad}}">
+                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarUnid{{$unidad->id}}">
                                     Activar
                                 </a>
                                 <!-- Activate Modal-->
-                                <div class="modal fade" id="eliminarUnid{{$unidad->id_unidad}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                <div class="modal fade" id="eliminarUnid{{$unidad->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -53,7 +53,7 @@
                                             <div class="modal-body">Selecciona confirmar para activar esta unidad</div>
                                             <div class="modal-footer">
                                                 <button class="btn btn-secondary" type="button" data-dismiss="modal">cancelar</button>
-                                                <form action="{{route('activateUnidad',$unidad->id_unidad)}}" method="POST">
+                                                <form action="{{route('activateUnidad',$unidad->id)}}" method="POST">
                                                     @csrf
                                                     {!!method_field('PUT')!!}    
                                                     <button type="submit" class="btn btn-primary">confirmar</button>

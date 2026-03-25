@@ -17,7 +17,7 @@ use DB;
 class controladorMante extends Controller
 {
     public function mantenimiento (){
-        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id_unidad'
+        // Recupera las unidades que cumplen con los criterios especificados y las ordena por 'id'
         // Subconsulta para obtener el último servicio de cada unidad
         $ultimoServicio = unidadServicio:: select('unidad_id', DB::raw('MAX(created_at) as ultima_fecha'))
         ->groupBy('unidad_id');
@@ -25,23 +25,23 @@ class controladorMante extends Controller
         // Consulta principal que utiliza la subconsulta
         $unidades = DB::table('unidades')
         ->leftJoinSub($ultimoServicio, 'ultimo_servicio', function($join) {
-            $join->on('unidades.id_unidad', '=', 'ultimo_servicio.unidad_id');
+            $join->on('unidades.id', '=', 'ultimo_servicio.unidad_id');
         })
         ->leftJoin('unidad_servicios as servicios', function($join) {
-            $join->on('unidades.id_unidad', '=', 'servicios.unidad_id')
+            $join->on('unidades.id', '=', 'servicios.unidad_id')
                 ->on('ultimo_servicio.ultima_fecha', '=', 'servicios.created_at');
         })
-        ->select('unidades.id_unidad','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo','unidades.n_de_permiso','unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
+        ->select('unidades.id','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo','unidades.n_de_permiso','unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
         ->where('unidades.estatus', '1')
-        ->where('unidades.id_unidad', '!=', '1')
+        ->where('unidades.id', '!=', '1')
         ->where('unidades.estado', 'Activo')
-        ->orderBy('unidades.id_unidad', 'asc')
+        ->orderBy('unidades.id', 'asc')
         ->get();
 
         $unidades->each(function ($unidad) {
             if (empty($unidad->fecha_ultimo_servicio)){
                 unidadServicio::create([
-                    'unidad_id'=>$unidad->id_unidad,
+                    'unidad_id'=>$unidad->id,
                     'km_mantenimiento'=>$unidad->kilometraje,
                     'contador'=>0,
                     'created_at'=>Carbon::now(),
@@ -84,17 +84,17 @@ class controladorMante extends Controller
         // Consulta principal que utiliza la subconsulta
         $unidad = DB::table('unidades')
             ->leftJoinSub($ultimoServicio, 'ultimo_servicio', function($join) {
-                $join->on('unidades.id_unidad', '=', 'ultimo_servicio.unidad_id');
+                $join->on('unidades.id', '=', 'ultimo_servicio.unidad_id');
             })
             ->leftJoin('unidad_servicios as servicios', function($join) {
-                $join->on('unidades.id_unidad', '=', 'servicios.unidad_id')
+                $join->on('unidades.id', '=', 'servicios.unidad_id')
                     ->on('ultimo_servicio.ultima_fecha', '=', 'servicios.created_at');
             })
-            ->select('unidades.id_unidad','unidades.tipo','unidades.n_de_permiso','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
+            ->select('unidades.id','unidades.tipo','unidades.n_de_permiso','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje', 'servicios.km_mantenimiento', 'servicios.contador', 'servicios.created_at as fecha_ultimo_servicio')
             ->where('unidades.estatus', '1')
-            ->where('unidades.id_unidad', $id) // Filtrar por la unidad específica
+            ->where('unidades.id', $id) // Filtrar por la unidad específica
             ->where('unidades.estado', 'Activo')
-            ->orderBy('unidades.id_unidad', 'asc')
+            ->orderBy('unidades.id', 'asc')
             ->first();
 
         // Obtener refacciones según el tipo de unidad
@@ -135,7 +135,7 @@ class controladorMante extends Controller
         $alert = DB::table('historial_mants')
         ->select('historial_mants.created_at','historial_mants.notas')
         ->join('programaciones','historial_mants.programacion_id','=','programaciones.id_programacion')
-        ->where('programaciones.unidad_id',$unidad->id_unidad)
+        ->where('programaciones.unidad_id',$unidad->id)
         ->where('historial_mants.estatus','2')
         ->orderBy('historial_mants.created_at','desc')
         ->first();
@@ -211,13 +211,13 @@ class controladorMante extends Controller
     */
     public function registrarMant(Request $req,$progra){
         // Obtener información de la unidad y su tipo
-        $unid = programaciones::select('unidades.id_unidad','unidades.tipo')
-        ->join('unidades','programaciones.unidad_id','unidades.id_unidad')
+        $unid = programaciones::select('unidades.id','unidades.tipo')
+        ->join('unidades','programaciones.unidad_id','unidades.id')
         ->where('programaciones.id_programacion',$progra)
         ->first();
 
         // Obtener el contador de mantenimientos de la unidad
-        $contador = unidadServicio::where('unidad_id',$unid->id_unidad)->first();
+        $contador = unidadServicio::where('unidad_id',$unid->id)->first();
         $contadorfinal = $contador->contador +1;
 
         // Determinar el tipo de mantenimiento basado en el tipo de unidad
@@ -239,13 +239,13 @@ class controladorMante extends Controller
         ]);
 
         // Actualizar el kilometraje de la unidad
-        Unidades::where('id_unidad',$unid->id_unidad)->update([
+        Unidades::where('id',$unid->id)->update([
             'kilometraje'=>$req->kms,
             'updated_at'=>Carbon::now()
         ]);
 
         // Actualizar el mantenimiento de la unidad
-        unidadServicio::where('unidad_id',$unid->id_unidad)->update([
+        unidadServicio::where('unidad_id',$unid->id)->update([
             'km_mantenimiento'=>$req->kms,
             'contador'=>$contadorfinal,
             'updated_at'=>Carbon::now(),
@@ -279,7 +279,7 @@ class controladorMante extends Controller
         $kilometraje = $req->kilometraje;
 
         // Actualizar el kilometraje de la unidad
-        Unidades::where('id_unidad',$id)->update([
+        Unidades::where('id',$id)->update([
             "kilometraje"=>$kilometraje,
             "updated_at"=>Carbon::now(),
         ]);
@@ -324,17 +324,17 @@ class controladorMante extends Controller
 
         // Iterar sobre las filas y leer los datos
         for ($row = 31; $row <= $highestRow; $row++) {
-            // Obtener los datos de la celda A (id_unidad/permiso) y J (kilometraje recorrido) de cada fila
-            $id_unidad = $sheet->getCell('A' . $row)->getValue();
+            // Obtener los datos de la celda A (id/permiso) y J (kilometraje recorrido) de cada fila
+            $id = $sheet->getCell('A' . $row)->getValue();
             $kilometraje = $sheet->getCell('J' . $row)->getValue();
 
             // Verificar si la unidad existe en la base de datos
-            $unidad = Unidades::where('n_de_permiso', $id_unidad)->orWhere('id_unidad',$id_unidad)->first();
+            $unidad = Unidades::where('n_de_permiso', $id)->orWhere('id',$id)->first();
 
             if ($unidad) {
                 // Si la unidad existe, actualizar el kilometraje
                 $kilometrajeFinal = $unidad->kilometraje+$kilometraje;
-                Unidades::where('id_unidad',$unidad->id_unidad)->update([
+                Unidades::where('id',$unidad->id)->update([
                     "kilometraje" => $kilometrajeFinal,
                     "updated_at" => Carbon::now(),
                 ]);
@@ -357,12 +357,12 @@ class controladorMante extends Controller
     public function calendario()
     {
         // Obtener las unidades activas, excluyendo la unidad con ID 1
-        $unidades = Unidades::select('unidades.id_unidad','unidades.n_de_permiso','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje')
+        $unidades = Unidades::select('unidades.id','unidades.n_de_permiso','unidades.tipo','unidades.estado','unidades.anio_unidad','unidades.marca','unidades.modelo', 'unidades.kilometraje')
         ->where('unidades.estatus', '1')
-        ->where('unidades.id_unidad', '!=', '1')
-        ->where('unidades.id_unidad', '!=', '2')
+        ->where('unidades.id', '!=', '1')
+        ->where('unidades.id', '!=', '2')
         ->where('unidades.estado', 'Activo')
-        ->orderBy('unidades.id_unidad', 'asc')
+        ->orderBy('unidades.id', 'asc')
         ->get();
 
         // Devolver la vista 'Solicitante.calendario' con las unidades obtenidas
@@ -383,7 +383,7 @@ class controladorMante extends Controller
     {
         // Obtener las programaciones activas o en reprogramación y mapear los datos para el calendario de eventos
         $events = programaciones::
-        join('unidades', 'programaciones.unidad_id', 'unidades.id_unidad')
+        join('unidades', 'programaciones.unidad_id', 'unidades.id')
         ->where('programaciones.estatus', '1')
         ->orWhere('programaciones.estatus', '2')
         ->get()->map(function ($event) {
@@ -392,7 +392,7 @@ class controladorMante extends Controller
             if ($event->tipo != 'AUTOMOVIL') {
                 $title .= $event->n_de_permiso; // Suponiendo que 'n_de_permiso' es la columna para el permiso del camión
             } else{
-                $title .= $event->id_unidad; // Suponiendo que 'placas' es la columna para las placas del automóvil
+                $title .= $event->id; // Suponiendo que 'placas' es la columna para las placas del automóvil
             }
             return [
                 'id' => $event->id_programacion,

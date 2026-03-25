@@ -80,7 +80,7 @@ $pdf->Cell(25, 7, 'Kilometraje', 1, 1, 'C',1);
 
 // Iterar sobre los datos de gastos y agregar filas a la tabla
 foreach ($unidades as $unidad) {
-    $pdf->Cell(30, 7, $unidad['id_unidad'], 1, 0, 'C',0);
+    $pdf->Cell(30, 7, $unidad['id'], 1, 0, 'C',0);
     $pdf->Cell(30, 7, $unidad['n_de_permiso'], 1, 0, 'C',0);
 	$pdf->Cell(55, 7, $unidad['n_de_serie'], 1, 0, 'C',0);
     $pdf->Cell(30, 7, $unidad['tipo'], 1, 0, 'C',0);

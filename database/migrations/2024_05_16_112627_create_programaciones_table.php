@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id_programacion');
             $table->date('fecha_progra');
             $table->string('unidad_id')->nullable();
-            $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
+            $table->foreign('unidad_id')->references('id')->on('unidades')->onDelete('cascade');
             $table->string('notas')->nullable();
             $table->bigInteger('estatus');
             $table->timestamps();

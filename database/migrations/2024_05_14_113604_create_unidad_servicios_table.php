@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('unidad_servicios', function (Blueprint $table) {
-            $table->bigIncrements('id_unidad_serv');
+            $table->bigIncrements('id_serv');
             $table->string('unidad_id')->nullable();
-            $table->foreign('unidad_id')->references('id_unidad')->on('unidades')->onDelete('cascade');
+            $table->foreign('unidad_id')->references('id')->on('unidades')->onDelete('cascade');
             $table->integer('km_mantenimiento');
             $table->string('contador');
             $table->timestamps();

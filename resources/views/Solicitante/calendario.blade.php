@@ -61,9 +61,9 @@
                                         <option value="" selected disabled>Selecciona la unidad que se programará el mantenimiento:</option>
                                         @foreach ($unidades as $unidad)
                                             @if ($unidad->tipo != "AUTOMOVIL")
-                                                <option value="{{$unidad->id_unidad}}">{{$unidad->n_de_permiso}} - {{$unidad->marca}} {{$unidad->modelo}}</option>
+                                                <option value="{{$unidad->id}}">{{$unidad->n_de_permiso}} - {{$unidad->marca}} {{$unidad->modelo}}</option>
                                             @else
-                                                <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}} - {{$unidad->marca}} {{$unidad->modelo}}</option>
+                                                <option value="{{$unidad->id}}">{{$unidad->id}} - {{$unidad->marca}} {{$unidad->modelo}}</option>
                                             @endif
                                         @endforeach
                                     </select>

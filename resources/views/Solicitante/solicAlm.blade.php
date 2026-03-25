@@ -93,7 +93,7 @@
                     <select name="unidad" class="form-control" required>
                         <option value="" selected disabled>Selecciona la unidad que requiere la refaccion:</option>
                         @foreach ($unidades as $unidad)                            
-                            <option value="{{$unidad->id_unidad}}">{{$unidad->id_unidad}}</option>
+                            <option value="{{$unidad->id}}">{{$unidad->id}}</option>
                         @endforeach
                     </select>
                 </div>
