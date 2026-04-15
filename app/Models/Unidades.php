@@ -10,9 +10,9 @@ class Unidades extends Model
 
     protected $fillable = [
         'id',
-        'id',
-        'tipo',
+        'id_unidad',
         'Numero_ec',
+        'tipo',
         'estado',
         'anio_unidad',
         'marca',

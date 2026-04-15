@@ -857,8 +857,15 @@ class controladorSolic extends Controller
         ->orderBy('nombre','asc')
         ->get();
 
+        $serviciosG = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.id_proveedor','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+
         // Cargar y mostrar la vista con los datos necesarios
-        return view('Solicitante.pagos',compact('pagos','servicios','proveedores'));
+        return view('Solicitante.pagos',compact('pagos','servicios','proveedores','serviciosG'));
     }
 
     /*
