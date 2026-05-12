@@ -75,6 +75,15 @@
                                                                 <label for="">Filtrar por departamento</label>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Compras"
+                                                                        id="flexCheckCompras" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="flexCheckCompras">
+                                                                        Compras
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
                                                                         name="departamentos[]" value="Mantenimiento"
                                                                         id="flexCheckMantenimiento" checked>
                                                                     <label class="form-check-label"
@@ -229,6 +238,15 @@
                                                                 <label for="">Filtrar por departamento</label>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Compras"
+                                                                        id="flexCheckCompras" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="flexCheckCompras">
+                                                                        Compras
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
                                                                         name="departamentos[]" value="Mantenimiento"
                                                                         id="flexCheckMantenimiento" checked>
                                                                     <label class="form-check-label"
@@ -380,6 +398,15 @@
                                                             </div>
                                                             <div class="card-body py-3">
                                                                 <label for="">Filtrar por departamento</label>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="departamentos[]" value="Compras"
+                                                                        id="flexCheckCompras" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="flexCheckCompras">
+                                                                        Compras
+                                                                    </label>
+                                                                </div>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox"
                                                                         name="departamentos[]" value="Mantenimiento"

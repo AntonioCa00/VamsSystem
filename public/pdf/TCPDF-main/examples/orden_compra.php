@@ -33,6 +33,7 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
+$pdf->Cell(0, 10, "Requisicion n° ". $rid, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
@@ -120,7 +121,8 @@ if(!empty($unidad)){
     $pdf->Cell(50, 7, 'Tipo de Mantenimiento', 1, 1, 'C', 1);
 
     // notas que agrega el solicitante
-    $pdf->Cell(130, 6,'Núm. de serie: '. $unidad->n_de_serie, 1, 0 , 0 );
+    $pdf->Cell(50, 6,'N° economico: '.$unidad->Numero_ec, 1 );
+    $pdf->Cell(75, 6,'N° serie: '.$unidad->n_de_serie, 1 );
 
     $pdf->Cell(50, 6, $mantenimiento, 1, 1,'C');
 

@@ -5,7 +5,7 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
 // set document information
 $pdf->setCreator(PDF_CREATOR);
-$pdf->setAuthor('Javier Chavez');
+$pdf->setAuthor('TRANSPORTESVAMS');
 $pdf->setTitle('Orden_pago');
 $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
@@ -33,13 +33,12 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Orden de pago n° ". $idcorresponde, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 10, "Orden de pago ", 0, 1, 'C');
+$pdf->Cell(0, 10, "Orden de Pago #".$idcorresponde, 0, 1, 'C');
 $pdf->SetFont('helvetica', 'B', 12);
 $pdf->Ln(10); // Salto de línea antes de la tabla
 
