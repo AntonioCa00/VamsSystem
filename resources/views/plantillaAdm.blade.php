@@ -73,17 +73,27 @@
                     <span>Solicitudes</span></a>
             </li>
 
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('ordenesCompras')}}">
+            <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Orden de compra</span></a>
-            </li>
+                    <span>Ordenes de compra</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ route('ordenesCompras') }}">Ordenes de compra</a></li>
+                    <li><a class="dropdown-item" href="#">Compras a credito</a></li>
+                </ul>
+            </li>             
 
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('pagosFijos')}}">
+            <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Pagos Fijos</span></a>
-            </li>
+                    <span>Pagos Fijos</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{route('pagosFijos')}}">Pagos fijos</a></li>
+                    <li><a class="dropdown-item" href="{{ route('ordenesCredito') }}">Pagos a credito</a></li>
+                </ul>
+            </li>            
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{route('proveedores')}}">
@@ -97,23 +107,6 @@
                     <i class="fas fa-fw fa-table"></i>
                     <span>Unidades</span></a>
             </li>
-
-            {{-- <li class="nav-item active">
-                <a class="nav-link" href="{{route('entradas')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Entradas</span></a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('refacciones')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Almacen</span></a>
-            </li>
-
-            <li class="nav-item active">
-                <a class="nav-link" href="{{route('salidas')}}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Salidas</span></a>
-            </li>                 --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

@@ -136,6 +136,12 @@ if (!empty($servicio->banco) && (!empty($servicio->n_cuenta) || !empty($servicio
 }else{
     $pdf->Cell(180, 7, 'No se han cargado los datos bancarios de este proveedor', 1, 1, 'C', 1);
 }
+if (!empty($fechaPago)){
+    $pdf->Cell(50, 7, 'Condicion de pago: Credito' , 1, 0, 'C', 1);
+    $pdf->SetFont('helvetica', 'B', 10);
+    $pdf->Cell(130, 7, 'Dia de pago acordado: ' . $fechaPago, 1, 1, 'C', 1);
+    $pdf->SetFont('helvetica', '', 10);
+}
 
 
 $pdf->Ln(10); // Salto de línea antes de la tabla
@@ -165,7 +171,7 @@ $pdf->Cell(0, 10, '        Solicitante                                          
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'pagoFijo_' . $idcorresponde. '.pdf';
 
-//$rutaDescarga = 'C:/laragon/www/VamsSystem/public/pagosFijos/' . $nombreArchivo;
-$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/pagosFijos/'. $nombreArchivo;
+$rutaDescarga = 'C:/laragon/www/VamsSystem/public/pagosFijos/' . $nombreArchivo;
+//$rutaDescarga = 'C:/wamp64/www/VamsSystem/public/pagosFijos/'. $nombreArchivo;
 
 $pdf->Output($rutaDescarga, 'F');
