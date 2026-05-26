@@ -84,6 +84,7 @@ Route::middleware(['authcheck'])->group(function () {
         Route::get('reportesCompras',[controladorCompras::class,'reportes'])->name('reportesAdm');
         Route::get('reportesCompras/Unidades',[controladorCompras::class,'reporteUnidades'])->name('reporteUnidadesCom');
         Route::get('ordenPago/Crear',[controladorCompras::class,'crearOrdenPago'])->name('crearOrdenPago');
+        Route::get('ordenPago/Credito',[controladorCompras::class,'ordenesCredito'])->name('ordenesCredito');
 
         //------------------------RUTAS CON ACCIONES EN BD------------------------//
 

@@ -88,9 +88,63 @@
                     <label for="exampleFormControlInput1">Notas:</label>
                     <input name="Notas" type="text" class="form-control" placeholder="Agrega notas si necesario">
                 </div>
+                <div class="form-group">
+                    <div class="row">
+                        <!-- Columna izquierda -->
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1">Condiciones de pago:</label>
+                            <!-- Campo para seleccionar la condición de pago acordada -->
+                            <select name="condiciones" id="condicionPago" class="form-control" required>
+                                <option value="" selected disabled>Selecciona la condicion de pago acordada:</option>
+                                <option value="Contado">Contado</option>
+                                <option value="Credito">Crédito</option>
+                            </select>
+                        </div>
+                        <!-- Columna derecha -->
+                        <div class="col-md-6" id="datosBancarios" style="display: none;">
+                            <label for="banco">Días de credito acordado:</label>
+                            <input type="date" class="form-control" id="banco" name="dia_credito"
+                                placeholder="Ingresa los días de crédito acordados">
+                        </div>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Crear orden de pago</button>
             </div>
             </form>
         </div>
     </div>
+    
+    <script>
+    document.getElementById('condicionPago').addEventListener('change', function() {
+
+        // Valor seleccionado
+        var valor = this.value;
+
+        // Contenedor de datos bancarios
+        var datosBancarios = document.getElementById('datosBancarios');
+
+        // Input dentro del contenedor
+        var inputDias = datosBancarios.querySelector('input');
+
+        // Si es crédito
+        if (valor === 'Credito') {
+
+            datosBancarios.style.display = 'block';
+
+            inputDias.required = true;
+
+        } else {
+
+            // Ocultar sección
+            datosBancarios.style.display = 'none';
+
+            // Limpiar valor
+            inputDias.value = '';
+
+            // Quitar requerido
+            inputDias.required = false;
+        }
+
+    });
+    </script>   
 @endsection

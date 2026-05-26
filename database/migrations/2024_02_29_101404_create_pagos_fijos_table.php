@@ -20,6 +20,7 @@ return new class extends Migration
             $table->float('costo_total',10,2);
             $table->string('pdf');
             $table->string('estado');
+            $table->date('fecha_pago');
             $table->string('notas');
             $table->string('comprobante_pago')->nullable();
             $table->timestamps();

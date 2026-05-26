@@ -76,7 +76,7 @@
                             <th>${{$orden->costo_total}}</th>
                             <!-- Mostrar si la orden de compra esta pagada o pendiente -->
                             @if (empty($orden->comprobante_pago))
-                                <th class="text-warning">Pendiente</th>                                
+                                <th class="text-warning">Pendiente</th>
                             @else
                                 <th class="text-success">Pagado</th>
                             @endif
@@ -89,8 +89,8 @@
                             <th>{{$orden->fecha_creacion}}</th>
                             <th>
                                 <!-- Validar si la orden de compra esta pendiente -->
-                                @if($orden->estadoComp === null)     
-                                    <!--Si la orden de compra esta pendiente, mostrar botones para pagar o eliminar -->           
+                                @if($orden->estadoComp === null)
+                                    <!--Si la orden de compra esta pendiente, mostrar botones para pagar o eliminar -->
                                     @if ($orden->tipo_pago == 1)
                                         <a class="btn btn-success" href="#" data-toggle="modal" data-target="#Finalizar{{$orden->id_orden}}">
                                             Registrar pago
@@ -147,6 +147,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarOrd{{$orden->id_orden}}">
+                                        Eliminar
+                                    </a>  
                                 @else
                                 <!-- Si la orden de compra ya esta pagada, mostrar el enlace para ver el comprobante de pago -->
                                     @if(empty($orden->comprobante_pago))

@@ -89,7 +89,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered dataTable"  width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>Servicio:</th>
@@ -185,7 +185,7 @@
         <!--Tarjeta de pagos-->
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Folio:</th>
@@ -193,6 +193,7 @@
                             <th>Estado:</th>
                             <th>Importe:</th>
                             <th>Proveedor:</th>
+                            <th>Fecha Pago:</th>
                             <th>Orden Pago:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -200,7 +201,11 @@
                     <tbody>
                         <!--Iterar sobre los pagos y crear una fila para cada uno-->
                         @foreach ($pagos as $pago)
+                        @if ($pago->fecha_pago != null)
+                            <tr class="text-info font-weight-bold">
+                        @else
                             <tr>
+                        @endif                            
                                 <th>{{$pago->id_pago}}</th>
                                 <th>{{$pago->nombre_servicio}}</th>
                                 <!-- Verificar el estado del pago y aplicar estilos según corresponda -->
@@ -212,6 +217,11 @@
 
                                 <th>${{$pago->costo_total}}</th>
                                 <th>{{$pago->nombre}}</th>
+                                @if ($pago->fecha_pago == null)
+                                    <th class="font-weight-bold">Sin fecha de pago</th>
+                                @else 
+                                    <th>{{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d-m-Y') }}</th>
+                                @endif                                
                                 <th class="text-center">
                                     <a href="{{ asset($pago->pdf) }}" target="_blank">
                                         <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
@@ -262,6 +272,38 @@
                                                                     step="0.01" pattern="^\d+(\.\d{2})?$"
                                                                     title="El importe debe ser un número con dos decimales. Ejemplo: 123.45">
                                                             </div>
+                                                            <div class="form-group">
+                                                                    <!-- Columna izquierda -->
+                                                                    <div class="col-md-6">
+                                                                        <label for="exampleFormControlInput1">Condiciones
+                                                                            de pago:</label>
+                                                                        <!-- Campo para seleccionar la condición de pago acordada -->
+                                                                        <select name="condiciones" id="condicionPago"
+                                                                            class="form-control" required>
+                                                                            <option value="" selected disabled>
+                                                                                Selecciona la condicion de pago acordada:
+                                                                            </option>
+                                                                            <option value="Contado"
+                                                                                {{ is_null($pago->fecha_pago) ? 'selected' : '' }}>
+                                                                                Contado
+                                                                            </option>
+
+                                                                            <option value="Credito"
+                                                                                {{ !is_null($pago->fecha_pago) ? 'selected' : '' }}>
+                                                                                Crédito
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <!-- Columna derecha -->
+                                                                    <div class="col-md-6" id="datosBancarios"
+                                                                        style="display: none;">
+                                                                        <label for="banco">Días de credito
+                                                                            acordado:</label>
+                                                                        <input value="{{ $pago->fecha_pago }}" type="date" class="form-control"
+                                                                            id="banco" name="dia_credito"
+                                                                            placeholder="Ingresa los días de crédito acordados">
+                                                                    </div>
+                                                                </div>                                                    
                                                     </div>
                                                     <div class="card-footer py-3">
                                                         <div class="form-group">
@@ -311,4 +353,44 @@
         </div>
     </div>
 </div>
+
+    <script>
+        function validarCondicionPago() {
+
+            // Select
+            var select = document.getElementById('condicionPago');
+
+            // Valor seleccionado
+            var valor = select.value;
+
+            // Contenedor
+            var datosBancarios = document.getElementById('datosBancarios');
+
+            // Input interno
+            var inputDias = datosBancarios.querySelector('input');
+
+            // Si es crédito
+            if (valor === 'Credito') {
+
+                datosBancarios.style.display = 'block';
+
+                inputDias.required = true;
+
+            } else {
+
+                datosBancarios.style.display = 'none';
+
+                inputDias.value = '';
+
+                inputDias.required = false;
+            }
+        }
+
+        // Detectar cambio manual
+        document.getElementById('condicionPago')
+            .addEventListener('change', validarCondicionPago);
+
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', validarCondicionPago);
+    </script>
 @endsection

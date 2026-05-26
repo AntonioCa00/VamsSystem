@@ -16,6 +16,7 @@ class Pagos_Fijos extends Model
         'costo_total',
         'pdf',
         'estado',
+        'fecha_pago',
         'notas',
         'comprobante_pago',
         'created_at',
