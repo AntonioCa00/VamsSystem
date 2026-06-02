@@ -21,9 +21,9 @@
                                 <th>Folio:</th>
                                 <th>Servicio:</th>
                                 <th>Fecha Pago:</th>
+                                <th>Estado:</th>
                                 <th>Importe:</th>
                                 <th>Proveedor:</th>
-                                <th>Fecha Pago:</th>
                                 <th>Orden Pago:</th>
                                 <th>Opciones:</th>
                             </tr>
@@ -41,14 +41,9 @@
                                         <th class="text-success">
                                             {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d-m-Y') }}</th>
                                     @endif
-
+                                    <th>{{ $pago->estado }}</th>
                                     <th>${{ $pago->costo_total }}</th>
-                                    <th>{{ $pago->nombre }}</th>
-                                    @if ($pago->fecha_pago == null)
-                                        <th class="font-weight-bold">Sin fecha de pago</th>
-                                    @else 
-                                        <th>{{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d-m-Y') }}</th>
-                                    @endif   
+                                    <th>{{ $pago->nombre }}</th>  
                                     <th class="text-center">
                                         <a href="{{ asset($pago->pdf) }}" target="_blank">
                                             <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
