@@ -119,12 +119,16 @@
                         <span>Ordenes de compra</span></a>
                 </li>
 
-                <!-- Nav Item - Tables -->
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ route('ordenesdePago') }}">
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-fw fa-table"></i>
-                        <span>Pagos Fijo</span></a>
-                </li>
+                        <span>Pagos Fijos</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{route('ordenesdePago')}}">Pagos fijos</a></li>
+                        <li><a class="dropdown-item" href="{{ route('ordenesACredito') }}">Pagos a credito</a></li>
+                    </ul>
+                </li>                
             @endif
 
             @if (session('departamento') == "Mantenimiento")
