@@ -190,10 +190,10 @@
                         <tr>
                             <th>Folio:</th>
                             <th>Servicio:</th>
+                            <th>Fecha Pago:</th>
                             <th>Estado:</th>
                             <th>Importe:</th>
-                            <th>Proveedor:</th>
-                            <th>Fecha Pago:</th>
+                            <th>Proveedor:</th>                            
                             <th>Orden Pago:</th>
                             <th>Opciones:</th>
                         </tr>
@@ -208,6 +208,7 @@
                         @endif                            
                                 <th>{{$pago->id_pago}}</th>
                                 <th>{{$pago->nombre_servicio}}</th>
+                                <th>{{$pago->fecha_pago}}</th>
                                 <!-- Verificar el estado del pago y aplicar estilos según corresponda -->
                                 @if ($pago->estado === "Pagado")
                                     <th class="font-weight-bold text-success">{{$pago->estado}}</th>

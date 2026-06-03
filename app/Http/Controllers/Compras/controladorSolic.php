@@ -137,12 +137,29 @@ class controladorSolic extends Controller
         Retorna la vista 'Solicitante.consultaPagos', pasando los pagos obtenidos a la vista.
     */
     public function tablePagos () {
-        // Recupera los pagos fijos de la base de datos
-        $pagos = Pagos_Fijos::select('pagos_fijos.*','servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre','pagos_fijos.comprobante_pago')
-        ->join('servicios','pagos_fijos.servicio_id','servicios.id_servicio')
-        ->join('proveedores','servicios.proveedor_id','proveedores.id_proveedor')
-        ->orderBy('id_pago','desc')
-        ->get();
+
+        $Semana = Carbon::now()
+        ->endOfWeek(Carbon::SUNDAY);
+
+        $pagos = Pagos_Fijos::select(
+                'pagos_fijos.*',
+                'servicios.id_servicio',
+                'servicios.nombre_servicio',
+                'proveedores.nombre',
+                'pagos_fijos.comprobante_pago'
+            )
+            ->join('servicios', 'pagos_fijos.servicio_id', 'servicios.id_servicio')
+            ->join('proveedores', 'servicios.proveedor_id', 'proveedores.id_proveedor')
+
+            ->where(function ($query) use ($Semana) {
+
+                $query->whereNull('pagos_fijos.fecha_pago')
+
+                    ->orWhere('pagos_fijos.fecha_pago', '<=', $Semana);
+            })
+
+            ->orderBy('id_pago', 'desc')
+            ->get();
 
         // Redirige al usuario a la página para visualizar los pagos
         return view('Solicitante.consultaPagos',compact('pagos'));
@@ -1134,6 +1151,41 @@ class controladorSolic extends Controller
     public function reportePagos(){
         //Retorna la vista de reportes.
         return view('Solicitante.reportes');
+    }
+
+    public function ordenesCredito(){
+
+        $inicioProximaSemana = Carbon::now()
+            ->startOfWeek(Carbon::MONDAY)
+            ->addWeek();
+
+        $pagos = Pagos_Fijos::select(
+                'pagos_fijos.*',
+                'servicios.id_servicio',
+                'servicios.nombre_servicio',
+                'proveedores.nombre',
+                'pagos_fijos.comprobante_pago'
+            )
+            ->join('servicios', 'pagos_fijos.servicio_id', 'servicios.id_servicio')
+            ->join('proveedores', 'servicios.proveedor_id', '=', 'proveedores.id_proveedor')
+            ->where('pagos_fijos.fecha_pago', '>=', $inicioProximaSemana)
+            ->orderBy('id_pago', 'desc')
+            ->get();
+
+        // Obtener todos los servicios activos y sus proveedores
+        $servicios = Servicios::select('servicios.id_servicio','servicios.nombre_servicio','proveedores.nombre')
+        ->join('proveedores','servicios.proveedor_id','=','proveedores.id_proveedor')
+        ->orderBy('servicios.nombre_servicio','asc')
+        ->where('servicios.estatus','1')
+        ->get();
+
+        // Obtener todos los proveedores activos
+        $proveedores = Proveedores::where('estatus','1')
+        ->orderBy('nombre','asc')
+        ->get();
+
+        //Retorna la vista de ordenes de credito.
+        return view('Solicitante.pagosCredito', compact('pagos','servicios','proveedores'));
     }
 
     /*
