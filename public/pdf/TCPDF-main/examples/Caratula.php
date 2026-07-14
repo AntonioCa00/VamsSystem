@@ -6,12 +6,12 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 // set document information
 $pdf->setCreator(PDF_CREATOR);
 $pdf->setAuthor('DIEGO CRUZ ALVAREZ');
-$pdf->setTitle('Caratula de proveedorDatos');
+$pdf->setTitle('Caratula de proveedor');
 $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Caratula proveedor', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Caratula Proveedor',"Transportes Vams  \nDepartamento de Compras");
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -39,7 +39,7 @@ $pdf->AddPage();
 $pdf->SetFont('helvetica', 'B', 20);
 // Imprimir el título del reporte
 
-$pdf->Cell(0, 8, "Datos de registro proveedorDatos                   #" . $id, 0, 1, 'L');
+$pdf->Cell(0, 8, "Datos de registro proveedor                      #" . $id, 0, 1, 'L');
 $pdf->SetFont('helvetica', 'B', 14);
 $pdf->Ln(8); // Salto de línea antes de la tabla
 

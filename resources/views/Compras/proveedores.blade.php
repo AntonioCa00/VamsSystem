@@ -102,7 +102,7 @@
                             <th>{{$proveedor->nombre}}</th>
                             <th class="text-center">
                                 @if (!empty($proveedor->caratula))
-                                    <a href="#">
+                                    <a href="{{ asset($proveedor->caratula) }}">
                                         <img class="imagen-container" src="{{ asset('img/caratula.png') }}" alt="Abrir PDF">
                                     </a>    
                                 @endif
