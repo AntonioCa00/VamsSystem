@@ -88,52 +88,36 @@
                                     </th>
                                     <th>{{ $orden->fecha_creacion }}</th>
                                     <th>
-                                        <!-- Validar si la orden de compra esta pendiente -->
-                                        @if ($orden->estadoComp === null)
-                                            <!--Si la orden de compra esta pendiente, mostrar botones para pagar o eliminar -->
-                                            @if ($orden->tipo_pago == 1)
-                                                <a class="btn btn-success" href="#" data-toggle="modal"
-                                                    data-target="#Finalizar{{ $orden->id_orden }}">
+                                        <!-- Enlace para abrir el PDF de la caratula de la orden de compra -->
+                                        @if ($orden->tipo_pago == 1)
+                                            @if ($orden->estadoComp === null)
+                                                <a class="btn btn-success btnRegistrarPago"
+                                                    href="#"
+                                                    data-toggle="modal"
+                                                    data-target="#modalRegistrarPago"
+                                                    data-url="{{ route('FinalizarCompra', $orden->id_orden) }}">
                                                     Registrar pago
                                                 </a>
-                                                <!-- Logout Modal-->
-                                                <div class="modal fade" id="Finalizar{{ $orden->id_orden }}" tabindex="-1"
-                                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel">Registrar
-                                                                    pago de orden de compra</h5>
-                                                                <button class="close" type="button" data-dismiss="modal"
-                                                                    aria-label="Close">
-                                                                    <span aria-hidden="true">X</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form
-                                                                    action="{{ route('FinalizarCompra', $orden->id_orden) }}"
-                                                                    method="POST" enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    {!! method_field('PUT') !!}
-                                                                    <div class="form-group">
-                                                                        <label>Favor de cargar su comprobante de
-                                                                            pago:</label>
-                                                                        <input name="comprobante_pago" type="file"
-                                                                            class="form-control">
-                                                                    </div>
-                                                                    <button type="submit" class="btn btn-primary">Registrar
-                                                                        pago</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            
+                                                <a class="btn btn-primary btnEliminarOrden"
+                                                    href="#"
+                                                    data-toggle="modal"
+                                                    data-target="#modalEliminarOrden"
+                                                    data-url="{{ route('deleteOrd', [$orden->id_orden, $orden->id_requisicion]) }}">
+                                                    Eliminar
+                                                </a>
+                                            @else 
+                                                <a class="btn btn-info btnEditarComprobante"
+                                                    href="#"
+                                                    data-toggle="modal"
+                                                    data-target="#modalEditarComprobante"
+
+                                                    data-url="{{ route('editComprobantePagoC', $orden->id_orden) }}"
+                                                    data-comprobante="{{ $orden->comprobante_pago ? asset($orden->comprobante_pago) : '' }}">
+
+                                                    Editar Comprobante
+                                                </a>
                                             @endif
-                                            <a class="btn btn-primary btnEliminarOrden" href="#" data-toggle="modal"
-                                                data-target="#modalEliminarOrden" data-id="{{ $orden->id_orden }}"
-                                                data-sid="{{ $orden->id_requisicion }}">
-                                                Eliminar
-                                            </a>
                                         @else
                                             <!-- Si la orden de compra ya esta pagada, mostrar el enlace para ver el comprobante de pago -->
                                             @if (empty($orden->comprobante_pago))
@@ -144,83 +128,22 @@
                                                 <a href="{{ asset($orden->comprobante_pago) }}" target="_blank">
                                                     Comprobante pago
                                                 </a>
-                                            @endif
+                                            @endif   
                                         @endif
                                     </th>
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
-                    <!-- Logout Modal-->
-                    <div class="modal fade" id="modalEliminarOrden" tabindex="-1" role="dialog">
-
-                        <div class="modal-dialog" role="document">
-
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title">
-                                        ¿Ha tomado una decisión?
-                                    </h5>
-
-                                    <button class="close" type="button" data-dismiss="modal">
-                                        <span aria-hidden="true">X</span>
-                                    </button>
-                                </div>
-
-                                <div class="modal-body">
-                                    Selecciona confirmar para eliminar esta orden de compra
-                                </div>
-
-                                <div class="modal-footer">
-
-                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                                        Cancelar
-                                    </button>
-
-                                    <form id="formEliminarOrden" method="POST">
-
-                                        @csrf
-                                        @method('PUT')
-
-                                        <button type="submit" class="btn btn-primary">
-                                            Confirmar
-                                        </button>
-
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </table>                    
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+    @include('Compras.modals.modalEditarComprobante')
+    @include('Compras.modals.modalRegistrarPago')
+    @include('Compras.modals.modalEliminarOrden')
 
-    document.querySelectorAll('.btnEliminarOrden').forEach(button => {
+    <script src="{{ asset('js/compras.js') }}"></script>
 
-        button.addEventListener('click', function () {
-
-            let id = this.dataset.id;
-            let sid = this.dataset.sid;
-
-            let url = "/deleteOrd/" + id + "/" + sid;
-
-            alert(url);
-
-            let form = document.querySelector('#formEliminarOrden');
-
-            console.log(form);
-
-            form.setAttribute('action', url);
-
-            alert(form.getAttribute('action'));
-
-        });
-
-    });
-
-    </script>
 @endsection

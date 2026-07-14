@@ -92,6 +92,7 @@
                     <thead>
                         <tr>
                             <th>Nombre:</th>
+                            <th>Caratula:</th>
                             <th>Detalles:</th>
                         </tr>
                     </thead>
@@ -99,12 +100,12 @@
                         @foreach ($proveedores as $proveedor)
                         <tr>
                             <th>{{$proveedor->nombre}}</th>
-                            {{-- <th>
-                                <a href="{{ asset($proveedor->CIF) }}" target="_blank">
-                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
+                            <th class="text-center">
+                                <a href="{{ asset($proveedor->caratula) }}" target="_blank">
+                                    <img class="imagen-container" src="{{ asset('img/caratula.png') }}" alt="Abrir PDF">
                                 </a>
-                            </th> --}}
-                            <th>
+                            </th>
+                            <th class="text-center">
                                 <a href="#" data-toggle="modal" data-target="#detalles{{$proveedor->id_proveedor}}">
                                     <img src="{{ asset('img/detalles.png') }}" alt="Abrir detalles">
                                 </a>
