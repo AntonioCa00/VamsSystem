@@ -101,9 +101,11 @@
                         <tr>
                             <th>{{$proveedor->nombre}}</th>
                             <th class="text-center">
-                                <a href="{{ asset($proveedor->caratula) }}" target="_blank">
-                                    <img class="imagen-container" src="{{ asset('img/caratula.png') }}" alt="Abrir PDF">
-                                </a>
+                                @if (!empty($proveedor->caratula))
+                                    <a href="#">
+                                        <img class="imagen-container" src="{{ asset('img/caratula.png') }}" alt="Abrir PDF">
+                                    </a>    
+                                @endif
                             </th>
                             <th class="text-center">
                                 <a href="#" data-toggle="modal" data-target="#detalles{{$proveedor->id_proveedor}}">

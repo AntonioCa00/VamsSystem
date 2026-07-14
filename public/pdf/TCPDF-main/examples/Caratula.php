@@ -11,7 +11,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Caratula proveedorDatos', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Caratula proveedor', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -82,14 +82,14 @@ $pdf->SetX(16); // Mueve el cursor 30 mm desde el margen izquierdo
 $pdf->Cell(0, 8, "DIRECCION:", 0, 1, 'L',0);
 $pdf->SetX(30); // Mueve el cursor 30 mm desde el margen izquierdo
 $pdf->SetFont('helvetica', 'A', 12); // Definir la fuente y el tamaño de la fuente
-$pdf->Cell(50, 8, $proveedorDatos->direccion, 0, 1, 'L',0);
+$pdf->MultiCell(0,8,$proveedorDatos->domicilio,0,'L',false,1);
 
 $pdf->SetFont('helvetica', 'B', 14);
 $pdf->SetX(16); // Mueve el cursor 30 mm desde el margen izquierdo
 $pdf->Cell(0, 8, "DOMICILIO FISCAL:", 0, 1, 'L',0);
 $pdf->SetX(30); // Mueve el cursor 30 mm desde el margen izquierdo
 $pdf->SetFont('helvetica', 'A', 12); // Definir la fuente y el tamaño de la fuente
-$pdf->Cell(50, 8, $proveedorDatos->domicilio, 0, 1, 'L',0);
+$pdf->MultiCell(0, 8, $proveedorDatos->domicilio, 0, 'L',false,1);
 
 $pdf->SetFont('helvetica', 'B', 14);
 $pdf->SetX(16); // Mueve el cursor 30 mm desde el margen izquierdo
