@@ -64,12 +64,11 @@
                         </table>
                         <!-- Botones para procesar las requisiciones (Procesar requisiciones o procesar solo urgencias) -->
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                            <button type="submit" value="Corte" name="action" class="btn btn-primary">Procesar
-                                Requisiciones</button>
+                            <button type="submit" value="Aprobar" name="action" class="btn btn-primary">
+                                <img src="{{ asset('img/aprobado.png') }}"> Procesar Requisiciones</button>
                             <div class="form-group d-flex align-items-center">
-                                <button type="submit" name="action" value="Urgencia" class="btn btn-danger">
-                                    <img src="{{ asset('img/urgencia.png') }}">Procesar urgencias
-                                </button>
+                                <button type="submit" name="action" value="Rechazar" class="btn btn-danger">
+                                    <img src="{{ asset('img/rechazo.png') }}">Rechazar Requisiciones</button>
                             </div>
                         </div>
                     </form>

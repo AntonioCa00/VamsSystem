@@ -25,6 +25,7 @@ class Proveedores extends Model
         'n_cuenta',
         'n_cuenta_clabe',         
         'estado_cuenta',
+        'caratula',
         'estatus',
         'created_at',
         'updated_at'

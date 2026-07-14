@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('n_cuenta')->nullable();
             $table->string('n_cuenta_clabe')->nullable();
             $table->string('estado_cuenta')->nullable();
+            $table->string('caratula');
             $table->tinyInteger('estatus')->default(1);
             $table->timestamps();
         });
