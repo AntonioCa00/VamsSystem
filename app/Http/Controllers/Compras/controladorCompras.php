@@ -1054,6 +1054,32 @@ class controladorCompras extends Controller
         return redirect('proveedores/Compras')->with('insert', 'insert');
     }
 
+    public function detalleProveedor($id)
+    {
+        $proveedor = Proveedores::where('id_proveedor', $id)->first();
+
+        return response()->json([
+            'id' => $proveedor->id_proveedor,
+            'nombre' => $proveedor->nombre,
+            'regimen_fiscal' => $proveedor->regimen_fiscal,
+            'sobrenombre' => $proveedor->sobrenombre,
+            'telefono' => $proveedor->telefono,
+            'telefono2' => $proveedor->telefono2,
+            'contacto' => $proveedor->contacto,
+            'direccion' => $proveedor->direccion,
+            'domicilio' => $proveedor->domicilio,
+            'rfc' => $proveedor->rfc,
+            'correo' => $proveedor->correo,
+            'CIF' => $proveedor->CIF ? asset($proveedor->CIF) : null,
+            'banco' => $proveedor->banco,
+            'n_cuenta' => $proveedor->n_cuenta,
+            'n_cuenta_clabe' => $proveedor->n_cuenta_clabe,
+            'estado_cuenta' => $proveedor->estado_cuenta ? asset($proveedor->estado_cuenta) : null,
+            'urlEditar' => route('editProveedor', $proveedor->id_proveedor),
+            'urlEliminar' => route('deleteProveedor', $proveedor->id_proveedor),
+        ]);
+    }
+
     /*
       TODO: Muestra la vista para editar los detalles de un proveedor específico.
 

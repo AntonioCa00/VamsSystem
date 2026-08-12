@@ -108,123 +108,38 @@
                                 @endif
                             </th>
                             <th class="text-center">
-                                <a href="#" data-toggle="modal" data-target="#detalles{{$proveedor->id_proveedor}}">
-                                    <img src="{{ asset('img/detalles.png') }}" alt="Abrir detalles">
-                                </a>
-                                <!-- Modal detalles-->
-                                <div class="modal fade" id="detalles{{$proveedor->id_proveedor}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                    aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Información detallada del proveedor</h5>
-                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">X</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body modal-body-scrollable">
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Nombre y/o razón social de la empresa:</span></label>
-                                                        <h6>{{$proveedor->nombre}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Regimen fiscal:</span></label>
-                                                        <h6>{{$proveedor->regimen_fiscal}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Sobrenombre:</span></label>
-                                                        <h6>{{$proveedor->sobrenombre}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Telefono:</label>
-                                                        <h6>{{$proveedor->telefono}}</h6>
-                                                    </div>
-                                                    @if (!empty($proveedor->telefono2))
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">Telefono secundario:</label>
-                                                            <h6>{{$proveedor->telefono2}}</h6>
-                                                        </div>
-                                                    @endif
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Nombre del contacto:</label>
-                                                        <h6>{{$proveedor->contacto}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Dirección:</label>
-                                                        <h6>{{$proveedor->direccion}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Domicilio fiscal:</span></label>
-                                                        <h6>{{$proveedor->domicilio}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">RFC:</span></label>
-                                                        <h6>{{$proveedor->rfc}}</h6>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFormControlInput1">Correo:</span></label>
-                                                        <h6>{{$proveedor->correo}}</h6>
-                                                    </div>
-                                                    @if(empty($proveedor->CIF))
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">CIF en formato PDF:</label>
-                                                            <a href="#">
-                                                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                            </a>
-                                                        </div>
-                                                    @else 
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">CIF en formato PDF:</label>
-                                                            <a href="{{ asset($proveedor->CIF) }}" target="_blank">
-                                                                <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                            </a>
-                                                        </div>
-                                                    @endif                                                      
-                                                    <h4 class="text-center text-primary">Datos  bancarios</h4>
-                                                    @if (!empty($proveedor->banco) && !empty($proveedor->n_cuenta) && !empty($proveedor->n_cuenta_clabe))
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">Banco:</span></label>
-                                                            <h6>{{$proveedor->banco}}</h6>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">Número de cuenta:</span></label>
-                                                            <h6>{{$proveedor->n_cuenta}}</h6>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">Número de cuenta clabe:</span></label>
-                                                            <h6>{{$proveedor->n_cuenta_clabe}}</h6>
-                                                        </div>
+                                <a class="btn btn-info btnDetalleProveedor"
+                                    href="#"
+                                    data-toggle="modal"
+                                    data-target="#modalDetalleProveedor"
 
-                                                        @if(empty($proveedor->estado_cuenta))
-                                                            <div class="form-group">
-                                                                <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
-                                                                <a href="#">
-                                                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                                </a>
-                                                            </div>
-                                                        @else 
-                                                            <div class="form-group">
-                                                                <label for="exampleFormControlInput1">Caratula de estado de cuenta:</span></label>
-                                                                <a href="{{ asset($proveedor->estado_cuenta) }}" target="_blank">
-                                                                    <img src="{{ asset('img/pdf.png') }}" alt="Abrir PDF">
-                                                                </a>
-                                                            </div>
-                                                        @endif                                                        
-                                                    @else
-                                                        <div class="form-group">
-                                                            <label for="exampleFormControlInput1">NO TIENE DATOS BANCARIOS REGISTRADOS</span></label>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{{route('editProveedor',$proveedor->id_proveedor)}}" class="btn btn-success">Actualizar información</a>
-                                                    <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#eliminarProv{{$proveedor->id_proveedor}}">
-                                                        Eliminar
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    data-editar="{{ route('editProveedor', $proveedor->id_proveedor) }}"
+                                    data-eliminar="{{ route('deleteProveedor', $proveedor->id_proveedor) }}"
+
+                                    data-nombre="{{ $proveedor->nombre }}"
+                                    data-regimen="{{ $proveedor->regimen_fiscal }}"
+                                    data-sobrenombre="{{ $proveedor->sobrenombre }}"
+                                    data-telefono="{{ $proveedor->telefono }}"
+                                    data-telefono2="{{ $proveedor->telefono2 }}"
+                                    data-contacto="{{ $proveedor->contacto }}"
+                                    data-direccion="{{ $proveedor->direccion }}"
+                                    data-domicilio="{{ $proveedor->domicilio }}"
+                                    data-rfc="{{ $proveedor->rfc }}"
+                                    data-correo="{{ $proveedor->correo }}"
+
+                                    data-cif="{{ $proveedor->CIF ? asset($proveedor->CIF) : '' }}"
+
+                                    data-banco="{{ $proveedor->banco }}"
+                                    data-cuenta="{{ $proveedor->n_cuenta }}"
+                                    data-clabe="{{ $proveedor->n_cuenta_clabe }}"
+
+                                    data-estadocuenta="{{ $proveedor->estado_cuenta ? asset($proveedor->estado_cuenta) : '' }}">
+
+                                    Ver detalles
+                                </a>
+                            </th>
+                                <!-- Modal detalles-->
+                                
                                 <!-- Logout Modal-->
                                 <div class="modal fade" id="eliminarProv{{$proveedor->id_proveedor}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
@@ -257,4 +172,8 @@
         </div>
     </div>
 </div>
+
+@include('Compras.modals.modalProveedor')
+
+<script src="{{ asset('js/compras.js') }}"></script>
 @endsection
