@@ -159,6 +159,43 @@ $pdf->Cell(35, 7, $datosProveedor->telefono, 1);
 $pdf->Cell(85, 7, $datosProveedor->contacto, 1);
 $pdf->Cell(60, 7, $datosProveedor->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
+
+// Altura por fila (la estás usando en 7)
+$alturaFila = 7;
+
+// Calcular cuántas filas ocupará el bloque
+$filas = 1; // DATOS BANCARIOS DEL PROVEEDOR
+
+if ($tipoPago == 1) {
+    $filas += 1;
+} else {
+    if (
+        !empty($datosProveedor->banco) &&
+        (!empty($datosProveedor->n_cuenta) || !empty($datosProveedor->n_cuenta_clabe))
+    ) {
+        $filas += 4; // encabezado + datos + condiciones + días
+    } else {
+        $filas += 1;
+    }
+}
+
+// Footer (líneas + texto)
+$filas += 2;
+
+// Espacio extra (Ln)
+$espacioExtra = 25; // el que se usa antes de las líneas de firma
+
+// Altura total estimada
+$alturaTotal = ($filas * $alturaFila) + $espacioExtra;
+
+// Límite inferior dinámico
+$limite = $pdf->getPageHeight() - 20;
+
+// Validación
+if ($pdf->GetY() + $alturaTotal > $limite) {
+    $pdf->AddPage();
+}
+
 $pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
 $pdf->SetFont('helvetica', '', 10);
 if ($tipoPago == 1) {
@@ -191,29 +228,21 @@ if ($tipoPago == 1) {
 
 
 
-$pdf->Ln(10); // Salto de línea antes de la tabla
-
-$pdf->SetY(260); // Ajusta la posición Y según tus necesidades
-// Dibujar una línea
-
-// Coordenadas iniciales y finales para los tres segmentos
-$x1 = 10;
-$x2 = 70;
-$x3 = 130;
+$pdf->Ln(25); // Salto de línea antes de la tabla
 
 $y = $pdf->GetY(); // Obtener la posición Y actual
 
 // Dibujar el primer segmento de la línea
-$pdf->Line(10, $y, 60, $y);
+$pdf->Line(15, $y, 65, $y);
 
 // Dibujar el segundo segmento de la línea
-$pdf->Line(75, $y, 130, $y);
+$pdf->Line(80, $y, 135, $y);
 
 // Dibujar el tercer segmento de la línea
-$pdf->Line(140, $y, 190, $y);
+$pdf->Line(145, $y, 195, $y);
 
 $pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '     Solicita compras                                  Contabilidad                                    Gerente general ', 0, 1, 'A', 0);
+$pdf->Cell(0, 10, '          Solicita compras                                     Contabilidad                                    Gerente general ', 0, 1, 'A', 0);
 
 
 

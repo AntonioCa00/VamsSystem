@@ -47,3 +47,108 @@ document.querySelectorAll('.btnEliminarOrden').forEach(button => {
 
     });
 });
+
+document.querySelectorAll('.btnDetalleProveedor').forEach(button => {
+
+    button.addEventListener('click', function () {
+
+        let datos = this.dataset;
+
+        //=========================
+        // DATOS GENERALES
+        //=========================
+
+        document.querySelector('#detalleNombre').textContent = datos.nombre;
+        document.querySelector('#detalleRegimen').textContent = datos.regimen;
+        document.querySelector('#detalleSobrenombre').textContent = datos.sobrenombre;
+        document.querySelector('#detalleTelefono').textContent = datos.telefono;
+        document.querySelector('#detalleContacto').textContent = datos.contacto;
+        document.querySelector('#detalleDireccion').textContent = datos.direccion;
+        document.querySelector('#detalleDomicilio').textContent = datos.domicilio;
+        document.querySelector('#detalleRFC').textContent = datos.rfc;
+        document.querySelector('#detalleCorreo').textContent = datos.correo;
+
+        //=========================
+        // TELEFONO SECUNDARIO
+        //=========================
+
+        if (datos.telefono2) {
+
+            document.querySelector('#divTelefono2').style.display = "block";
+            document.querySelector('#detalleTelefono2').textContent = datos.telefono2;
+
+        } else {
+
+            document.querySelector('#divTelefono2').style.display = "none";
+
+        }
+
+        //=========================
+        // CIF
+        //=========================
+
+        if (datos.cif) {
+
+            document.querySelector('#linkCIF').style.display = "inline";
+            document.querySelector('#sinCIF').style.display = "none";
+
+            document.querySelector('#linkCIF').href = datos.cif;
+
+        } else {
+
+            document.querySelector('#linkCIF').style.display = "none";
+            document.querySelector('#sinCIF').style.display = "inline";
+
+        }
+
+        //=========================
+        // DATOS BANCARIOS
+        //=========================
+
+        if (datos.banco || datos.cuenta || datos.clabe) {
+
+            document.querySelector('#datosBancarios').style.display = "block";
+            document.querySelector('#sinDatosBancarios').style.display = "none";
+
+            document.querySelector('#detalleBanco').textContent = datos.banco;
+            document.querySelector('#detalleCuenta').textContent = datos.cuenta;
+            document.querySelector('#detalleClabe').textContent = datos.clabe;
+
+        } else {
+
+            document.querySelector('#datosBancarios').style.display = "none";
+            document.querySelector('#sinDatosBancarios').style.display = "block";
+
+        }
+
+        //=========================
+        // ESTADO DE CUENTA
+        //=========================
+
+        if (datos.estadocuenta) {
+
+            document.querySelector('#linkEstadoCuenta').style.display = "inline";
+            document.querySelector('#sinEstadoCuenta').style.display = "none";
+
+            document.querySelector('#linkEstadoCuenta').href = datos.estadocuenta;
+
+        } else {
+
+            document.querySelector('#linkEstadoCuenta').style.display = "none";
+            document.querySelector('#sinEstadoCuenta').style.display = "inline";
+
+        }
+
+        //=========================
+        // BOTONES
+        //=========================
+
+        document.querySelector('#btnEditarProveedor')
+            .href = datos.editar;
+
+        document.querySelector('#btnEliminarProveedor')
+            .dataset.url = datos.eliminar;
+
+    });
+
+});

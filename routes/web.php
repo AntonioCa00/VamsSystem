@@ -127,6 +127,9 @@ Route::middleware(['authcheck'])->group(function () {
         Route::put('actuaizar/proveedores',[controladorCompras::class,'actualizarProveedores'])->name('actualizarProveedores');
         Route::put('finalizarCompraC/{id}',[controladorCompras::class,'finalizarCompra'])->name('FinalizarCompra');
         Route::put('editComprobante-pagoC/{id}',[controladorCompras::class,'editComprobantePago'])->name('editComprobantePagoC');
+
+        //AJAX 
+        Route::get('/proveedores/detalle/{id}', [controladorCompras::class, 'detalleProveedor'])->name('detalleProveedor');
     });
 
     Route::middleware(['check.role:Gerente Area'])->group(function () {
