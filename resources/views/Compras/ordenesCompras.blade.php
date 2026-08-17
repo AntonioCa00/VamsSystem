@@ -107,7 +107,7 @@
                                                     Eliminar
                                                 </a>
                                             @else 
-                                                <a class="btn btn-info btnEditarComprobante"
+                                                <a class="btnEditarComprobante"
                                                     href="#"
                                                     data-toggle="modal"
                                                     data-target="#modalEditarComprobante"
