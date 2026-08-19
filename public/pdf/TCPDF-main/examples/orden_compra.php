@@ -11,7 +11,7 @@ $pdf->setSubject('TCPDF Tutorial');
 $pdf->setKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' orden de compra ', PDF_HEADER_STRING);
+$pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' orden de compra                                                    '."Requisicion #". $rid, PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -21,7 +21,7 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 $pdf->setDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // set margins
-$pdf->setMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+$pdf->setMargins(10, PDF_MARGIN_TOP, 10);
 $pdf->setHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -33,25 +33,21 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // Agregar una página
 $pdf->AddPage();
-$pdf->Cell(0, 10, "Requisicion n° ". $rid, 0, 1, 'L');
 // set margins
 // Definir la fuente y el tamaño de la fuente titulo
 $pdf->SetFont('helvetica', 'B', 19);
 // Imprimir el título del reporte
 
 $pdf->Cell(0, 10, "Orden de compra #".$idnuevaorden, 0, 1, 'C');
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Ln(7); // Salto de línea antes de la tabla
-
-$pdf->Cell(0, 10, "Solicitante", 0, 1, 'C',0);
+$pdf->Ln(3); // Salto de línea antes de la tabla
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 11);
 
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(40, 5, 'Nombre', 1, 0, 'C', 1);
-$pdf->Cell(40, 5, 'Tipo_Perfil', 1, 0, 'C', 1);
-$pdf->Cell(40, 5, 'ID del Empleado', 1, 0, 'C', 1);
+$pdf->Cell(60, 5, 'Nombre', 1, 0, 'C', 1);
+$pdf->Cell(40, 5, 'Area', 1, 0, 'C', 1);
+$pdf->Cell(40, 5, 'Usuario', 1, 0, 'C', 1);
 $pdf->Cell(40, 5, 'Fecha', 1, 1, 'C', 1);
 
 // Deserializar los datos del empleado
@@ -66,11 +62,11 @@ $posicionEmpleado = $datosEmpleado[0]['rol'];
 $idEmpleado = $datosEmpleado[0]['idEmpleado'];
 $fechaEmpleado = date("Y/m/d");
 
-$pdf->Cell(40, 5, $nombreEmpleado.' '.$apepatEmpleado, 1);
-$pdf->Cell(40, 5, $posicionEmpleado, 1);
-$pdf->Cell(40, 5, $idEmpleado, 1);
+$pdf->Cell(60, 5, $nombreEmpleado.' '.$apepatEmpleado, 1);
+$pdf->Cell(40, 5, $posicionEmpleado, 1, 0, 'C',0);
+$pdf->Cell(40, 5, $idEmpleado, 1, 0, 'C',0);
 $pdf->Cell(40, 5, $fechaEmpleado, 1, 1, 'C');
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(3); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 12);
 
 // Imprimir el subtutitulo
@@ -79,9 +75,9 @@ $pdf->Cell(0, 10, "Articulos", 0, 1, 'C',0);
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
 
-$pdf->Cell(20, 10, 'Cantidad', 1, 0, 'C', 1);
+$pdf->Cell(10, 10, 'Cant', 1, 0, 'C', 1);
 $pdf->Cell(20, 10, 'Medida', 1, 0, 'C', 1);
-$pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', 1);
+$pdf->Cell(110, 10, 'Descripción', 1, 0, 'C', 1);
 $pdf->Cell(25, 10, 'Precio_unitario', 1, 0, 'C', 1);
 $pdf->Cell(25, 10, 'Total bruto', 1, 1, 'C', 1);
 
@@ -89,9 +85,9 @@ $pdf->Cell(25, 10, 'Total bruto', 1, 1, 'C', 1);
 foreach ($articulosFiltrados as &$articulo) {
     $montoTotal = $articulo['cantidad'] * $articulo['precio_unitario'];
     $articulo['monto_total'] = $montoTotal;
-    $pdf->Cell(20, 10, $articulo['cantidad'], 1);
-    $pdf->Cell(20, 10, $articulo['unidad'], 1);
-    $pdf->Cell(90, 10, $articulo['descripcion'], 1);
+    $pdf->Cell(10, 10, $articulo['cantidad'], 1, 0, 'C', 0);
+    $pdf->Cell(20, 10, $articulo['unidad'], 1, 0, 'C', 0);
+    $pdf->Cell(110, 10, $articulo['descripcion'], 1);
     $pdf->Cell(25, 10, '$' . number_format($articulo['precio_unitario'], 2), 1);
     $pdf->Cell(25, 10, '$' . number_format($montoTotal, 2), 1, 1, 'R');
 }
@@ -109,7 +105,7 @@ if (!empty($descuento)){
 
 // Imprimir el total de montos totales
 $pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(155, 10, 'Subtotal (IVA/ Retenciones no incluido):', 1);
+$pdf->Cell(165, 10, 'Subtotal (IVA/ Retenciones no incluido):', 1);
 $pdf->Cell(25, 10, '$' . number_format($totalGastos , 2), 1, 1, 'R');
 
 if(!empty($unidad)){
@@ -117,134 +113,168 @@ if(!empty($unidad)){
     $pdf->SetFont('helvetica', 'A', 11);
     // Encabezados de la tabla
     $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-    $pdf->Cell(130, 7, 'Unidad', 1, 0, 'C', 1);
+    $pdf->Cell(140, 7, 'Unidad', 1, 0, 'C', 1);
     $pdf->Cell(50, 7, 'Tipo de Mantenimiento', 1, 1, 'C', 1);
 
     // notas que agrega el solicitante
     $pdf->Cell(50, 6,'N° economico: '.$unidad->Numero_ec, 1 );
-    $pdf->Cell(75, 6,'N° serie: '.$unidad->n_de_serie, 1 );
+    $pdf->Cell(90, 6,'N° serie: '.$unidad->n_de_serie, 1 );
 
     $pdf->Cell(50, 6, $mantenimiento, 1, 1,'C');
 
 }
 
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(5); // Salto de línea antes de la tabla
 // Definir la fuente y el tamaño de la fuente
 $pdf->SetFont('helvetica', 'A', 11);
 // Encabezados de la tabla
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(180, 5, 'Notas', 1, 1, 'C', 1);
+$pdf->Cell(165, 7, 'Notas', 1, 0, 'C', 1);
+$pdf->Cell(25, 7, 'Cuenta Pago', 1, 1 ,'C', 1);
 // notas que agrega el solicitante
+$pdf->Cell(165, 7, $Nota, 1, 0 , 0 );
+$pdf->Cell(25, 7, '7865', 1, 1 ,'C', 0 );
 
-$pdf->MultiCell(180, 5, $Nota, 1, 1 ,'C', 0 );
-
-$pdf->Ln(10); // Salto de línea antes de la tabla
+$pdf->Ln(5); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(0, 10, "Proveedor seleccionado", 0, 1, 'C',0);
 
 // Crear la tabla de gastos
+$pdf->Cell(95, 7, 'Nombre', 1, 0, 'C', 1);
+$pdf->Cell(95, 7, 'Sobrenombre', 1, 1, 'C', 1);
 
 $pdf->SetFont('helvetica', '', 10);
 $pdf->SetFillColor(240, 240, 240); // Color de fondo de la cabecera de la tabla
-$pdf->Cell(180, 7, 'Nombre', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $datosProveedor->nombre, 1,1);
-$pdf->Cell(180, 7, 'Sobrenombre', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $datosProveedor->sobrenombre, 1,1);
-$pdf->Cell(180, 7, 'Correo(s):', 1, 1, 'C', 1);
-$pdf->MultiCell(180, 7, $datosProveedor->correo, 1,1);
+
+// Obtener la altura de la celda según el contenido
+$anchoColumna = 95;
+// Altura mínima de la celda
+$altoMinimo = 7;
+
+// Calcular la altura de la celda para el nombre y sobrenombre
+$alturaNombre = $pdf->getStringHeight($anchoColumna, $datosProveedor->nombre);
+$alturaSobrenombre = $pdf->getStringHeight($anchoColumna, $datosProveedor->sobrenombre);
+
+// La fila nunca será menor de 7 mm
+$alturaFila = max($altoMinimo, $alturaNombre, $alturaSobrenombre);
+
+// Obtener la posición actual
+$x = $pdf->GetX();
+$y = $pdf->GetY();
+
+// Imprimir el nombre y sobrenombre en celdas separadas
+$pdf->MultiCell($anchoColumna, $alturaFila, $datosProveedor->nombre, 1, 'L', false, 0, $x, $y);
+$pdf->MultiCell($anchoColumna, $alturaFila, $datosProveedor->sobrenombre, 1, 'L', false, 1, $x + $anchoColumna, $y);
 $pdf->Cell(35, 7, 'Telefono', 1, 0, 'C', 1);
-$pdf->Cell(85, 7, 'Nombre del contacto', 1, 0, 'C', 1);
+$pdf->Cell(95, 7, 'Nombre del contacto', 1, 0, 'C', 1);
 $pdf->Cell(60, 7, 'RFC', 1, 1, 'C', 1);
 $pdf->Cell(35, 7, $datosProveedor->telefono, 1);
-$pdf->Cell(85, 7, $datosProveedor->contacto, 1);
+$pdf->Cell(95, 7, $datosProveedor->contacto, 1);
 $pdf->Cell(60, 7, $datosProveedor->rfc , 1,1);
 $pdf->SetFont('helvetica', 'B', 10);
 
-// Altura por fila (la estás usando en 7)
+// Altura por fila
 $alturaFila = 7;
 
-// Calcular cuántas filas ocupará el bloque
+// Calcular cuántas filas ocupará el bloque bancario
 $filas = 1; // DATOS BANCARIOS DEL PROVEEDOR
 
 if ($tipoPago == 1) {
-    $filas += 1;
+
+    $filas += 1; // Pago con tarjeta
+
 } else {
+
     if (
         !empty($datosProveedor->banco) &&
         (!empty($datosProveedor->n_cuenta) || !empty($datosProveedor->n_cuenta_clabe))
     ) {
-        $filas += 4; // encabezado + datos + condiciones + días
+        $filas += 4;
     } else {
         $filas += 1;
     }
 }
 
-// Footer (líneas + texto)
-$filas += 2;
 
-// Espacio extra (Ln)
-$espacioExtra = 25; // el que se usa antes de las líneas de firma
+// ==========================================
+// RESERVAR ESPACIO PARA LAS FIRMAS
+// ==========================================
 
-// Altura total estimada
-$alturaTotal = ($filas * $alturaFila) + $espacioExtra;
+// Las firmas comenzarán 35 mm antes del final
+$posicionFirmas = $pdf->getPageHeight() - 35;
 
-// Límite inferior dinámico
-$limite = $pdf->getPageHeight() - 20;
+// Espacio de seguridad entre contenido y firmas
+$espacioSeguridad = 8;
 
-// Validación
-if ($pdf->GetY() + $alturaTotal > $limite) {
+// Límite donde puede llegar el contenido
+$limiteContenido = $posicionFirmas - $espacioSeguridad;
+
+
+// ==========================================
+// VALIDAR SI LOS DATOS BANCARIOS CABEN
+// ==========================================
+
+$alturaBloqueBancario = $filas * $alturaFila;
+
+if ($pdf->GetY() + $alturaBloqueBancario > $limiteContenido) {
     $pdf->AddPage();
 }
 
-$pdf->Cell(180, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
+
+// ==========================================
+// DATOS BANCARIOS
+// ==========================================
+
+$pdf->Cell(190, 7, 'DATOS BANCARIOS DEL PROVEEDOR', 1, 1, 'C', 1);
+
 $pdf->SetFont('helvetica', '', 10);
+
 if ($tipoPago == 1) {
-    // Pago con tarjeta → NO mostrar datos bancarios
-    $pdf->Cell(180, 7, 'Pago con tarjeta', 1, 1, 'C', 1);
+    // Pago con tarjeta
+    $pdf->Cell(180,7,'Pago con tarjeta',1,1,'C',1);
 } else {
-    // Pago NO es con tarjeta → validar datos bancarios
+
     if (
         !empty($datosProveedor->banco) &&
         (!empty($datosProveedor->n_cuenta) || !empty($datosProveedor->n_cuenta_clabe))
     ) {
-        $pdf->Cell(60, 7, 'Banco:', 1, 0, 'C', 1);
+
+        $pdf->Cell(65, 7, 'Banco:', 1, 0, 'C', 1);
         $pdf->Cell(60, 7, 'Número de cuenta', 1, 0, 'C', 1);
-        $pdf->Cell(60, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
-
-        $pdf->Cell(60, 7, $datosProveedor->banco, 1);
+        $pdf->Cell(65, 7, 'Número de cuenta clabe', 1, 1, 'C', 1);
+        $pdf->Cell(65, 7, $datosProveedor->banco, 1);
         $pdf->Cell(60, 7, $datosProveedor->n_cuenta, 1);
-        $pdf->Cell(60, 7, $datosProveedor->n_cuenta_clabe, 1, 1);
-
-        $pdf->Cell(50, 7, 'Condicion de pago: ' . $condiciones, 1, 0, 'C', 1);
+        $pdf->Cell(65, 7, $datosProveedor->n_cuenta_clabe, 1, 1);
+        $pdf->Cell(65,7,'Condicion de pago: ' . $condiciones,1,0,'C',1);
         $pdf->SetFont('helvetica', 'B', 10);
-        $pdf->Cell(130, 7, 'Dia de pago acordado: ' . $dias, 1, 1, 'C', 1);
+        $pdf->Cell(125,7,'Dia de pago acordado: ' . $dias,1,1,'C',1);
         $pdf->SetFont('helvetica', '', 10);
-
     } else {
-
         $pdf->Cell(180,7,'No se han cargado los datos bancarios de este proveedor',1,1,'C',1);
     }
 }
 
+// ==========================================
+// FIRMAS AL FINAL DE LA HOJA
+// ==========================================
 
+$pdf->SetY(-38);
 
-$pdf->Ln(25); // Salto de línea antes de la tabla
+$y = $pdf->GetY();
 
-$y = $pdf->GetY(); // Obtener la posición Y actual
-
-// Dibujar el primer segmento de la línea
 $pdf->Line(15, $y, 65, $y);
-
-// Dibujar el segundo segmento de la línea
 $pdf->Line(80, $y, 135, $y);
-
-// Dibujar el tercer segmento de la línea
 $pdf->Line(145, $y, 195, $y);
 
-$pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 10, '          Solicita compras                                     Contabilidad                                    Gerente general ', 0, 1, 'A', 0);
+$pdf->SetFont('helvetica', '', 9);
 
+$pdf->SetY($y + 2);
 
+$pdf->Cell(65, 10, 'Compras', 0, 0, 'C');
+$pdf->Cell(15, 10, '', 0, 0, 'C');
+$pdf->Cell(40, 10, 'Contabilidad', 0, 0, 'C');
+$pdf->Cell(10, 10, '', 0, 0, 'C');
+$pdf->Cell(65, 10, 'Gerente general', 0, 1, 'C');
 
 // Nombre del archivo y ruta proporcionados desde el controlador
 $nombreArchivo = 'ordenCompra_' . $idnuevaorden. '.pdf';
