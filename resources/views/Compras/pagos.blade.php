@@ -190,10 +190,11 @@
                         <tr>
                             <th>Folio:</th>
                             <th>Servicio:</th>
-                            <th>Fecha Pago:</th>
+                            <th>Fecha Prog:</th>
                             <th>Estado:</th>
                             <th>Importe:</th>
                             <th>Proveedor:</th>                            
+                            <th>Fecha Pago:</th>
                             <th>Orden Pago:</th>
                             <th>Opciones:</th>
                         </tr>

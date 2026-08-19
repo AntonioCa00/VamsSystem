@@ -143,8 +143,8 @@ $pdf->Line(75, $y, 125, $y);
 // Dibujar el tercer segmento de la línea
 $pdf->Line(135, $y, 185, $y);
 
-$pdf->SetFont('helvetica', '', 11,);
-$pdf->Cell(0, 7, '   Solicitante Requisicion              Encargado área (Requisicion)          Autoriza Gerencia (Cotización) ', 0, 1, 'A', 0);
+$pdf->SetFont('helvetica', '', 11);
+$pdf->Cell(0, 7, '              Solicitante                                   Encargado área                           Autoriza Gerencia ', 0, 1, 'A', 0);
 
 
 // Nombre del archivo y ruta proporcionados desde el controlador
