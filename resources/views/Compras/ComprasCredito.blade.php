@@ -43,7 +43,7 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">ORDENES DE COMPRAS</h1>
+        <h1 class="h3 mb-2 text-gray-800">ORDENES DE COMPRAS PROGRAMADAS</h1>
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
@@ -55,13 +55,13 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th class="col-0.5">Folio orden:</th>
-                                <th class="col-0.5">Folio Req:</th>                                
+                                <th class="col-1">Folio Orden:</th>
+                                <th class="col-1">Folio Req:</th>                                
                                 <th class="col-3">Proveedor:</th>
-                                <th class="col-1">Costo total:</th>
+                                <th class="col-1">Costo Total:</th>
                                 <th class="col-1">Estado:</th>
                                 <th class="col-1">Orden Compra</th>
-                                <th class="col-1.5">Fecha creado / <span class="text-info">Programado:</span></th>
+                                <th class="col-1 text-info">Fecha Programado:</th>
                                 <th>Opciones:</th>
                             </tr>
                         </thead>
@@ -145,8 +145,8 @@
                                                     <a href="{{ asset($orden->comprobante_pago) }}" target="_blank">
                                                         Comprobante pago
                                                     </a>
-                                                @endif
-                                            @endif
+                                                @endif  
+                                             @endif
                                         @endif
                                     </th>
                                 </tr>

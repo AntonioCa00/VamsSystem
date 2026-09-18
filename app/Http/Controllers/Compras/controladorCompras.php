@@ -184,6 +184,8 @@ class controladorCompras extends Controller
         $totalPagosAnio= Pagos_Fijos::whereYear('created_at', $anioActual)->sum('costo_total');
         $TotalAnio = $totalRequisicionesAnio + $totalPagosAnio;
 
+        //Consulta para saber los gastos mensuales de cada departamento
+
         $mantenimiento = Orden_compras::join('cotizaciones','Orden_Compras.cotizacion_id','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','requisiciones.id_requisicion')
         ->join('users','requisiciones.usuario_id','users.id')
@@ -292,16 +294,6 @@ class controladorCompras extends Controller
         return view('Compras.refaccion',compact('refacciones'));
     }
 
-    //! ESTA FUNCION NO ESTA SIRVIENDO ACTUALMENTE
-    public function tableEntradas(){
-        $entradas = Entradas::select('entradas.id_entrada','requisiciones.pdf as reqPDF','orden_compras.pdf as ordPDF','entradas.factura','entradas.created_at')
-        ->join('orden_compras','entradas.orden_id','=','orden_compras.id_orden')
-        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
-        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
-        ->get();
-        return view('Compras.entradas',compact('entradas'));
-    }
-
     /*
       TODO: Recupera y muestra un listado de unidades activas, excluyendo una unidad específica.
 
@@ -365,6 +357,7 @@ class controladorCompras extends Controller
         "updated_at"=>Carbon::now()
         ]);
 
+        //Una vez creada la unidad, se crea un registro en la tabla unidadServicio para llevar el control del mantenimiento de la unidad
         unidadServicio::create([
             "unidad_id" => $req->input('id'),
             "km_mantenimiento"=> $req->input('kilometraje'),
@@ -511,16 +504,6 @@ class controladorCompras extends Controller
         return redirect()->route('unidades')->with('activado','activado');
     }
 
-    //! ESTA FUNCION NO ESTA EN FUNCIONAMIENTO ACTUALMENTE
-    public function tableSalidas(){
-        $salidas = Salidas::select('salidas.id_salida','requisiciones.pdf as reqPDF','salidas.cantidad','users.nombres','almacen.clave','almacen.ubicacion','almacen.descripcion','salidas.created_at')
-        ->join('almacen','salidas.refaccion_id','=','almacen.clave')
-        ->join('requisiciones','salidas.requisicion_id','=','requisiciones.id_requisicion')
-        ->join('users','requisiciones.usuario_id','=','users.id')
-        ->get();
-        return view('Compras.salidas',compact('salidas'));
-    }
-
     /*
       TODO: Recupera y muestra un listado de solicitudes que cumplen con ciertos criterios de estado, junto con información relevante.
 
@@ -605,8 +588,10 @@ class controladorCompras extends Controller
     */
     public function createCorte(Request $req)
     {
+        // Obtiene el arreglo de requisiciones seleccionadas desde la solicitud HTTP
         $articulosSeleccionados = $req->input('requisiciones', []);
 
+        // Itera sobre cada requisición seleccionada para actualizar su estado según la acción especificada
         foreach ($articulosSeleccionados as $idRequisicion => $data) {
 
             // Solo procesa si realmente fue seleccionada
@@ -631,6 +616,18 @@ class controladorCompras extends Controller
         return redirect('solicitud/Compras')
             ->with('corte', 'corte');
     }
+
+    /*
+      TODO: Recupera y muestra todos los artículos vinculados a una requisición específica para su edición.
+
+        Este método consulta la base de datos para obtener un listado de todos los artículos que están asociados a una requisición
+    específica, identificada por su ID. La intención es proporcionar a los usuarios la capacidad de revisar y modificar los detalles de los artículos antes de que la requisición sea procesada o aprobada.
+
+        @param  int  $id  El ID de la requisición cuyos artículos se van a recuperar.
+
+        Retorna la vista 'Compras.editarSolicitud', pasando el listado de artículos vinculados a la requisición para su edición.
+    
+    */ 
 
     public function editarArti($id){
         // Busca todos los artículos vinculados a la ID de la requisición proporcionada
@@ -677,6 +674,7 @@ class controladorCompras extends Controller
 
       Redirige al usuario a la página anterior tras la eliminación exitosa del artículo.
     */
+
     public function rechazaArt($id,$rid){
         // Elimina el artículo específico por su ID
         Articulos::where('id',$id)->delete();
@@ -994,8 +992,13 @@ class controladorCompras extends Controller
     public function insertProveedor(Request $req)
     {
 
+        //Guarda los datos del proveedor en una variable para su uso posterior
         $proveedorDatos = $req;
+
+        //Asigna un nombre único al proveedor para la creación de archivos PDF
         $nombreEmpresa = str_replace(' ', '', $req->nombre);
+
+        // Genera un nuevo ID para el proveedor sumando 1 al máximo ID existente en la tabla Proveedores
         $id = Proveedores::max('id_proveedor') + 1;
 
         // Se genera el nombre y ruta para guardar PDF
@@ -1053,6 +1056,20 @@ class controladorCompras extends Controller
 
         return redirect('proveedores/Compras')->with('insert', 'insert');
     }
+
+    /*
+      TODO: Recupera y muestra los detalles de un proveedor específico en formato JSON.
+
+        Este método consulta la base de datos para obtener los detalles de un proveedor específico, identificado por su ID.
+        La información recuperada incluye datos como nombre, contacto, dirección, RFC, correo electrónico, detalles bancarios,
+        y las rutas a los archivos PDF asociados (CIF y estado de cuenta). La información se devuelve en formato JSON,
+        lo que permite su uso en aplicaciones web, interfaces de usuario dinámicas o para su procesamiento en la vista de detalles 
+        permitiendo así una mejor experiencia de usuario.
+
+        @param  int  $id  El ID del proveedor cuyos detalles se van a recuperar.
+    
+        Retorna un objeto JSON que contiene los detalles del proveedor específico.
+    */
 
     public function detalleProveedor($id)
     {
@@ -1301,6 +1318,7 @@ class controladorCompras extends Controller
       y los artículos pendientes para su visualización y gestión.
     */
     public function createOrdenCompra($id){
+
         // Recuperación de la cotización seleccionada
         $cotizacion = Cotizaciones::select('cotizaciones.id_cotizacion','cotizaciones.pdf as cotPDF','requisiciones.pdf as reqPDF')
         ->join('requisiciones','cotizaciones.requisicion_id','=', 'requisiciones.id_requisicion')
@@ -1509,9 +1527,13 @@ class controladorCompras extends Controller
       Devuelve la vista 'Compras.ordenesCompras', pasando la lista de órdenes para su visualización.
     */
     public function tableOrdenesCompras(){
+        
+        $Semana = Carbon::now()
+        ->endOfWeek(Carbon::SUNDAY);
+
         /* Obtención de información detallada para cada orden en donde se analizan la evolucion de la peticiónn
            desde requisición hasta orden de compra*/
-        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.tipo_pago','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.tipo_pago','orden_compras.dia_credito','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
         ->join('users','orden_compras.admin_id','=','users.id')
         ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
         ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
@@ -1519,6 +1541,10 @@ class controladorCompras extends Controller
         //Se excluyen las que se encuentren rechazadas.
         ->where('requisiciones.estado','!=','Rechazado')
         ->orderBy('orden_compras.created_at','desc')
+        ->where(function ($query) use ($Semana) {
+            $query->whereNull('orden_compras.dia_credito')
+            ->orWhere('orden_compras.dia_credito', '<=', $Semana);
+        })
         ->get();
 
         // Formatear fechas
@@ -1529,6 +1555,46 @@ class controladorCompras extends Controller
 
         //Muentra la vista con la variable que contiene las ordenes de compra
         return view ('Compras.ordenesCompras',compact('ordenes'));
+    }
+
+    /*
+      TODO: Recupera y muestra una lista de todas las órdenes de compra programadas con credito.
+
+      Este método consulta la base de datos para obtener información detallada sobre cada orden de compra a credito, incluyendo
+      el ID de la orden, detalles asociados de la requisición, el estado de la requisición, los nombres de los administradores
+      que gestionaron las órdenes, archivos PDF relacionados con las cotizaciones y las órdenes, detalles del proveedor,
+      costo total, estado del pago y otros datos relevantes. Filtra cualquier orden relacionada con requisiciones que hayan
+      sido rechazadas, centrándose en aquellas que están activas o en proceso.
+
+      Devuelve la vista 'Compras.ordenesComprasCredito', pasando la lista de órdenes para su visualización.
+    */
+    public function comprasCredito(){
+        
+        $inicioProximaSemana = Carbon::now()
+            ->startOfWeek(Carbon::MONDAY)
+            ->addWeek();
+
+        /* Obtención de información detallada para cada orden en donde se analizan la evolucion de la peticiónn
+           desde requisición hasta orden de compra*/
+        $ordenes = Orden_compras::select('orden_compras.id_orden','requisiciones.id_requisicion','requisiciones.estado','requisiciones.pdf as reqPDF','users.nombres','cotizaciones.pdf as cotPDF','proveedores.nombre as proveedor','orden_compras.costo_total','orden_compras.tipo_pago','orden_compras.dia_credito','orden_compras.estado as estadoComp','orden_compras.pdf as ordPDF','orden_compras.comprobante_pago','orden_compras.estado' ,'orden_compras.created_at')
+        ->join('users','orden_compras.admin_id','=','users.id')
+        ->join('cotizaciones','orden_compras.cotizacion_id','=','cotizaciones.id_cotizacion')
+        ->join('requisiciones','cotizaciones.requisicion_id','=','requisiciones.id_requisicion')
+        ->join('proveedores','orden_compras.proveedor_id','=','proveedores.id_proveedor')
+        //Se excluyen las que se encuentren rechazadas.
+        ->where('requisiciones.estado','!=','Rechazado')
+        ->orderBy('orden_compras.created_at','desc')
+        ->where('orden_compras.dia_credito', '>=', $inicioProximaSemana)
+        ->get();
+
+        // Formatear fechas
+        $ordenes->transform(function ($orden) {
+            $orden->fecha_creacion = Carbon::parse($orden->created_at)->format('d/m/Y');
+            return $orden;
+        });
+
+        //Muentra la vista con la variable que contiene las ordenes de compra
+        return view ('Compras.ComprasCredito',compact('ordenes'));
     }
 
     /*
@@ -1725,7 +1791,9 @@ class controladorCompras extends Controller
                 'servicios.id_servicio',
                 'servicios.nombre_servicio',
                 'proveedores.nombre',
-                'pagos_fijos.comprobante_pago'
+                'pagos_fijos.comprobante_pago',
+                'pagos_fijos.fecha_pago',
+                'pagos_fijos.created_at'
             )
             ->join('servicios', 'pagos_fijos.servicio_id', 'servicios.id_servicio')
             ->join('proveedores', 'servicios.proveedor_id', 'proveedores.id_proveedor')

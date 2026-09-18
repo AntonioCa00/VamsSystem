@@ -190,7 +190,7 @@
                         <tr>
                             <th>Folio:</th>
                             <th>Servicio:</th>
-                            <th>Fecha Prog:</th>
+                            <th>Fecha / prog</th>
                             <th>Estado:</th>
                             <th>Importe:</th>
                             <th>Proveedor:</th>                            
@@ -202,11 +202,11 @@
                     <tbody>
                         <!--Iterar sobre los pagos y crear una fila para cada uno-->
                         @foreach ($pagos as $pago)
-                        @if ($pago->fecha_pago != null)
-                            <tr class="text-info font-weight-bold">
-                        @else
-                            <tr>
-                        @endif                            
+                            @if ($pago->fecha_pago != null)
+                                <tr class="text-info font-weight-bold">
+                            @else
+                                <tr>
+                            @endif                            
                                 <th>{{$pago->id_pago}}</th>
                                 <th>{{$pago->nombre_servicio}}</th>
                                 <th>{{$pago->fecha_pago}}</th>

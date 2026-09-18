@@ -80,7 +80,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{{ route('ordenesCompras') }}">Ordenes de compra</a></li>
-                    <li><a class="dropdown-item" href="#">Compras a credito</a></li>
+                    <li><a class="dropdown-item" href="{{ route('comprasCredito')}}">Compras a credito</a></li>
                 </ul>
             </li>             
 

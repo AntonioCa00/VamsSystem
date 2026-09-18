@@ -20,7 +20,7 @@
                             <tr>
                                 <th>Folio:</th>
                                 <th>Servicio:</th>
-                                <th>Fecha Pago:</th>
+                                <th>Fecha prog</th>
                                 <th>Estado:</th>
                                 <th>Importe:</th>
                                 <th>Proveedor:</th>
@@ -35,8 +35,8 @@
                                     <th>{{ $pago->id_pago }}</th>
                                     <th>{{ $pago->nombre_servicio }}</th>
                                     <!-- Verificar el estado del pago y aplicar estilos según corresponda -->
-                                    @if ($pago->estado === 'Pagado')
-                                        <th class="font-weight-bold text-success">{{ $pago->estado }}</th>
+                                    @if (empty($pago->fecha_pago))
+                                        <th class="font-weight-bold text-success">{{ $pago->created_at }}</th>
                                     @else
                                         <th class="text-success">
                                             {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d-m-Y') }}</th>
