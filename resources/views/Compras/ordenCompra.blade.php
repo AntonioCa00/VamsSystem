@@ -150,11 +150,17 @@
                         </div>
                     </div>
                 </div>
-                <!-- Campo para ingresar los datos bancarios del proveedor -->
-                <div class="form-group mt-4">
-                    <label for="exampleFormControlInput1">Notas:</label>
-                    <input name="Notas" type="text" class="form-control" value=""
-                        placeholder="Ingresa cuenta de pago del recurso..." required>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <div class="col-md-6">
+                        <label for="exampleFormControlInput1">Notas:</label>
+                        <input name="Notas" type="text" class="form-control" value=""
+                            placeholder="Agrega comentarios sobre la orden de compra..." required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="banco">Cuenta de pago:</label>
+                        <input type="number" min="0" max="9999" class="form-control" name="cuenta"
+                            placeholder="Cuenta de donde saldrá el pago">
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary">
                     <h6>Crear formato de orden de compra</h6>

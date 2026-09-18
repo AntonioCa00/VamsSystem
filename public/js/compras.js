@@ -4,18 +4,29 @@ document.querySelectorAll('.btnEditarComprobante').forEach(button => {
 
     button.addEventListener('click', function () {
 
-        let url = this.dataset.url;
-        let comprobante = this.dataset.comprobante;
-        document.querySelector('#formEditarComprobante')
-            .setAttribute('action', url);
-        if (comprobante) {
-            document.querySelector('#divComprobanteActual')
-                .style.display = "block";
-            document.querySelector('#linkComprobante')
-                .setAttribute('href', comprobante);
+        const url = this.getAttribute('data-url') || '';
+        const comprobanteAttr = this.getAttribute('data-comprobante') || '';
+
+        console.log('EditarComprobante click', { url, comprobante: comprobanteAttr });
+
+        const form = document.querySelector('#formEditarComprobante');
+        const div = document.querySelector('#divComprobanteActual');
+        const link = document.querySelector('#linkComprobante');
+
+        if (form) form.setAttribute('action', url);
+
+        if (comprobanteAttr) {
+            div.style.display = 'block';
+            link.setAttribute('href', comprobanteAttr);
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+            link.textContent = 'Ver comprobante';
+            link.style.pointerEvents = 'auto';
         } else {
-            document.querySelector('#divComprobanteActual')
-                .style.display = "none";
+            div.style.display = 'none';
+            // disable link when no comprobante to avoid dead click
+            link.removeAttribute('href');
+            link.style.pointerEvents = 'none';
         }
     });
 });

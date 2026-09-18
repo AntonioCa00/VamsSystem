@@ -515,7 +515,7 @@ class controladorSolic extends Controller
             }
 
             // Validar si la requisicion esta relacionada a una unidad, en caso de pertenecer a mantenimiento
-            if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen"){
+            if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen" || session('departamento') === "Compras"){
                 $unidad = Unidades::where('id',$req->input('unidad'))->first();
             }else{
                 $unidad = null;
@@ -536,7 +536,7 @@ class controladorSolic extends Controller
             ob_end_clean();
 
             // Creación de la nueva requisición en la base de datos validando el departamento para así agregar o ignorar unidad
-            if(session('departamento') === "Mantenimiento" || session("departamento") === "Almacen"){
+            if(session('departamento') === "Mantenimiento" || session("departamento") === "Almacen" || session("departamento") === "Compras"){
                 // Crea la requisición con unidad asociada
                 DB::table('requisiciones')->insert([
                     "id_requisicion"=>$idcorresponde,

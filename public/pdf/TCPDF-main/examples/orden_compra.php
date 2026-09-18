@@ -133,7 +133,7 @@ $pdf->Cell(165, 7, 'Notas', 1, 0, 'C', 1);
 $pdf->Cell(25, 7, 'Cuenta Pago', 1, 1 ,'C', 1);
 // notas que agrega el solicitante
 $pdf->Cell(165, 7, $Nota, 1, 0 , 0 );
-$pdf->Cell(25, 7, '7865', 1, 1 ,'C', 0 );
+$pdf->Cell(25, 7, $cuenta, 1, 1 ,'C', 0 );
 
 $pdf->Ln(5); // Salto de línea antes de la tabla
 $pdf->SetFont('helvetica', 'B', 10);

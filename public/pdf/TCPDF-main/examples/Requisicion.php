@@ -116,7 +116,7 @@ if($urgencia != null && $Nota != null){
     // notas que agrega el solicitante
     $pdf->MultiCell(160, 5, 'Requisicion de urgencia. Fecha programada para recibir articulos: '.$fechaProgramada.'
 Notas de requisicion: '. $Nota, 1, 1 ,'C', 0 );
-}  elseif($urgencia != null && $Nota === null){
+} elseif($urgencia != null && $Nota === null){
     $pdf->MultiCell(160, 5, 'Requisicion de urgencia. Fecha programada para recibir articulos: '.$fechaProgramada, 1, 1 ,'C', 0 );
 } else{
    // notas que agrega el solicitante

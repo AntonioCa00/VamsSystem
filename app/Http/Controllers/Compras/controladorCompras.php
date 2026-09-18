@@ -1344,6 +1344,7 @@ class controladorCompras extends Controller
             $descuento = $req->input('descuento');
             $condiciones = $req->input('condiciones');
             $tipoPago = $req->has('tipo_pago') ? '1' : '0';
+            $cuenta = $req->input('cuenta');
 
             //Si se condiciona a credito guarda el valor de los días acordados
             if($condiciones === "Credito"){
@@ -1436,6 +1437,7 @@ class controladorCompras extends Controller
                 "tipo_pago"=>$tipoPago,
                 "dia_credito"=>$dia,                
                 "pdf" => $rutaDescargas,
+                "cuenta" =>$cuenta,
                 "created_at"=>Carbon::now(),
                 "updated_at"=>Carbon::now(),
             ]);

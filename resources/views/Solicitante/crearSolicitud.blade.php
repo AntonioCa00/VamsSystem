@@ -133,7 +133,7 @@
         <div class="card-footer py-3">
             <form action="{{route('requisicion')}}" method="post">
                 @csrf
-                @if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen")
+                @if(session('departamento') === "Mantenimiento" || session('departamento') === "Almacen" || session('departamento') === "Compras")
                     <div class="form-group">
                         <label for="exampleFormControlInput1">UNIDAD PARA REQUISICION</label>
                         @if (session('departamento') === "Mantenimiento")

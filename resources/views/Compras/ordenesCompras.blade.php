@@ -119,16 +119,26 @@
                                                 </a>
                                             @endif
                                         @else
-                                            <!-- Si la orden de compra ya esta pagada, mostrar el enlace para ver el comprobante de pago -->
-                                            @if (empty($orden->comprobante_pago))
-                                                <!-- Si no hay comprobante de pago, mostrar mensaje -->
-                                                Sin comprobante
-                                            @else
-                                                <!-- Si hay comprobante de pago, mostrar enlace para descargar -->
-                                                <a href="{{ asset($orden->comprobante_pago) }}" target="_blank">
-                                                    Comprobante pago
+                                            @if ($orden->estadoComp === null)
+                                                <a class="btn btn-primary btnEliminarOrden"
+                                                    href="#"
+                                                    data-toggle="modal"
+                                                    data-target="#modalEliminarOrden"
+                                                    data-url="{{ route('deleteOrd', [$orden->id_orden, $orden->id_requisicion]) }}">
+                                                    Eliminar
                                                 </a>
-                                            @endif   
+                                            @else
+                                                <!-- Si la orden de compra ya esta pagada, mostrar el enlace para ver el comprobante de pago -->
+                                                @if (empty($orden->comprobante_pago))
+                                                    <!-- Si no hay comprobante de pago, mostrar mensaje -->
+                                                    Sin comprobante
+                                                @else
+                                                    <!-- Si hay comprobante de pago, mostrar enlace para descargar -->
+                                                    <a href="{{ asset($orden->comprobante_pago) }}" target="_blank">
+                                                        Comprobante pago
+                                                    </a>
+                                                @endif
+                                            @endif
                                         @endif
                                     </th>
                                 </tr>

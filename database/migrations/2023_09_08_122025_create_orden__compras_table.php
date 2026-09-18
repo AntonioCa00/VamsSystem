@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orden_compras', function (Blueprint $table) {
-            $table->bigIncrements('id_orden');
+            $table->bigIncrements('id_orden');  
             $table->bigInteger('admin_id')->unsigned();
             $table->foreign('admin_id')->references('id')->on('users');
             $table->bigInteger('cotizacion_id')->unsigned();
@@ -23,7 +23,9 @@ return new class extends Migration
             $table->enum('tipo_pago',['0','1']);
             $table->date('dia_credito')->nullable();
             $table->string('pdf');
-            $table->string('estado')->nullable();
+            $table->string('comprobante_pago');
+            $table->string('cuenta');
+            $table->string('estado')->nullable();            
             $table->timestamps();
         });
     }

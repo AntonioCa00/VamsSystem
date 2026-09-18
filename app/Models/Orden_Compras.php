@@ -18,6 +18,7 @@ class Orden_Compras extends Model
         'tipo_pago',
         'dia_credito',
         'pdf',
+        'cuenta',
         'estado',
         'created_at',        
         'updated_at'
