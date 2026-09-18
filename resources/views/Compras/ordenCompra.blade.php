@@ -14,7 +14,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered text-center" width="100%" cellspacing="0">
-                        <thead>
+                        <thead>                    
                             <tr>
                                 <th>Requisicion:</th>
                                 <th>Cotizacion Validada:</th>
